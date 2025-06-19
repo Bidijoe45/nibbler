@@ -1,0 +1,9 @@
+{
+    "gui_libraries": [
+        {
+            "key": 1,
+            "name": "lib_name",
+            "path": "lib/gui1/gui1.so"
+        }
+    ]
+}

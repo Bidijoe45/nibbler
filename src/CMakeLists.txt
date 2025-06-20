@@ -1,6 +1,7 @@
 set(NIBBLER_MAIN_LIB nibbler_main_lib)
 set(SRCS
     nibbler.cpp
+    config.cpp
 )
 
 add_library(${NIBBLER_MAIN_LIB} ${SRCS})

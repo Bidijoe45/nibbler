@@ -6,13 +6,13 @@
 
 namespace nibbler {
 
-    class Nibbler {
-    public:
-        Nibbler();
-        int run();
+class Nibbler {
+public:
+    Nibbler();
+    int run();
 
-    private:
-        std::unique_ptr<Nibbler> nibbler_instance_ = nullptr;
+private:
+    std::unique_ptr<Nibbler> nibbler_instance_ = nullptr;
 };
 
 }

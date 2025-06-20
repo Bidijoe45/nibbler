@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.16)
 set(NIBBLER_MAIN_LIB nibbler_main_lib)
 set(SRCS
     nibbler.cpp
@@ -9,4 +10,6 @@ target_include_directories(${NIBBLER_MAIN_LIB} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR
 
 configure_file("../nibbler-config.json" "nibbler-config.json")
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${NIBBLER_MAIN_LIB})
+
+# Just for testing, THIS SHOULD NOT BE USED
+# target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${NIBBLER_MAIN_LIB} SDL_Wrapper)

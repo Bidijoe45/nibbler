@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.16)
 set(NIBBLER_TEST_EXEC nibbler_tests)
 set(SRCS
     test.cpp

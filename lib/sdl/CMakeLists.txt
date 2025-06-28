@@ -9,7 +9,6 @@ set(SRCS
 )
 
 include(FetchContent)
-set(FETCHCONTENT_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}/thirdparty" CACHE STRING "")
 FetchContent_Declare(
     SDL
     GIT_REPOSITORY https://github.com/libsdl-org/SDL.git

@@ -1,11 +1,23 @@
-#include <string>
-
 #include "config.hpp"
+
+#include <string>
+#include <iostream>
 
 namespace nibbler {
 
+/**
+ * TODO: implement this
+ */
 Configuration ConfigParser::parseConfigFile(const std::string &file_path) {
-    return Configuration();
+    Configuration config;
+
+    config.gameboard_height = 50;
+    config.gameboard_height = 50;
+
+    ConfigLibrary tty_gui = { .key="1", .name="TTY_GUI", .path="build/lib/tty-gui/libTTY_GUI.dylib" };
+    config.gui_libraries.push_back(tty_gui);
+
+    return config;
 }
 
 }

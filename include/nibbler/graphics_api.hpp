@@ -23,6 +23,8 @@ public:
     virtual void add_event_listener_key_down(KeyDownCallback cb) = 0;
     virtual void add_event_listener_key_up(KeyUpCallback cb) = 0;
     virtual void add_event_listener_key_press(KeyPressCallback cb) = 0;
+    virtual void draw_pixel(size_t x, size_t y) = 0;
+    virtual void clear_screen() = 0;
 
 protected:
     inline IWindow(size_t width, size_t height, std::string title) {};

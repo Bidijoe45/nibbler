@@ -4,6 +4,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <functional>
 
 namespace nibbler {
 
@@ -12,9 +13,14 @@ Snake::Snake(Configuration config, GraphicsApiUniquePtr graphics_api)
 
 Snake::~Snake() { }
 
-// This function is called 59.9 times per second. Game logic goes here
-void update(std::shared_ptr<IWindow> window, std::chrono::duration<double> delta_time) {
+void Snake::on_key_down(KEY key) {
 
+}
+
+// This function is called 59.9 times per second. Game logic goes here
+void Snake::update(std::shared_ptr<IWindow> window, std::chrono::duration<double> delta_time) {
+    window->clear_screen();
+    window->draw_pixel(10, 10);
 }
 
 int Snake::run() {
@@ -24,11 +30,12 @@ int Snake::run() {
         "Nibbler"
     );
 
+    window->add_event_listener_key_down(std::bind(&Snake::on_key_down, this, std::placeholders::_1));
+
     size_t target_frame_rate = 60;
     std::chrono::duration<double> target_frame_duration = std::chrono::duration<double>(1.0 / target_frame_rate);
     std::chrono::steady_clock::time_point previous_time = std::chrono::steady_clock::now();
     std::chrono::duration<double> delta_time;
-    std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
     const std::chrono::milliseconds sleep_margin(3);
 
     while (true) {

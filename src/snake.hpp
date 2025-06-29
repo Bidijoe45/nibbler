@@ -11,6 +11,7 @@ class Snake {
 public:
     Snake(Configuration config, GraphicsApiUniquePtr graphics_api);
     ~Snake();
+    void update(std::shared_ptr<IWindow> window, std::chrono::duration<double> delta_time);
     int run();
 
 private:

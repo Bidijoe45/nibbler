@@ -19,7 +19,6 @@ namespace ttygui {
 
     std::shared_ptr<nibbler::IWindow>
     TTYGUI::create_window(std::size_t width, std::size_t height, std::string title) {
-        std::cout << "hello from tty gui\n";
         return std::make_shared<TTYGUIWindow>(width, height, std::move(title));
     }
 

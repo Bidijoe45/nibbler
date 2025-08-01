@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <csignal>
+#include <fcntl.h>
+#include <poll.h>
 
 namespace ttygui {
 
@@ -21,12 +23,19 @@ TTYGUIWindow::TTYGUIWindow(std::size_t width, std::size_t height, std::string ti
     std::signal(SIGINT, TTYGUIWindow::handle_exit);
 
     set_noncanonical_mode();
+    TTYGUIWindow::update_terminal_size();
     draw_border();
 }
 
-TTYGUIWindow::~TTYGUIWindow() {};
+TTYGUIWindow::~TTYGUIWindow() {
+    this->set_non_blocking(false);
+    this->restore_terminal();
+};
 
-void TTYGUIWindow::add_event_listener_key_down(nibbler::IWindow::KeyDownCallback) {}
+void TTYGUIWindow::add_event_listener_key_down(nibbler::IWindow::KeyDownCallback callback) {
+    this->key_down_callbacks_.push_back(callback);
+}
+
 void TTYGUIWindow::add_event_listener_key_up(nibbler::IWindow::KeyUpCallback) {}
 void TTYGUIWindow::add_event_listener_key_press(nibbler::IWindow::KeyPressCallback) {}
 
@@ -38,6 +47,14 @@ void TTYGUIWindow::set_noncanonical_mode() {
     raw.c_cc[VTIME] = 0;
     tcsetattr(STDIN_FILENO, TCSANOW, &raw);
     std::cout << "\033[?25l";
+}
+
+void TTYGUIWindow::set_non_blocking(bool enable) {
+    int flags = fcntl(STDIN_FILENO, F_GETFL, 0);
+    if (enable)
+        fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK);
+    else
+        fcntl(STDIN_FILENO, F_SETFL, flags & ~O_NONBLOCK);
 }
 
 void TTYGUIWindow::draw_border() {
@@ -63,6 +80,7 @@ void TTYGUIWindow::handle_resize(int) {
     TTYGUIWindow::draw_border();
 }
 
+//TODO: Don't know if this is really needed
 void TTYGUIWindow::handle_exit(int) {
     TTYGUIWindow::restore_terminal();
     std::exit(0);
@@ -84,10 +102,70 @@ void TTYGUIWindow::clear_screen() {
     TTYGUIWindow::draw_border();
 }
 
-void TTYGUIWindow::draw_pixel(size_t x, size_t y) {
-    char c = 'X';
+void TTYGUIWindow::draw_pixel(size_t x, size_t y, char c) {;
     std::cout << "\033[" << y << ";" << x << "H" << c;
     std::cout.flush();
+}
+
+std::pair<size_t, size_t> TTYGUIWindow::get_window_size() {
+    TTYGUIWindow::update_terminal_size();
+    return std::make_pair<size_t, size_t>(TTYGUIWindow::term_cols, TTYGUIWindow::term_rows);
+}
+
+void TTYGUIWindow::draw_snake(std::vector<nibbler::Position> &snake) {
+    for (auto &pos : snake) {
+        this->draw_pixel(pos.x, pos.y, 'X');
+    }
+}
+
+nibbler::KEY TTYGUIWindow::convert_input_to_key(char ch) {
+    switch (ch)
+    {
+        case '1':
+            return nibbler::KEY::NUMBER_1;
+            break;
+
+        case '2':
+            return nibbler::KEY::NUMBER_2;
+            break;
+        
+        default:
+            break;
+    }
+
+    return nibbler::KEY::EMPTY;
+}
+
+void TTYGUIWindow::read_input() {
+    struct pollfd pfd;
+    pfd.fd = STDIN_FILENO;
+    pfd.events = POLLIN;
+
+    int ret = poll(&pfd, 1, 0);
+    if (ret <= 0) return;
+
+    char ch;
+    if (read(STDIN_FILENO, &ch, 1) <= 0) return;
+
+    for (auto& callback : this->key_down_callbacks_) {
+        if (ch == 27) {
+            char seq[2];
+            if (read(STDIN_FILENO, &seq[0], 1) <= 0) return;
+            if (read(STDIN_FILENO, &seq[1], 1) <= 0) return;
+
+            if (seq[0] == '[') {
+                switch (seq[1]) {
+                    case 'A': callback(nibbler::KEY::ARROW_UP); break;
+                    case 'B': callback(nibbler::KEY::ARROW_DOWN); break;
+                    case 'C': callback(nibbler::KEY::ARROW_RIGHT); break;
+                    case 'D': callback(nibbler::KEY::ARROW_LEFT); break;
+                    default: break;
+                }
+            }
+        } else {
+            callback(this->convert_input_to_key(ch));
+        }
+    }
 }
 
 TTYGUI::TTYGUI() {}

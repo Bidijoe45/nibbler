@@ -10,12 +10,17 @@ namespace nibbler {
 enum KEY {
     ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT,
     NUMBER_1, NUMBER_2, NUMBER_3, NUMBER_4, NUMBER_5, NUMBER_6, NUMBER_7, NUMBER_8, NUMBER_9, NUMBER_0,
-    LETTER_P,
+    LETTER_P, EMPTY
+};
+
+struct Position {
+    float x;
+    float y;
 };
 
 class IWindow {
 public:
-    typedef std::function<void(KEY)> KeyDownCallback, KeyUpCallback, KeyPressCallback;
+    typedef std::function<void(KEY)> Callback, KeyDownCallback, KeyUpCallback, KeyPressCallback;
 
     IWindow() = delete;
     inline virtual ~IWindow() {};
@@ -23,8 +28,10 @@ public:
     virtual void add_event_listener_key_down(KeyDownCallback cb) = 0;
     virtual void add_event_listener_key_up(KeyUpCallback cb) = 0;
     virtual void add_event_listener_key_press(KeyPressCallback cb) = 0;
-    virtual void draw_pixel(size_t x, size_t y) = 0;
     virtual void clear_screen() = 0;
+    virtual std::pair<size_t, size_t> get_window_size() = 0;
+    virtual void read_input() = 0;
+    virtual void draw_snake(std::vector<Position> &snake) = 0;
 
 protected:
     inline IWindow(size_t width, size_t height, std::string title) {};

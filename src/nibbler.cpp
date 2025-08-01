@@ -40,7 +40,7 @@ int Nibbler::start() {
     }
 
     GraphicsApiUniquePtr graphics_api(create_gui_lib(), destroy_gui_lib);
-    Snake snake(this->config_, std::move(graphics_api));
+    SnakeGame snake(this->config_, std::move(graphics_api));
 
     return snake.run();
 }

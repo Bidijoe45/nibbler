@@ -13,6 +13,8 @@ Configuration ConfigParser::parseConfigFile(const std::string &file_path) {
 
     config.gameboard_height = 50;
     config.gameboard_height = 50;
+    config.window_width = 640;
+    config.window_height = 480;
 
     ConfigLibrary tty_gui = { .key="1", .name="TTY_GUI", .path="build/lib/tty-gui/libTTY_GUI.dylib" };
     config.gui_libraries.push_back(tty_gui);

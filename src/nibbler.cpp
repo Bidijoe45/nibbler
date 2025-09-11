@@ -1,6 +1,6 @@
 #include "nibbler.hpp"
 #include "nibbler/graphics_api.hpp"
-#include <snake.hpp>
+#include "snake.hpp"
 
 #include <memory>
 #include <iostream>
@@ -18,7 +18,7 @@ int Nibbler::start() {
     }
 
     ConfigLibrary first_library = this->config_.gui_libraries.at(0);
-    std::unique_ptr<DynamicLib> gui_lib = DynamicLibLoader::load_library(first_library.path, RTLD_LAZY);
+    std::unique_ptr<DynamicLib> gui_lib = DynamicLibLoader::load_library(first_library.path, RTLD_NOW);
 
     if (gui_lib == nullptr) {
         std::cerr << "ERROR: Cannot load library:" << first_library.name << std::endl;
@@ -40,6 +40,7 @@ int Nibbler::start() {
     }
 
     GraphicsApiUniquePtr graphics_api(create_gui_lib(), destroy_gui_lib);
+    // FIXME: gui should be interchangeable on key press (1, 2, 3), therefore we need an alternative way to set it
     SnakeGame snake(this->config_, std::move(graphics_api));
 
     return snake.run();

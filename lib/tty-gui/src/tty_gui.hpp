@@ -13,16 +13,21 @@ namespace ttygui {
 
 class TTYGUIWindow : public nibbler::IWindow {
 public:
-    TTYGUIWindow(std::size_t width, std::size_t height, std::string title);
+    // TODO: this gui does not seem to need the width and height because they are deduced from the
+    // TODO: terminal size. perhaps we could remove them from the constructor (remove them from
+    // TODO: the IWindow constructor too, since the IWindow does not need them either, it is an
+    // TODO: implementation variable and it is up to the implementation to decide what it wants
+    // TODO: and where to store it I think????).  It does not seem to use the title either.
+    TTYGUIWindow(std::size_t width_squares, std::size_t height_squares, std::string title);
     ~TTYGUIWindow();
 
-    void add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb);
-    void add_event_listener_key_up(nibbler::IWindow::KeyUpCallback cb);
-    void add_event_listener_key_press(nibbler::IWindow::KeyPressCallback cb);
-    void clear_screen();
-    std::pair<size_t, size_t> get_window_size();
-    void read_input();
-    void draw_snake(std::vector<nibbler::Position> &snake);
+    void add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) override;
+    void add_event_listener_key_up(nibbler::IWindow::KeyUpCallback cb) override;
+    void add_event_listener_key_press(nibbler::IWindow::KeyPressCallback cb) override;
+    void clear_screen() override;
+    std::pair<size_t, size_t> get_window_size_squares() override;
+    void read_input() override;
+    void draw_snake(std::vector<nibbler::Position> &snake) override;
 
     static void restore_terminal();
     static void handle_resize(int);
@@ -36,7 +41,7 @@ public:
 private:
     void set_noncanonical_mode();
     void set_non_blocking(bool enable);
-    nibbler::KEY convert_input_to_key(char ch);
+    nibbler::Key convert_input_to_key(char ch);
     void draw_pixel(size_t x, size_t y, char c);
 
     std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
@@ -48,7 +53,7 @@ public:
     ~TTYGUI();
 
     std::shared_ptr<nibbler::IWindow>
-    create_window(std::size_t width, std::size_t height, std::string title);
+    create_window(std::size_t width_squares, std::size_t height_squares, std::string title) override;
 };
 
 } 
@@ -56,7 +61,7 @@ public:
 extern "C" {
 
 nibbler::INibblerGraphicsApi* create_graphics_library();
-void                        destroy_graphics_library(nibbler::INibblerGraphicsApi*);
+void destroy_graphics_library(nibbler::INibblerGraphicsApi*);
 
 }
 

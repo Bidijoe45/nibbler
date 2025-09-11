@@ -17,7 +17,7 @@ target_include_directories(${NIBBLER_MAIN_LIB} PUBLIC ${CMAKE_SOURCE_DIR}/includ
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)
 
 # Link libraries
-#target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ClippCmdParser)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ClippCmdParser)
 
 # Link main program
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${NIBBLER_MAIN_LIB})

@@ -27,7 +27,7 @@ class SnakeGame {
 public:
     SnakeGame(Configuration config, GraphicsApiUniquePtr graphics_api);
     ~SnakeGame();
-    void on_key_down(KEY key);
+    void on_key_down(Key key);
     void update(std::shared_ptr<IWindow> window, std::chrono::duration<double> delta_time);
     int run();
 

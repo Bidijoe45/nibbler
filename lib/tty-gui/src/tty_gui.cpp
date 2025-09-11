@@ -15,14 +15,14 @@ int TTYGUIWindow::term_cols = 0;
 int TTYGUIWindow::term_rows = 0;
 termios TTYGUIWindow::orig_termios;
 
-TTYGUIWindow::TTYGUIWindow(std::size_t width, std::size_t height, std::string title)
-    : nibbler::IWindow(width, height, std::move(title))
+TTYGUIWindow::TTYGUIWindow(std::size_t width_squares, std::size_t height_squares, std::string title)
+    : nibbler::IWindow(width_squares, height_squares, std::move(title))
 {
     std::atexit(TTYGUIWindow::restore_terminal);
     std::signal(SIGWINCH, TTYGUIWindow::handle_resize);
     std::signal(SIGINT, TTYGUIWindow::handle_exit);
 
-    set_noncanonical_mode();
+    this->set_noncanonical_mode();
     TTYGUIWindow::update_terminal_size();
     draw_border();
 }
@@ -107,7 +107,7 @@ void TTYGUIWindow::draw_pixel(size_t x, size_t y, char c) {;
     std::cout.flush();
 }
 
-std::pair<size_t, size_t> TTYGUIWindow::get_window_size() {
+std::pair<size_t, size_t> TTYGUIWindow::get_window_size_squares() {
     TTYGUIWindow::update_terminal_size();
     return std::make_pair<size_t, size_t>(TTYGUIWindow::term_cols, TTYGUIWindow::term_rows);
 }
@@ -118,22 +118,22 @@ void TTYGUIWindow::draw_snake(std::vector<nibbler::Position> &snake) {
     }
 }
 
-nibbler::KEY TTYGUIWindow::convert_input_to_key(char ch) {
+nibbler::Key TTYGUIWindow::convert_input_to_key(char ch) {
     switch (ch)
     {
         case '1':
-            return nibbler::KEY::NUMBER_1;
+            return nibbler::Key::NUMBER_1;
             break;
 
         case '2':
-            return nibbler::KEY::NUMBER_2;
+            return nibbler::Key::NUMBER_2;
             break;
         
         default:
             break;
     }
 
-    return nibbler::KEY::EMPTY;
+    return nibbler::Key::EMPTY;
 }
 
 void TTYGUIWindow::read_input() {
@@ -155,10 +155,10 @@ void TTYGUIWindow::read_input() {
 
             if (seq[0] == '[') {
                 switch (seq[1]) {
-                    case 'A': callback(nibbler::KEY::ARROW_UP); break;
-                    case 'B': callback(nibbler::KEY::ARROW_DOWN); break;
-                    case 'C': callback(nibbler::KEY::ARROW_RIGHT); break;
-                    case 'D': callback(nibbler::KEY::ARROW_LEFT); break;
+                    case 'A': callback(nibbler::Key::ARROW_UP); break;
+                    case 'B': callback(nibbler::Key::ARROW_DOWN); break;
+                    case 'C': callback(nibbler::Key::ARROW_RIGHT); break;
+                    case 'D': callback(nibbler::Key::ARROW_LEFT); break;
                     default: break;
                 }
             }
@@ -172,8 +172,8 @@ TTYGUI::TTYGUI() {}
 TTYGUI::~TTYGUI() {}
 
 std::shared_ptr<nibbler::IWindow>
-TTYGUI::create_window(std::size_t width, std::size_t height, std::string title) {
-    return std::make_shared<TTYGUIWindow>(width, height, std::move(title));
+TTYGUI::create_window(std::size_t width_squares, std::size_t height_squares, std::string title) {
+    return std::make_shared<TTYGUIWindow>(width_squares, height_squares, std::move(title));
 }
 
 }

@@ -9,7 +9,15 @@
 namespace nibbler {
 
 void Snake::move(double delta_time) {
-    // Move snake
+    // Move the rest of the snake's body
+    for (std::size_t i = this->body.size() - 1; i > 0; i--)
+    {
+
+        //std::cout << i << " from: " << this->body[i].x << ", " << this->body[i].y << " to: " << this->body[i-1].x <<", " << this->body[i-1].y << std::endl; 
+        this->body[i] = this->body[i - 1];
+    }
+
+    // Move first segment of the snake
     switch (this->dir)
     {
         case Direction::UP:
@@ -48,24 +56,26 @@ SnakeGame::SnakeGame(Configuration config, GraphicsApiUniquePtr graphics_api)
 
 SnakeGame::~SnakeGame() { }
 
-void SnakeGame::on_key_down(KEY key) {
+void SnakeGame::on_key_down(Key key) {
     switch (key)
     {
-        case ARROW_LEFT:
+        case Key::ARROW_LEFT:
             this->snake_.change_direction(Direction::LEFT);
             break;
 
-        case ARROW_RIGHT:
+        case Key::ARROW_RIGHT:
             this->snake_.change_direction(Direction::RIGHT);
             break;
         
-        case ARROW_DOWN:
+        case Key::ARROW_DOWN:
             this->snake_.change_direction(Direction::DOWN);
             break;
 
-        case ARROW_UP:
+        case Key::ARROW_UP:
             this->snake_.change_direction(Direction::UP);
             break;
+
+        // TODO: add gui-changin keys! Maybe they could be mapped by Key enum (either from config or at a later point) so that they'd be more easily accessible
 
         default:
             break;
@@ -73,12 +83,15 @@ void SnakeGame::on_key_down(KEY key) {
 }
 
 void SnakeGame::initialize_game(std::shared_ptr<IWindow> window) {
-    std::pair<size_t, size_t> windows_size = window->get_window_size();
+    std::pair<size_t, size_t> windows_size = window->get_window_size_squares();
     Position start_pos;
     start_pos.x = windows_size.first / 2;
     start_pos.y = windows_size.second / 2;
 
     this->snake_.body.push_back(start_pos);
+    this->snake_.body.push_back(Position({start_pos.x - 1, start_pos.y}));
+    this->snake_.body.push_back(Position({start_pos.x - 2, start_pos.y}));
+    this->snake_.body.push_back(Position({start_pos.x - 3, start_pos.y}));
     this->snake_.dir = Direction::RIGHT;
     this->snake_.speed = 3;
 }
@@ -89,34 +102,33 @@ void SnakeGame::update(std::shared_ptr<IWindow> window, std::chrono::duration<do
     
     //TODO: if window si rescaled, restart the game
     //if (last_window_size != std::make_pair(0,0)
-    //    && last_window_size != window->get_window_size())
+    //    && last_window_size != window->get_window_size_squares())
     //{
     //    initialize_game(window);
     //}
 
-    window->clear_screen();
+    //window->clear_screen();
     this->snake_.move(delta_time.count());
     
     //TODO: Check collsions
 
-    window->draw_snake(this->snake_.body);
+    //window->draw_snake(this->snake_.body);
 }
 
 int SnakeGame::run() {
     //FIXME: this should not return a shared_ptr. The graphics_api does not need the ownership of this.
-    std::shared_ptr<IWindow> window = graphics_api_->create_window(
-        this->config_.window_width,
-        this->config_.window_width, 
+    std::shared_ptr<IWindow> window = this->graphics_api_->create_window(
+        this->config_.gameboard_width_squares,
+        this->config_.gameboard_height_squares,
         "Nibbler"
     );
 
     window->add_event_listener_key_down(std::bind(&SnakeGame::on_key_down, this, std::placeholders::_1));
 
-    size_t target_frame_rate = 60;
-    std::chrono::duration<double> target_frame_duration = std::chrono::duration<double>(1.0 / target_frame_rate);
+    size_t target_frames_per_s = 60;
+    std::chrono::duration<double> target_frame_duration = std::chrono::duration<double>(1.0 / target_frames_per_s);
     std::chrono::steady_clock::time_point previous_time = std::chrono::steady_clock::now();
     std::chrono::duration<double> delta_time;
-    const std::chrono::milliseconds sleep_margin(3);
 
     this->initialize_game(window);
 
@@ -124,18 +136,9 @@ int SnakeGame::run() {
         std::chrono::steady_clock::time_point frame_start = std::chrono::steady_clock::now();
         delta_time = frame_start - previous_time;
         previous_time = frame_start;
-
         window->read_input();
         this->update(window, delta_time);
-
-        std::chrono::steady_clock::time_point frame_end = std::chrono::steady_clock::now();
-        std::chrono::duration<double> work_duration = frame_end - frame_start;
-        std::chrono::duration<double> time_remaining = target_frame_duration - work_duration;
-
-        if (time_remaining > sleep_margin) {
-            std::this_thread::sleep_for(std::chrono::duration_cast<std::chrono::milliseconds>(time_remaining - sleep_margin));
-        }
-
+        
         while (std::chrono::steady_clock::now() - frame_start < target_frame_duration) {
             std::this_thread::yield();
         }

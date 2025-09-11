@@ -15,10 +15,10 @@ struct ConfigLibrary {
 };
 
 struct Configuration {
-    size_t window_width;
-    size_t window_height;
-    size_t gameboard_width;
-    size_t gameboard_height;
+    size_t window_width_pixels; // TODO: necessary?
+    size_t window_height_pixels; // TODO: necessary?
+    size_t gameboard_width_squares; // FIXME: comes from cli
+    size_t gameboard_height_squares; // FIXME: comes from cli
 
     std::vector<ConfigLibrary> gui_libraries;
 };

@@ -8,50 +8,61 @@
 
 namespace nibbler {
 
+void Snake::add_segment(void)
+{
+    const Position &prev_segment_pos = this->body.segments.back();
+    const Direction &prev_segment_dir = this->body.directions.back();
+    // FIXME: add the new tail in the direction of the current tail
+    this->body.segments.push_back(Position({prev_segment_pos.x - 1, prev_segment_pos.y}));
+    this->body.directions.push_back(prev_segment_dir);
+}
+
 void Snake::move(double delta_time) {
 
-    std::cout << "delta_time: " << delta_time << std::endl; 
-
-    // Move the rest of the snake's body
-    for (std::size_t i = this->body.size() - 1; i > 0; i--)
+    if (this->body.segments.empty())
     {
-
-        //std::cout << i << " from: " << this->body[i].x << ", " << this->body[i].y << " to: " << this->body[i-1].x <<", " << this->body[i-1].y << std::endl; 
-        this->body[i] = this->body[i - 1];
+        return;
     }
 
-    // Move first segment of the snake
-    switch (this->dir)
-    {
-        case Direction::UP:
-            this->body[0].y -= this->speed * delta_time;
-            break;
-        case Direction::LEFT:
-            this->body[0].x -= this->speed * delta_time;
-            break;
-        case Direction::DOWN:
-            this->body[0].y += this->speed * delta_time;
-            break;
-        case Direction::RIGHT:
-            this->body[0].x += this->speed * delta_time;
-            break;
-    }
+    // Each segment of the body has its own direction, and takes the direction of the segment preceding it
+    Direction prev_dir = this->body.directions[0];
+    std::size_t i = 0;
+    do {
+        switch (this->body.directions[i])
+        {
+            case Direction::UP:
+                this->body.segments[i].y -= this->speed * delta_time;
+                break;
+            case Direction::LEFT:
+                this->body.segments[i].x -= this->speed * delta_time;
+                break;
+            case Direction::DOWN:
+                this->body.segments[i].y += this->speed * delta_time;
+                break;
+            case Direction::RIGHT:
+                this->body.segments[i].x += this->speed * delta_time;
+                break;
+        }
+        if (i != 0)
+            std::swap(this->body.directions[i], prev_dir);
+        i++;
+    } while (i < this->body.segments.size());
 }
 
 void Snake::change_direction(Direction dir) {
-    if (this->dir == dir)
+    if (this->body.directions[0] == dir)
         return;
     
-    if (this->dir == Direction::UP && dir == Direction::DOWN)
+    if (this->body.directions[0] == Direction::UP && dir == Direction::DOWN)
         return;
-    if (this->dir == Direction::DOWN && dir == Direction::UP)
+    if (this->body.directions[0] == Direction::DOWN && dir == Direction::UP)
         return;
-    if (this->dir == Direction::LEFT && dir == Direction::RIGHT)
+    if (this->body.directions[0] == Direction::LEFT && dir == Direction::RIGHT)
         return;
-    if (this->dir == Direction::RIGHT && dir == Direction::LEFT)
+    if (this->body.directions[0] == Direction::RIGHT && dir == Direction::LEFT)
         return;
 
-    this->dir = dir;
+    this->body.directions[0] = dir;
 }
 
 SnakeGame::SnakeGame(Configuration config, GraphicsApiUniquePtr graphics_api)
@@ -91,31 +102,31 @@ void SnakeGame::initialize_game(std::shared_ptr<IWindow> window) {
     start_pos.x = windows_size.first / 2;
     start_pos.y = windows_size.second / 2;
 
-    this->snake_.body.push_back(start_pos);
-    this->snake_.body.push_back(Position({start_pos.x - 1, start_pos.y}));
-    this->snake_.body.push_back(Position({start_pos.x - 2, start_pos.y}));
-    this->snake_.body.push_back(Position({start_pos.x - 3, start_pos.y}));
-    this->snake_.dir = Direction::RIGHT;
+    this->snake_.body.segments.push_back(start_pos);
+    this->snake_.body.directions.push_back(Direction::RIGHT);
+    this->snake_.add_segment();
+    this->snake_.add_segment();
+    this->snake_.add_segment();
     this->snake_.speed = 3;
 }
 
 // This function is called 59.9 times per second. Game logic goes here
 void SnakeGame::update(std::shared_ptr<IWindow> window, double delta_time) {
-    static std::pair<size_t, size_t> last_window_size = std::make_pair(0, 0);
+    //static std::pair<size_t, size_t> last_window_size = std::make_pair(0, 0);
     
     //TODO: if window si rescaled, restart the game
-    if (last_window_size != std::make_pair(0,0)
-        && last_window_size != window->get_window_size_squares())
-    {
-        initialize_game(window);
-    }
+    //if (last_window_size != std::make_pair(0,0)
+    //   && last_window_size != window->get_window_size_squares())
+    //{
+    //   initialize_game(window);
+    //}
 
     window->clear_screen();
     this->snake_.move(delta_time);
     
     //TODO: Check collsions
 
-    window->draw_snake(this->snake_.body);
+    window->draw_snake(this->snake_.body.segments);
 }
 
 int SnakeGame::run() {

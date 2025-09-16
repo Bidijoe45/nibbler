@@ -15,10 +15,16 @@ enum Direction {
 };
 
 struct Snake {
-    std::vector<Position> body;
-    Direction dir;
+    // Positions and directions are kept in two separate vectors like this
+    // instead of e.g. a vector of pairs, in order to be able to pass the
+    // vector of positions directly to draw_snake():
+    struct {
+        std::vector<Position> segments; // positions of the body
+        std::vector<Direction> directions; // each segment has its own direction
+    } body;
     float speed;
 
+    void add_segment(void);
     void change_direction(Direction dir);
     void move(double delta_time);
 };

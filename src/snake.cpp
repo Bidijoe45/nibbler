@@ -9,6 +9,9 @@
 namespace nibbler {
 
 void Snake::move(double delta_time) {
+
+    std::cout << "delta_time: " << delta_time << std::endl; 
+
     // Move the rest of the snake's body
     for (std::size_t i = this->body.size() - 1; i > 0; i--)
     {
@@ -97,22 +100,22 @@ void SnakeGame::initialize_game(std::shared_ptr<IWindow> window) {
 }
 
 // This function is called 59.9 times per second. Game logic goes here
-void SnakeGame::update(std::shared_ptr<IWindow> window, std::chrono::duration<double> delta_time) {
-    //static std::pair<size_t, size_t> last_window_size = std::make_pair(0, 0);
+void SnakeGame::update(std::shared_ptr<IWindow> window, double delta_time) {
+    static std::pair<size_t, size_t> last_window_size = std::make_pair(0, 0);
     
     //TODO: if window si rescaled, restart the game
-    //if (last_window_size != std::make_pair(0,0)
-    //    && last_window_size != window->get_window_size_squares())
-    //{
-    //    initialize_game(window);
-    //}
+    if (last_window_size != std::make_pair(0,0)
+        && last_window_size != window->get_window_size_squares())
+    {
+        initialize_game(window);
+    }
 
-    //window->clear_screen();
-    this->snake_.move(delta_time.count());
+    window->clear_screen();
+    this->snake_.move(delta_time);
     
     //TODO: Check collsions
 
-    //window->draw_snake(this->snake_.body);
+    window->draw_snake(this->snake_.body);
 }
 
 int SnakeGame::run() {
@@ -125,20 +128,26 @@ int SnakeGame::run() {
 
     window->add_event_listener_key_down(std::bind(&SnakeGame::on_key_down, this, std::placeholders::_1));
 
-    size_t target_frames_per_s = 60;
-    std::chrono::duration<double> target_frame_duration = std::chrono::duration<double>(1.0 / target_frames_per_s);
+    const size_t target_frames_per_s = 60;
+    const std::chrono::nanoseconds target_frame_duration(std::chrono::nanoseconds(std::chrono::seconds(1)) / target_frames_per_s);
     std::chrono::steady_clock::time_point previous_time = std::chrono::steady_clock::now();
-    std::chrono::duration<double> delta_time;
 
     this->initialize_game(window);
 
     while (true) {
         std::chrono::steady_clock::time_point frame_start = std::chrono::steady_clock::now();
-        delta_time = frame_start - previous_time;
+        std::chrono::duration<double> delta_time_s = frame_start - previous_time;
         previous_time = frame_start;
+
         window->read_input();
-        this->update(window, delta_time);
-        
+
+        this->update(window, delta_time_s.count()); 
+
+        //double fps = 1.0 / delta_time.count();
+        //std::cout << "FPS: " << fps << "\n";
+
+        //TODO: maybe in the future add a sleep to reduce the %CPU usage
+
         while (std::chrono::steady_clock::now() - frame_start < target_frame_duration) {
             std::this_thread::yield();
         }

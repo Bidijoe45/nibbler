@@ -11,58 +11,55 @@ namespace nibbler {
 void Snake::add_segment(void)
 {
     const Position &prev_segment_pos = this->body.segments.back();
-    const Direction &prev_segment_dir = this->body.directions.back();
     // FIXME: add the new tail in the direction of the current tail
     this->body.segments.push_back(Position({prev_segment_pos.x - 1, prev_segment_pos.y}));
-    this->body.directions.push_back(prev_segment_dir);
 }
 
 void Snake::move(double delta_time) {
+    if (this->body.segments.empty()) return;
 
-    if (this->body.segments.empty())
-    {
-        return;
-    }
+    this->move_timer_s += delta_time;
+    if (this->move_timer_s >= move_interval_s) {
+        this->move_timer_s -= move_interval_s;
 
-    // Each segment of the body has its own direction, and takes the direction of the segment preceding it
-    Direction prev_dir = this->body.directions[0];
-    std::size_t i = 0;
-    do {
-        switch (this->body.directions[i])
-        {
+        // move body from back to front
+        for (int i = this->body.segments.size() - 1; i > 0; --i) {
+            this->body.segments[i] = this->body.segments[i - 1];
+        }
+
+        // move head
+        switch (this->body.direction) {
             case Direction::UP:
-                this->body.segments[i].y -= this->speed * delta_time;
-                break;
-            case Direction::LEFT:
-                this->body.segments[i].x -= this->speed * delta_time;
+                this->body.segments[0].y -= 1;
                 break;
             case Direction::DOWN:
-                this->body.segments[i].y += this->speed * delta_time;
+                this->body.segments[0].y += 1;
+                break;
+            case Direction::LEFT:
+                this->body.segments[0].x -= 1;
                 break;
             case Direction::RIGHT:
-                this->body.segments[i].x += this->speed * delta_time;
+                this->body.segments[0].x += 1;
                 break;
         }
-        if (i != 0)
-            std::swap(this->body.directions[i], prev_dir);
-        i++;
-    } while (i < this->body.segments.size());
+    }
+
 }
 
 void Snake::change_direction(Direction dir) {
-    if (this->body.directions[0] == dir)
+    if (this->body.direction == dir)
         return;
     
-    if (this->body.directions[0] == Direction::UP && dir == Direction::DOWN)
+    if (this->body.direction == Direction::UP && dir == Direction::DOWN)
         return;
-    if (this->body.directions[0] == Direction::DOWN && dir == Direction::UP)
+    if (this->body.direction == Direction::DOWN && dir == Direction::UP)
         return;
-    if (this->body.directions[0] == Direction::LEFT && dir == Direction::RIGHT)
+    if (this->body.direction == Direction::LEFT && dir == Direction::RIGHT)
         return;
-    if (this->body.directions[0] == Direction::RIGHT && dir == Direction::LEFT)
+    if (this->body.direction == Direction::RIGHT && dir == Direction::LEFT)
         return;
 
-    this->body.directions[0] = dir;
+    this->body.direction = dir;
 }
 
 SnakeGame::SnakeGame(Configuration config, GraphicsApiUniquePtr graphics_api)
@@ -103,11 +100,10 @@ void SnakeGame::initialize_game(std::shared_ptr<IWindow> window) {
     start_pos.y = windows_size.second / 2;
 
     this->snake_.body.segments.push_back(start_pos);
-    this->snake_.body.directions.push_back(Direction::RIGHT);
+    this->snake_.body.direction = Direction::RIGHT;
     this->snake_.add_segment();
     this->snake_.add_segment();
     this->snake_.add_segment();
-    this->snake_.speed = 3;
 }
 
 // This function is called 59.9 times per second. Game logic goes here

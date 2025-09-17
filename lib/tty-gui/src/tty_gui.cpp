@@ -14,6 +14,8 @@ namespace ttygui {
 int TTYGUIWindow::term_cols = 0;
 int TTYGUIWindow::term_rows = 0;
 termios TTYGUIWindow::orig_termios;
+int TTYGUIWindow::score_rows = 1;
+int TTYGUIWindow::messages_rows = 3;
 
 TTYGUIWindow::TTYGUIWindow(std::size_t width_squares, std::size_t height_squares, std::string title)
     : nibbler::IWindow(width_squares, height_squares, std::move(title))
@@ -58,16 +60,59 @@ void TTYGUIWindow::set_non_blocking(bool enable) {
 }
 
 void TTYGUIWindow::draw_border() {
+    const int width = TTYGUIWindow::term_cols;
+    const int height = TTYGUIWindow::term_rows - TTYGUIWindow::score_rows - TTYGUIWindow::messages_rows; //Make space for score and messages. 4 Rows
+
     std::cout << "\033[2J";
-    for (int y = 0; y < TTYGUIWindow::term_rows; ++y) {
-        for (int x = 0; x < TTYGUIWindow::term_cols; ++x) {
-            if (y == 0 || y == TTYGUIWindow::term_rows - 1 || x == 0 || x == TTYGUIWindow::term_cols - 1) {
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            if (y == 0 || y == height - 1 || x == 0 || x == width - 1) {
                 std::cout << "\033[" << y + 1 << ";" << x + 1 << "H#";
             }
         }
     }
     std::cout << "\033[1;1H";
-    std::cout.flush();
+    std::cout.flush(); // TODO: maybe this should not be flushed on every draw, instead flushed once when everything is draw
+}
+
+
+void TTYGUIWindow::draw_score() {
+    const int draw_start = TTYGUIWindow::term_rows - TTYGUIWindow::messages_rows;
+    std::cout << "\033[" << draw_start << ";1H";
+    std::cout << "Score: " << this->score_;
+    std::cout << "\033[1;1H";
+    std::cout.flush();  // TODO: maybe this should not be flushed on every draw, instead flushed once when everything is draw
+}
+
+// Maybe not the best implementation. Text should go from bottom to top.
+// If there are more messages than messages rows it goes crazy
+// At least we have a small debug. "It ain't much but i'ts honest work" :)
+void TTYGUIWindow::draw_messages() {
+    int draw_start = TTYGUIWindow::term_rows + TTYGUIWindow::score_rows - TTYGUIWindow::messages_rows;
+
+    if (this->messages_.empty())
+        return;
+
+    for (int i=0; i < this->messages_rows; i++) {
+        if (this->messages_.empty())
+            break;
+        std::cout << "\033[" << draw_start << ";1H";
+        const std::string& msg = this->messages_.front();
+        std::cout << ">: " << msg;
+        this->messages_.pop_front();
+        draw_start += 1;
+    }
+    
+    std::cout << "\033[1;1H";
+    std::cout.flush();  // TODO: maybe this should not be flushed on every draw, instead flushed once when everything is draw
+}
+
+void TTYGUIWindow::push_message(const std::string& msg) {
+    this->messages_.push_back(msg);
+}
+
+void TTYGUIWindow::set_score(int score) {
+    this->score_ = score;
 }
 
 void TTYGUIWindow::restore_terminal() {
@@ -100,6 +145,8 @@ void TTYGUIWindow::clear_screen() {
     std::cout.flush();
     TTYGUIWindow::update_terminal_size();
     TTYGUIWindow::draw_border();
+    TTYGUIWindow::draw_score();
+    TTYGUIWindow::draw_messages();
 }
 
 void TTYGUIWindow::draw_pixel(size_t x, size_t y, char c) {;

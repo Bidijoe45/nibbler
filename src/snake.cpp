@@ -123,7 +123,7 @@ void SnakeGame::update(std::shared_ptr<IWindow> window, double delta_time) {
 
     window->clear_screen();
     this->snake_.move(delta_time);
-    
+
     //TODO: Check collsions
 
     window->draw_snake(this->snake_.body.segments);

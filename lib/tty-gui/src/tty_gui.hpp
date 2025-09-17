@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 #include <termios.h>
+#include <deque>
 
 namespace ttygui {
 
@@ -28,6 +29,8 @@ public:
     std::pair<size_t, size_t> get_window_size_squares() override;
     void read_input() override;
     void draw_snake(std::vector<nibbler::Position> &snake) override;
+    void push_message(const std::string& msg);
+    void set_score(int score);
 
     static void restore_terminal();
     static void handle_resize(int);
@@ -43,8 +46,14 @@ private:
     void set_non_blocking(bool enable);
     nibbler::Key convert_input_to_key(char ch);
     void draw_pixel(size_t x, size_t y, char c);
+    void draw_score();
+    void draw_messages();
 
+    static int score_rows; // Space for the score line
+    static int messages_rows; // Space for the messages
     std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
+    int score_;
+    std::deque<std::string> messages_;
 };
 
 class TTYGUI : public nibbler::INibblerGraphicsApi {

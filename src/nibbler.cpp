@@ -1,6 +1,7 @@
 #include "nibbler.hpp"
 #include "nibbler/graphics_api.hpp"
 #include "snake.hpp"
+#include "snake_game.hpp"
 
 #include <memory>
 #include <iostream>

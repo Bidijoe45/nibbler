@@ -4,6 +4,7 @@ set(SRCS
     config.cpp
     dynamic_lib.cpp
     nibbler.cpp
+    snake_game.cpp
     snake.cpp
 )
 

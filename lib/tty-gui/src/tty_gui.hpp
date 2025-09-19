@@ -33,6 +33,7 @@ public:
     void push_message(const std::string& msg) override;
     void set_score(int score) override;
 
+private:
     static void restore_terminal();
     static void handle_resize(int);
     static void handle_exit(int);
@@ -42,7 +43,6 @@ public:
     static int term_rows;
     static termios orig_termios;
 
-private:
     void set_noncanonical_mode();
     void set_non_blocking(bool enable);
     nibbler::Key convert_input_to_key(char ch);

@@ -12,6 +12,9 @@ SnakeGame::SnakeGame(Configuration config, GraphicsApiUniquePtr graphics_api)
 SnakeGame::~SnakeGame() {}
 
 void SnakeGame::on_key_down(Key key) {
+
+    std::cout << "key: " << std::endl;
+
     switch (key) {
         case Key::ARROW_LEFT:
             this->snake_.change_direction(Direction::LEFT);
@@ -27,6 +30,11 @@ void SnakeGame::on_key_down(Key key) {
 
         case Key::ARROW_UP:
             this->snake_.change_direction(Direction::UP);
+            break;
+
+        case Key::ESC:
+            std::cout << "ESC" << std::endl;
+            this->game_state_ = GameState::END;
             break;
 
             // TODO: add gui-changin keys! Maybe they could be mapped by Key enum (either from config or at a later point) so that they'd be more easily accessible
@@ -101,10 +109,12 @@ int SnakeGame::run() {
     const size_t target_frames_per_s = 60;
     const std::chrono::nanoseconds target_frame_duration(std::chrono::nanoseconds(std::chrono::seconds(1)) / target_frames_per_s);
     std::chrono::steady_clock::time_point previous_time = std::chrono::steady_clock::now();
-
+    
+    this->game_state_ = GameState::INIT;
     this->initialize_game(window);
 
-    while (true) {
+    this->game_state_ = GameState::RUNNING;
+    while (this->game_state_ == GameState::RUNNING) {
         std::chrono::steady_clock::time_point frame_start = std::chrono::steady_clock::now();
         std::chrono::duration<double> delta_time_s = frame_start - previous_time;
         previous_time = frame_start;

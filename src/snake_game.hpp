@@ -9,6 +9,11 @@
 
 namespace nibbler {
 
+typedef enum GameState {
+    INIT,
+    RUNNING,
+    END
+} GameState;
 
 class SnakeGame {
 public:
@@ -24,6 +29,7 @@ private:
     Configuration config_;
     GraphicsApiUniquePtr graphics_api_;
 
+    GameState game_state_;
     size_t score_ = 0;
     Snake snake_;
     Fruit fruit_;

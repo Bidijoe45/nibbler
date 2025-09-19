@@ -185,7 +185,12 @@ nibbler::Key TTYGUIWindow::convert_input_to_key(char ch) {
         case '2':
             return nibbler::Key::NUMBER_2;
             break;
-        
+
+        case 7:
+            std::cout << "fghjfghj" << std::endl;
+            return nibbler::Key::ESC;
+            break;
+
         default:
             break;
     }
@@ -204,20 +209,29 @@ void TTYGUIWindow::read_input() {
     char ch;
     if (read(STDIN_FILENO, &ch, 1) <= 0) return;
 
-    for (auto& callback : this->key_down_callbacks_) {
-        if (ch == 27) {
-            char seq[2];
-            if (read(STDIN_FILENO, &seq[0], 1) <= 0) return;
-            if (read(STDIN_FILENO, &seq[1], 1) <= 0) return;
+    std::cout << "char: " << ch << " " << (int) ch << std::endl;
 
-            if (seq[0] == '[') {
-                switch (seq[1]) {
-                    case 'A': callback(nibbler::Key::ARROW_UP); break;
-                    case 'B': callback(nibbler::Key::ARROW_DOWN); break;
-                    case 'C': callback(nibbler::Key::ARROW_RIGHT); break;
-                    case 'D': callback(nibbler::Key::ARROW_LEFT); break;
-                    default: break;
+    for (auto& callback : this->key_down_callbacks_) {
+        if (ch == 27) {  // ESC or sequence
+            // This is needed bc when you press ESC it waits for another character.
+            // arrow key sequence start with the same characer as ESC
+            int seq_ret = poll(&pfd, 1, 10); 
+
+            if (seq_ret > 0) {
+                char seq[2];
+                if (read(STDIN_FILENO, &seq[0], 1) <= 0) return;
+                if (read(STDIN_FILENO, &seq[1], 1) <= 0) return;
+                if (seq[0] == '[') {
+                    switch (seq[1]) {
+                        case 'A': callback(nibbler::Key::ARROW_UP); break;
+                        case 'B': callback(nibbler::Key::ARROW_DOWN); break;
+                        case 'C': callback(nibbler::Key::ARROW_RIGHT); break;
+                        case 'D': callback(nibbler::Key::ARROW_LEFT); break;
+                        default: break;
+                    }
                 }
+            } else {
+                callback(nibbler::Key::ESC);
             }
         } else {
             callback(this->convert_input_to_key(ch));

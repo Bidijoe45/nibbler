@@ -1,0 +1,52 @@
+#pragma once
+#ifndef TTY_GUI_HPP
+#define TTY_GUI_HPP
+
+#include "nibbler/graphics_api.hpp"
+
+#include <SDL3/SDL.h>
+
+namespace sdlgui {
+
+class SDLGUIWindow : public nibbler::IWindow {
+public:
+    SDLGUIWindow(std::size_t width_squares, std::size_t height_squares, std::string title);
+    ~SDLGUIWindow();
+
+    void add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) override;
+    void add_event_listener_key_up(nibbler::IWindow::KeyUpCallback cb) override;
+    void add_event_listener_key_press(nibbler::IWindow::KeyPressCallback cb) override;
+    void clear_screen() override;
+    std::pair<size_t, size_t> get_window_size_squares() override;
+    void read_input() override;
+    void draw_snake(std::vector<nibbler::Position> &snake) override;
+    void draw_fruit(nibbler::Position& fruit_pos) override;
+    void push_message(const std::string& msg) override;
+    void set_score(int score) override;
+
+private:
+    SDL_Window* window;
+    SDL_Renderer* render;
+    std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
+    int score_;
+};
+
+class SDLGUI : public nibbler::INibblerGraphicsApi {
+    public:
+        SDLGUI();
+        ~SDLGUI();
+
+    std::shared_ptr<nibbler::IWindow>
+    create_window(std::size_t width_squares, std::size_t height_squares, std::string title) override;
+};
+
+}
+
+extern "C" {
+
+nibbler::INibblerGraphicsApi* create_graphics_library();
+void destroy_graphics_library(nibbler::INibblerGraphicsApi*);
+
+}
+
+#endif

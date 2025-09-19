@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(SDL_Wrapper)
+project(SDL_GUI)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SRCS
-    src/sdl_wrapper.cpp
+    src/sdl_gui.cpp
 )
 
 include(FetchContent)
@@ -16,7 +16,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL)
 
-# Create your game executable target as usual
-add_library(SDL_Wrapper SHARED ${SRCS})
-target_link_libraries(SDL_Wrapper PRIVATE SDL3::SDL3)
-target_include_directories(SDL_Wrapper PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+add_library(${PROJECT_NAME} SHARED ${SRCS})
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)

@@ -16,8 +16,9 @@ Configuration ConfigParser::parseConfigFile(const std::string &file_path) {
     config.window_width_pixels = 640;
     config.window_height_pixels = 480;
 
-    ConfigLibrary tty_gui = { .key="1", .name="TTY_GUI", .path="build/lib/tty-gui/libTTY_GUI.dylib" };
-    config.gui_libraries.push_back(tty_gui);
+    //ConfigLibrary tty_gui = { .key="1", .name="TTY_GUI", .path="build/lib/tty-gui/libTTY_GUI.dylib" };
+    ConfigLibrary sdl_gui = { .key="2", .name="SDL_GUI", .path="build/lib/sdl/libSDL_GUI.dylib" };
+    config.gui_libraries.push_back(sdl_gui);
 
     return config;
 }

@@ -187,7 +187,6 @@ nibbler::Key TTYGUIWindow::convert_input_to_key(char ch) {
             break;
 
         case 7:
-            std::cout << "fghjfghj" << std::endl;
             return nibbler::Key::ESC;
             break;
 
@@ -208,8 +207,6 @@ void TTYGUIWindow::read_input() {
 
     char ch;
     if (read(STDIN_FILENO, &ch, 1) <= 0) return;
-
-    std::cout << "char: " << ch << " " << (int) ch << std::endl;
 
     for (auto& callback : this->key_down_callbacks_) {
         if (ch == 27) {  // ESC or sequence

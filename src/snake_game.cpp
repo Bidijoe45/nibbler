@@ -13,8 +13,6 @@ SnakeGame::~SnakeGame() {}
 
 void SnakeGame::on_key_down(Key key) {
 
-    std::cout << "key: " << std::endl;
-
     switch (key) {
         case Key::ARROW_LEFT:
             this->snake_.change_direction(Direction::LEFT);
@@ -33,7 +31,6 @@ void SnakeGame::on_key_down(Key key) {
             break;
 
         case Key::ESC:
-            std::cout << "ESC" << std::endl;
             this->game_state_ = GameState::END;
             break;
 

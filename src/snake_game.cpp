@@ -81,6 +81,7 @@ void SnakeGame::update(std::shared_ptr<IWindow> window, double delta_time) {
     if (fruit_collision) {
         this->fruit_ = this->fruit_factory_.create_fruit_random_pos();
         this->score_ += 1;
+        this->snake_.add_segment();
         window->set_score(this->score_);
     }
 

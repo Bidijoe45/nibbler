@@ -10,9 +10,23 @@ namespace nibbler {
 
 void Snake::add_segment(void)
 {
-    const Position &prev_segment_pos = this->body.segments.back();
-    // FIXME: add the new tail in the direction of the current tail
-    this->body.segments.push_back(Position({prev_segment_pos.x - 1, prev_segment_pos.y}));
+    if (this->body.segments.size() == 0) {
+        return;
+    }
+
+    const Position &prev_seg_pos = *(this->body.segments.end() - 2);
+
+    if (this->body.segments.size() == 1) {
+        this->body.segments.push_back(Position({prev_seg_pos.x - 1, prev_seg_pos.y}));
+        return;
+    }
+
+    const Position &prev_prev_seg_pos = *(this->body.segments.end() - 1);
+    
+    int diff_x = prev_prev_seg_pos.x - prev_seg_pos.x;
+    int diff_y = prev_prev_seg_pos.y - prev_seg_pos.y;
+
+    this->body.segments.push_back(Position({prev_seg_pos.x - diff_x, prev_seg_pos.y - diff_y}));
 }
 
 void Snake::move(double delta_time) {

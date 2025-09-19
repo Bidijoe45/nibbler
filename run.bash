@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./build/src/nibbler -w 640 -h 480
+./build/src/nibbler -w 40 -h 20

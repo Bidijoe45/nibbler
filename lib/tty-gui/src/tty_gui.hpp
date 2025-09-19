@@ -29,6 +29,7 @@ public:
     std::pair<size_t, size_t> get_window_size_squares() override;
     void read_input() override;
     void draw_snake(std::vector<nibbler::Position> &snake) override;
+    void draw_fruit(nibbler::Position& fruit_pos) override;
     void push_message(const std::string& msg) override;
     void set_score(int score) override;
 

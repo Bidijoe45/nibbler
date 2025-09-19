@@ -11,8 +11,8 @@ namespace nibbler {
 Configuration ConfigParser::parseConfigFile(const std::string &file_path) {
     Configuration config;
 
-    config.gameboard_width_squares = 50;
-    config.gameboard_height_squares = 50;
+    config.gameboard_width_squares = 30;
+    config.gameboard_height_squares = 30;
     config.window_width_pixels = 640;
     config.window_height_pixels = 480;
 

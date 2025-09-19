@@ -1,10 +1,13 @@
 #include "snake_game.hpp"
 
 #include <thread>
+#include <iostream>
 
 namespace nibbler {
 SnakeGame::SnakeGame(Configuration config, GraphicsApiUniquePtr graphics_api)
-    : config_(config), graphics_api_(std::move(graphics_api)) {}
+    : config_(config), graphics_api_(std::move(graphics_api)),
+      fruit_factory_(config_.gameboard_width_squares, config_.gameboard_height_squares)
+{ }
 
 SnakeGame::~SnakeGame() {}
 
@@ -44,6 +47,8 @@ void SnakeGame::initialize_game(std::shared_ptr<IWindow> window) {
     this->snake_.add_segment();
     this->snake_.add_segment();
     this->snake_.add_segment();
+
+    this->fruit_ = fruit_factory_.create_fruit_random_pos();
 }
 
 // This function is called 59.9 times per second. Game logic goes here
@@ -60,9 +65,27 @@ void SnakeGame::update(std::shared_ptr<IWindow> window, double delta_time) {
     window->clear_screen();
     this->snake_.move(delta_time);
 
-    // TODO: Check collsions
+    // If collision, just restart the game for now
+    bool wall_collision = this->snake_.check_wall_collision(this->config_.gameboard_width_squares, this->config_.gameboard_height_squares);
+    if (wall_collision) {
+        this->snake_.body.segments.clear();
+        this->snake_.body.direction = Direction::RIGHT;
+        this->fruit_ = fruit_factory_.create_fruit_random_pos();
+        this->score_ = 0;
+        window->set_score(this->score_);
+        this->initialize_game(window);
+        window->clear_screen();
+    }
+
+    bool fruit_collision = this->snake_.check_fruit_collision(this->fruit_.pos);
+    if (fruit_collision) {
+        this->fruit_ = this->fruit_factory_.create_fruit_random_pos();
+        this->score_ += 1;
+        window->set_score(this->score_);
+    }
 
     window->draw_snake(this->snake_.body.segments);
+    window->draw_fruit(this->fruit_.pos);
 }
 
 int SnakeGame::run() {

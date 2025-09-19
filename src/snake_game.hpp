@@ -5,6 +5,7 @@
 #include "nibbler/graphics_api.hpp"
 #include "snake.hpp"
 #include "config.hpp"
+#include "fruit.hpp"
 
 namespace nibbler {
 
@@ -23,7 +24,11 @@ private:
     Configuration config_;
     GraphicsApiUniquePtr graphics_api_;
 
+    size_t score_ = 0;
     Snake snake_;
+    Fruit fruit_;
+    FruitFactory fruit_factory_;
+
 };
 
 }

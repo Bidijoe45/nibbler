@@ -28,18 +28,19 @@ void Snake::move(double delta_time) {
         }
 
         // move head
+        Position& snake_head = this->body.segments[0];
         switch (this->body.direction) {
             case Direction::UP:
-                this->body.segments[0].y -= 1;
+                snake_head.y -= 1;
                 break;
             case Direction::DOWN:
-                this->body.segments[0].y += 1;
+                snake_head.y += 1;
                 break;
             case Direction::LEFT:
-                this->body.segments[0].x -= 1;
+                snake_head.x -= 1;
                 break;
             case Direction::RIGHT:
-                this->body.segments[0].x += 1;
+                snake_head.x += 1;
                 break;
         }
     }
@@ -60,6 +61,25 @@ void Snake::change_direction(Direction dir) {
         return;
 
     this->body.direction = dir;
+}
+
+bool Snake::check_wall_collision(size_t gameboard_width, size_t gameboard_height) {
+    Position& snake_head = this->body.segments[0];
+
+    if (snake_head.x <= 0) return true;
+    else if (snake_head.y <= 0) return true;
+    else if (snake_head.x >= gameboard_width) return true;
+    else if (snake_head.y >= gameboard_height) return true;
+
+    return false;
+}
+
+bool Snake::check_fruit_collision(Position fruit_pos) {
+    Position& snake_head = this->body.segments[0];
+
+    if (snake_head.x == fruit_pos.x && snake_head.y == fruit_pos.y) return true;
+
+    return false;
 }
 
 }

@@ -25,7 +25,10 @@ TTYGUIWindow::TTYGUIWindow(std::size_t width_squares, std::size_t height_squares
     std::signal(SIGINT, TTYGUIWindow::handle_exit);
 
     this->set_noncanonical_mode();
-    TTYGUIWindow::update_terminal_size();
+    //TTYGUIWindow::update_terminal_size();
+    TTYGUIWindow::term_cols = width_squares;
+    TTYGUIWindow::term_rows = height_squares;
+
     draw_border();
 }
 
@@ -60,8 +63,8 @@ void TTYGUIWindow::set_non_blocking(bool enable) {
 }
 
 void TTYGUIWindow::draw_border() {
-    const int width = TTYGUIWindow::term_cols;
-    const int height = TTYGUIWindow::term_rows - TTYGUIWindow::score_rows - TTYGUIWindow::messages_rows; //Make space for score and messages. 4 Rows
+    const int width = TTYGUIWindow::term_cols + 2; // +2 to take into account borders
+    const int height = TTYGUIWindow::term_rows + 2;
 
     std::cout << "\033[2J";
     for (int y = 0; y < height; ++y) {
@@ -77,7 +80,7 @@ void TTYGUIWindow::draw_border() {
 
 
 void TTYGUIWindow::draw_score() {
-    const int draw_start = TTYGUIWindow::term_rows - TTYGUIWindow::messages_rows;
+    const int draw_start = TTYGUIWindow::term_rows + TTYGUIWindow::score_rows + 2; // +2 to take into account borders 
     std::cout << "\033[" << draw_start << ";1H";
     std::cout << "Score: " << this->score_;
     std::cout << "\033[1;1H";
@@ -88,12 +91,12 @@ void TTYGUIWindow::draw_score() {
 // If there are more messages than messages rows it goes crazy
 // At least we have a small debug. "It ain't much but i'ts honest work" :)
 void TTYGUIWindow::draw_messages() {
-    int draw_start = TTYGUIWindow::term_rows + TTYGUIWindow::score_rows - TTYGUIWindow::messages_rows;
+    int draw_start = TTYGUIWindow::term_rows + TTYGUIWindow::score_rows + 1 + 2; // +2 to take into account borders ;
 
     if (this->messages_.empty())
         return;
 
-    for (int i=0; i < this->messages_rows; i++) {
+    for (int i=0; i < TTYGUIWindow::messages_rows; i++) {
         if (this->messages_.empty())
             break;
         std::cout << "\033[" << draw_start << ";1H";
@@ -121,7 +124,7 @@ void TTYGUIWindow::restore_terminal() {
 }
 
 void TTYGUIWindow::handle_resize(int) {
-    TTYGUIWindow::update_terminal_size();
+    //TTYGUIWindow::update_terminal_size();
     TTYGUIWindow::draw_border();
 }
 
@@ -143,19 +146,22 @@ void TTYGUIWindow::clear_screen() {
     std::cout << "\033[2J"
               << "\033[H";
     std::cout.flush();
-    TTYGUIWindow::update_terminal_size();
+    //TTYGUIWindow::update_terminal_size();
     TTYGUIWindow::draw_border();
     TTYGUIWindow::draw_score();
     TTYGUIWindow::draw_messages();
 }
 
-void TTYGUIWindow::draw_pixel(size_t x, size_t y, char c) {;
+void TTYGUIWindow::draw_pixel(size_t x, size_t y, char c) {
+    //Take into account window borders
+    x += 1; y += 1;
+
     std::cout << "\033[" << y << ";" << x << "H" << c;
     std::cout.flush();
 }
 
 std::pair<size_t, size_t> TTYGUIWindow::get_window_size_squares() {
-    TTYGUIWindow::update_terminal_size();
+    //TTYGUIWindow::update_terminal_size();
     return std::make_pair<size_t, size_t>(TTYGUIWindow::term_cols, TTYGUIWindow::term_rows);
 }
 
@@ -163,6 +169,10 @@ void TTYGUIWindow::draw_snake(std::vector<nibbler::Position> &snake) {
     for (auto &pos : snake) {
         this->draw_pixel(pos.x, pos.y, 'X');
     }
+}
+
+void TTYGUIWindow::draw_fruit(nibbler::Position& fruit_pos) {
+    this->draw_pixel(fruit_pos.x, fruit_pos.y, '0');
 }
 
 nibbler::Key TTYGUIWindow::convert_input_to_key(char ch) {

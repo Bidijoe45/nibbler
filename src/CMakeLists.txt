@@ -6,6 +6,7 @@ set(SRCS
     nibbler.cpp
     snake_game.cpp
     snake.cpp
+    fruit.cpp
 )
 
 set(CMAKE_CXX_FLAGS, "g")

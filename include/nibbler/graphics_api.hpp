@@ -37,19 +37,20 @@ public:
     virtual void push_message(const std::string &msg) = 0;
 
 protected:
-    inline IWindow(size_t width_squares, size_t height_squares, std::string title) {};
+    inline IWindow(size_t width_squares, size_t height_squares, std::string title) {}; // FIXME: why does this receive these three params if unused by the interface?
 };
 
 class INibblerGraphicsApi {
 
 public:
     inline virtual ~INibblerGraphicsApi() {};
-    virtual std::shared_ptr<IWindow> create_window(size_t width_squares, size_t height_squares, std::string title) = 0;
+    virtual std::unique_ptr<IWindow> create_window(size_t width_squares, size_t height_squares, std::string title) = 0;
 };
 
 typedef INibblerGraphicsApi* (*INibblerGraphicsApiConstructor)();
 typedef void (*INibblerGraphicsApiDestructor)(INibblerGraphicsApi*);  
 typedef std::unique_ptr<INibblerGraphicsApi, INibblerGraphicsApiDestructor> GraphicsApiUniquePtr;
+typedef std::shared_ptr<INibblerGraphicsApi> GraphicsApiSharedPtr;
 
 }
 

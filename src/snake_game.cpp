@@ -4,10 +4,19 @@
 #include <iostream>
 
 namespace nibbler {
-SnakeGame::SnakeGame(Configuration config, GraphicsApiUniquePtr graphics_api)
-    : config_(config), graphics_api_(std::move(graphics_api)),
-      fruit_factory_(config_.gameboard_width_squares, config_.gameboard_height_squares)
-{ }
+SnakeGame::SnakeGame(
+    Configuration config,
+    const std::map<Key, GraphicsApiSharedPtr> &graphics_apis
+) : config_(config),
+    graphics_apis_(graphics_apis),
+    fruit_factory_(config_.gameboard_width_squares, config_.gameboard_height_squares)
+{
+    if (!graphics_apis.empty())
+    {
+        this->current_gui_ = this->graphics_apis_.begin()->first;
+        this->switch_gui(); // create the initial window
+    }
+}
 
 SnakeGame::~SnakeGame() {}
 
@@ -17,69 +26,66 @@ void SnakeGame::on_key_down(Key key) {
         case Key::ARROW_LEFT:
             this->snake_.change_direction(Direction::LEFT);
             break;
-
         case Key::ARROW_RIGHT:
             this->snake_.change_direction(Direction::RIGHT);
             break;
-
         case Key::ARROW_DOWN:
             this->snake_.change_direction(Direction::DOWN);
             break;
-
         case Key::ARROW_UP:
             this->snake_.change_direction(Direction::UP);
             break;
-
         case Key::ESC:
             this->game_state_ = GameState::END;
             break;
-
-            // TODO: add gui-changin keys! Maybe they could be mapped by Key enum (either from config or at a later point) so that they'd be more easily accessible
-
+        case Key::NUMBER_1:
+        case Key::NUMBER_2:
+        case Key::NUMBER_3:
+        case Key::NUMBER_4:
+        case Key::NUMBER_5:
+        case Key::NUMBER_6:
+        case Key::NUMBER_7:
+        case Key::NUMBER_8:
+        case Key::NUMBER_9:
+        case Key::NUMBER_0:
+            // we don't update the gui directly here because the window
+            // instance would be destroyed, and this function is passed as
+            // a callback to, and called from, the window object
+            this->current_gui_ = key;
+            break;
         default:
             break;
     }
 }
 
-void SnakeGame::initialize_game(std::shared_ptr<IWindow> window) {
-    std::pair<size_t, size_t> windows_size = window->get_window_size_squares();
+void SnakeGame::initialize_game() {
+
+    std::pair<size_t, size_t> windows_size = this->window_->get_window_size_squares();
     Position start_pos;
     start_pos.x = windows_size.first / 2;
     start_pos.y = windows_size.second / 2;
 
+    this->snake_.body.segments.clear();
     this->snake_.body.segments.push_back(start_pos);
     this->snake_.body.direction = Direction::RIGHT;
     this->snake_.add_segment();
     this->snake_.add_segment();
     this->snake_.add_segment();
 
+    this->score_ = 0;
+
     this->fruit_ = fruit_factory_.create_fruit_random_pos();
 }
 
 // This function is called 59.9 times per second. Game logic goes here
-void SnakeGame::update(std::shared_ptr<IWindow> window, double delta_time) {
-    // static std::pair<size_t, size_t> last_window_size = std::make_pair(0, 0);
+void SnakeGame::update(double delta_time) {
 
-    // TODO: if window si rescaled, restart the game
-    // if (last_window_size != std::make_pair(0,0)
-    //    && last_window_size != window->get_window_size_squares())
-    //{
-    //    initialize_game(window);
-    // }
-
-    window->clear_screen();
     this->snake_.move(delta_time);
 
     // If collision, just restart the game for now
     bool wall_collision = this->snake_.check_wall_collision(this->config_.gameboard_width_squares, this->config_.gameboard_height_squares);
     if (wall_collision) {
-        this->snake_.body.segments.clear();
-        this->snake_.body.direction = Direction::RIGHT;
-        this->fruit_ = fruit_factory_.create_fruit_random_pos();
-        this->score_ = 0;
-        window->set_score(this->score_);
-        this->initialize_game(window);
-        window->clear_screen();
+        this->initialize_game();
     }
 
     bool fruit_collision = this->snake_.check_fruit_collision(this->fruit_.pos);
@@ -87,38 +93,60 @@ void SnakeGame::update(std::shared_ptr<IWindow> window, double delta_time) {
         this->fruit_ = this->fruit_factory_.create_fruit_random_pos();
         this->score_ += 1;
         this->snake_.add_segment();
-        window->set_score(this->score_);
     }
 
-    window->draw_snake(this->snake_.body.segments);
-    window->draw_fruit(this->fruit_.pos);
+    this->window_->clear_screen();
+    this->window_->set_score(this->score_);
+    this->window_->draw_snake(this->snake_.body.segments);
+    this->window_->draw_fruit(this->fruit_.pos);
 }
 
-int SnakeGame::run() {
-    // FIXME: this should not return a shared_ptr. The graphics_api does not need the ownership of this.
-    std::shared_ptr<IWindow> window = this->graphics_api_->create_window(
+void SnakeGame::switch_gui()
+{
+    auto api = this->graphics_apis_.find(this->current_gui_);
+    if (api == this->graphics_apis_.end())
+        return;
+
+    this->window_ = api->second->create_window(
         this->config_.gameboard_width_squares,
         this->config_.gameboard_height_squares,
         "Nibbler");
 
-    window->add_event_listener_key_down(std::bind(&SnakeGame::on_key_down, this, std::placeholders::_1));
+    this->window_->add_event_listener_key_down(std::bind(&SnakeGame::on_key_down, this, std::placeholders::_1));
+}
+
+int SnakeGame::run() {
+
+    if (this->graphics_apis_.empty())
+    {
+        std::cerr << "Error: no graphics APIs" << std::endl;
+        return 1;
+    }
 
     const size_t target_frames_per_s = 60;
     const std::chrono::nanoseconds target_frame_duration(std::chrono::nanoseconds(std::chrono::seconds(1)) / target_frames_per_s);
     std::chrono::steady_clock::time_point previous_time = std::chrono::steady_clock::now();
     
     this->game_state_ = GameState::INIT;
-    this->initialize_game(window);
+    this->initialize_game();
+
+    Key prev_gui = this->current_gui_;
 
     this->game_state_ = GameState::RUNNING;
     while (this->game_state_ == GameState::RUNNING) {
+
         std::chrono::steady_clock::time_point frame_start = std::chrono::steady_clock::now();
         std::chrono::duration<double> delta_time_s = frame_start - previous_time;
         previous_time = frame_start;
+        
+        this->window_->read_input();
 
-        window->read_input();
+        if (this->current_gui_ != prev_gui) {
+            this->switch_gui();
+            prev_gui = this->current_gui_;
+        }
 
-        this->update(window, delta_time_s.count());
+        this->update(delta_time_s.count());
 
         // double fps = 1.0 / delta_time.count();
         // std::cout << "FPS: " << fps << "\n";
@@ -129,7 +157,6 @@ int SnakeGame::run() {
             std::this_thread::yield();
         }
     }
-
     return 0;
 }
 

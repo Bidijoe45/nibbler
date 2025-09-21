@@ -29,6 +29,7 @@ private:
     SDL_Renderer* render;
     std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
     int score_;
+    const int square_size_px_;
 };
 
 class SDLGUI : public nibbler::INibblerGraphicsApi {
@@ -36,7 +37,7 @@ class SDLGUI : public nibbler::INibblerGraphicsApi {
         SDLGUI();
         ~SDLGUI();
 
-    std::shared_ptr<nibbler::IWindow>
+    std::unique_ptr<nibbler::IWindow>
     create_window(std::size_t width_squares, std::size_t height_squares, std::string title) override;
 };
 

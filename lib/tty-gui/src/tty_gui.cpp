@@ -32,7 +32,8 @@ TTYGUIWindow::TTYGUIWindow(std::size_t width_squares, std::size_t height_squares
     draw_border();
 }
 
-TTYGUIWindow::~TTYGUIWindow() {
+TTYGUIWindow::~TTYGUIWindow()
+{
     this->set_non_blocking(false);
     this->restore_terminal();
 };
@@ -186,8 +187,12 @@ nibbler::Key TTYGUIWindow::convert_input_to_key(char ch) {
             return nibbler::Key::NUMBER_2;
             break;
 
+        case '3':
+            return nibbler::Key::NUMBER_3;
+            break;
+
         case 7:
-            return nibbler::Key::ESC;
+            return nibbler::Key::ESC; // FIXME: why is ESC here but also in read_input()?
             break;
 
         default:
@@ -239,9 +244,9 @@ void TTYGUIWindow::read_input() {
 TTYGUI::TTYGUI() {}
 TTYGUI::~TTYGUI() {}
 
-std::shared_ptr<nibbler::IWindow>
+std::unique_ptr<nibbler::IWindow>
 TTYGUI::create_window(std::size_t width_squares, std::size_t height_squares, std::string title) {
-    return std::make_shared<TTYGUIWindow>(width_squares, height_squares, std::move(title));
+    return std::make_unique<TTYGUIWindow>(width_squares, height_squares, std::move(title));
 }
 
 }

@@ -18,33 +18,62 @@ int Nibbler::start() {
         return 1;
     }
 
-    ConfigLibrary first_library = this->config_.gui_libraries.at(0);
-    std::unique_ptr<DynamicLib> gui_lib = DynamicLibLoader::load_library(first_library.path, RTLD_NOW);
+    std::vector<std::unique_ptr<DynamicLib>> libs;
+    std::map<Key, GraphicsApiSharedPtr> gui_instances;
+    for (const auto &lib_config : this->config_.gui_libraries)
+    {
+        Key key;
+        if (lib_config.key == "0")
+            key = Key::NUMBER_0;
+        else if (lib_config.key == "1")
+            key = Key::NUMBER_1;
+        else if (lib_config.key == "2")
+            key = Key::NUMBER_2;
+        else if (lib_config.key == "3")
+            key = Key::NUMBER_3;
+        else if (lib_config.key == "4")
+            key = Key::NUMBER_4;
+        else if (lib_config.key == "5")
+            key = Key::NUMBER_5;
+        else if (lib_config.key == "6")
+            key = Key::NUMBER_6;
+        else if (lib_config.key == "7")
+            key = Key::NUMBER_7;
+        else if (lib_config.key == "8")
+            key = Key::NUMBER_8;
+        else if (lib_config.key == "9")
+            key = Key::NUMBER_9;
+        else
+        {
+            std::cerr << "ERROR: invalid key \"" << lib_config.key << "\" for GUI \"" << lib_config.name << "\"" << std::endl;
+            return 1;
+        }
 
-    if (gui_lib == nullptr) {
-        std::cerr << "ERROR: Cannot load library:" << first_library.name << std::endl;
-        return 1;
+        std::unique_ptr<DynamicLib> lib = DynamicLibLoader::load_library(lib_config.path, RTLD_NOW);
+        if (lib == nullptr) {
+            std::cerr << "ERROR: Cannot load library:" << lib_config.name << std::endl;
+            return 1;
+        }
+
+        INibblerGraphicsApiConstructor gui_api_constructor = reinterpret_cast<INibblerGraphicsApiConstructor>(lib->get_symbol("create_graphics_library"));
+        if (gui_api_constructor == NULL) {
+            std::cerr << "ERROR: Cannot load create_graphics_library symbol" << std::endl;
+            return 1;
+        }
+        INibblerGraphicsApiDestructor gui_api_destructor = reinterpret_cast<INibblerGraphicsApiDestructor>(lib->get_symbol("destroy_graphics_library"));
+        if (gui_api_destructor == NULL) {
+            std::cerr << "ERROR: Cannot load destroy_graphics_library symbol" << std::endl;
+            return 1;
+        }
+
+        GraphicsApiSharedPtr graphics_api(gui_api_constructor(), gui_api_destructor);
+        gui_instances.insert(std::make_pair(key, graphics_api));
+
+        libs.push_back(std::move(lib)); // store the libs to avoid them being destroyed every turn of the loop
     }
 
-    INibblerGraphicsApiConstructor create_gui_lib = reinterpret_cast<INibblerGraphicsApiConstructor>(gui_lib->get_symbol("create_graphics_library"));
-    INibblerGraphicsApiDestructor destroy_gui_lib
-        = reinterpret_cast<INibblerGraphicsApiDestructor>(gui_lib->get_symbol("destroy_graphics_library"));
-
-    if (create_gui_lib == NULL) {
-        std::cerr << "ERROR: Cannot load create_graphics_library symbol" << std::endl;
-        return 1;
-    }
-
-    if (destroy_gui_lib == NULL) {
-        std::cerr << "ERROR: Cannot load destroy_graphics_library symbol" << std::endl;
-        return 1;
-    }
-
-    GraphicsApiUniquePtr graphics_api(create_gui_lib(), destroy_gui_lib);
-    // FIXME: gui should be interchangeable on key press (1, 2, 3), therefore we need an alternative way to set it
-    SnakeGame snake(this->config_, std::move(graphics_api));
-
-    return snake.run();
+    SnakeGame game(this->config_, gui_instances);
+    return game.run();
 }
 
 }

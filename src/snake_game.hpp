@@ -7,27 +7,37 @@
 #include "config.hpp"
 #include "fruit.hpp"
 
+#include <map>
+
 namespace nibbler {
 
-typedef enum GameState {
+enum GameState {
     INIT,
     RUNNING,
     END
-} GameState;
+};
 
 class SnakeGame {
+
 public:
-    SnakeGame(Configuration config, GraphicsApiUniquePtr graphics_api);
+    SnakeGame(
+        Configuration config,
+        const std::map<Key, GraphicsApiSharedPtr> &graphics_apis);
+
     ~SnakeGame();
+
     void on_key_down(Key key);
-    void update(std::shared_ptr<IWindow> window, double delta_time);
+    void update(double delta_time);
     int run();
 
 private:
-    void initialize_game(std::shared_ptr<IWindow> window);
+    void initialize_game();
+    void switch_gui();
 
     Configuration config_;
-    GraphicsApiUniquePtr graphics_api_;
+    std::map<Key, GraphicsApiSharedPtr> graphics_apis_;
+    std::unique_ptr<IWindow> window_;
+    Key current_gui_;
 
     GameState game_state_;
     size_t score_ = 0;

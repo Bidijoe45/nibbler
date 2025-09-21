@@ -8,25 +8,28 @@
 namespace sdlgui {
 
 SDLGUIWindow::SDLGUIWindow(std::size_t width_squares, std::size_t height_squares, std::string title)
-    : nibbler::IWindow(width_squares, height_squares, std::move(title))
+    : nibbler::IWindow(width_squares, height_squares, std::move(title)),
+      square_size_px_(20)
 {
-    this->window = SDL_CreateWindow("SDL3 Project",640, 480, 0);
-    if (this->window == nullptr) {
-        std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-    }
-
-    this->render = SDL_CreateRenderer(this->window, NULL);
-    if (this->render == nullptr) {
-        std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
+    if (!SDL_CreateWindowAndRenderer(
+        title.c_str(),
+        this->square_size_px_ * width_squares,
+        this->square_size_px_ * height_squares,
+        0,
+        &this->window,
+        &this->render))
+    {
+        std::cerr << "SDL_CreateWindowAndRenderer error: " << SDL_GetError() << std::endl;
         SDL_DestroyWindow(this->window);
         SDL_Quit();
     }
 }
 
-SDLGUIWindow::~SDLGUIWindow() {
+SDLGUIWindow::~SDLGUIWindow()
+{
     SDL_DestroyRenderer(this->render);
     SDL_DestroyWindow(this->window);
+    SDL_PumpEvents(); // needed on macOS
     SDL_Quit();
 }
 
@@ -59,12 +62,25 @@ std::pair<size_t, size_t> SDLGUIWindow::get_window_size_squares() {
 }
 
 void SDLGUIWindow::read_input() {
+
     SDL_Event e;
     SDL_PollEvent(&e);
 
     for (auto& callback : this->key_down_callbacks_) {
-        if (e.type == SDL_EVENT_QUIT) callback(nibbler::Key::ESC);
-        if (e.key.key == SDLK_ESCAPE) callback(nibbler::Key::ESC);
+
+        if (e.type == SDL_EVENT_QUIT)
+        {
+            callback(nibbler::Key::ESC);
+            break;
+        }
+        switch (e.key.key)
+        {
+            case SDLK_ESCAPE: callback(nibbler::Key::ESC); break;
+            case SDLK_1: callback(nibbler::Key::NUMBER_1); break;
+            case SDLK_2: callback(nibbler::Key::NUMBER_2); break;
+            case SDLK_3: callback(nibbler::Key::NUMBER_3); break;
+            default: break;
+        }
     }
 }
 
@@ -87,9 +103,9 @@ void SDLGUIWindow::set_score(int score) {
 SDLGUI::SDLGUI() {}
 SDLGUI::~SDLGUI() {}
 
-std::shared_ptr<nibbler::IWindow>
+std::unique_ptr<nibbler::IWindow>
 SDLGUI::create_window(std::size_t width_squares, std::size_t height_squares, std::string title) {
-    return std::make_shared<SDLGUIWindow>(width_squares, height_squares, std::move(title));
+    return std::make_unique<SDLGUIWindow>(width_squares, height_squares, std::move(title));
 }
 
 }

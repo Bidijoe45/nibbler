@@ -62,7 +62,7 @@ public:
     TTYGUI();
     ~TTYGUI();
 
-    std::shared_ptr<nibbler::IWindow>
+    std::unique_ptr<nibbler::IWindow>
     create_window(std::size_t width_squares, std::size_t height_squares, std::string title) override;
 };
 

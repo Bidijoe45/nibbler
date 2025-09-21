@@ -26,6 +26,7 @@ struct Snake {
     void move(double delta_time);
     bool check_wall_collision(size_t gameboard_width, size_t gameboard_height);
     bool check_fruit_collision(Position fruit_pos);
+    bool check_body_collision();
 
     float move_timer_s = 0;
     float move_interval_s = 0.1;

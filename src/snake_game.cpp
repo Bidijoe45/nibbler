@@ -84,7 +84,8 @@ void SnakeGame::update(double delta_time) {
 
     // If collision, just restart the game for now
     bool wall_collision = this->snake_.check_wall_collision(this->config_.gameboard_width_squares, this->config_.gameboard_height_squares);
-    if (wall_collision) {
+    bool body_collision = this->snake_.check_body_collision();
+    if (wall_collision || body_collision) {
         this->initialize_game();
     }
 

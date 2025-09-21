@@ -96,4 +96,18 @@ bool Snake::check_fruit_collision(Position fruit_pos) {
     return false;
 }
 
+bool Snake::check_body_collision() {
+    Position& snake_head = this->body.segments[0];
+
+    for (auto segment = std::next(this->body.segments.begin()); // skip the head
+        segment != this->body.segments.end();
+        segment++)
+    {
+        if (snake_head.x == segment->x && snake_head.y == segment->y)
+            return true;
+    }
+
+    return false;
+}
+
 }

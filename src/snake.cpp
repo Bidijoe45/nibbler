@@ -8,6 +8,17 @@
 
 namespace nibbler {
 
+Snake::Snake() {}
+
+Snake::Snake(const Position &start_pos)
+{
+    this->body.segments.push_back(start_pos);
+    this->body.direction = Direction::RIGHT;
+    this->add_segment();
+    this->add_segment();
+    this->add_segment();
+}
+
 void Snake::add_segment(void)
 {
     if (this->body.segments.size() == 0) {
@@ -80,8 +91,8 @@ void Snake::change_direction(Direction dir) {
 bool Snake::check_wall_collision(size_t gameboard_width, size_t gameboard_height) {
     Position& snake_head = this->body.segments[0];
 
-    if (snake_head.x <= 0) return true;
-    else if (snake_head.y <= 0) return true;
+    if (snake_head.x < 0) return true;
+    else if (snake_head.y < 0) return true;
     else if (snake_head.x >= gameboard_width) return true;
     else if (snake_head.y >= gameboard_height) return true;
 

@@ -29,7 +29,7 @@ TTYGUIWindow::TTYGUIWindow(std::size_t width_squares, std::size_t height_squares
     TTYGUIWindow::term_cols = width_squares;
     TTYGUIWindow::term_rows = height_squares;
 
-    draw_border();
+    this->draw_border();
 }
 
 TTYGUIWindow::~TTYGUIWindow()
@@ -71,7 +71,8 @@ void TTYGUIWindow::draw_border() {
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             if (y == 0 || y == height - 1 || x == 0 || x == width - 1) {
-                std::cout << "\033[" << y + 1 << ";" << x + 1 << "H#";
+                this->draw_pixel(x, y, '#');
+                //std::cout << "\033[" << y + 1 << ";" << x + 1 << "H#";
             }
         }
     }
@@ -126,7 +127,7 @@ void TTYGUIWindow::restore_terminal() {
 
 void TTYGUIWindow::handle_resize(int) {
     //TTYGUIWindow::update_terminal_size();
-    TTYGUIWindow::draw_border();
+    //draw_border();
 }
 
 //TODO: Don't know if this is really needed
@@ -148,32 +149,27 @@ void TTYGUIWindow::clear_screen() {
               << "\033[H";
     std::cout.flush();
     //TTYGUIWindow::update_terminal_size();
-    TTYGUIWindow::draw_border();
-    TTYGUIWindow::draw_score();
-    TTYGUIWindow::draw_messages();
+    this->draw_border();
+    this->draw_score();
+    this->draw_messages();
 }
 
 void TTYGUIWindow::draw_pixel(size_t x, size_t y, char c) {
-    //Take into account window borders
+    // top left corner is 1,1 !!!
     x += 1; y += 1;
 
     std::cout << "\033[" << y << ";" << x << "H" << c;
     std::cout.flush();
 }
 
-std::pair<size_t, size_t> TTYGUIWindow::get_window_size_squares() {
-    //TTYGUIWindow::update_terminal_size();
-    return std::make_pair<size_t, size_t>(TTYGUIWindow::term_cols, TTYGUIWindow::term_rows);
-}
-
-void TTYGUIWindow::draw_snake(std::vector<nibbler::Position> &snake) {
+void TTYGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake) {
     for (auto &pos : snake) {
-        this->draw_pixel(pos.x, pos.y, 'X');
+        this->draw_pixel(pos.x + 1, pos.y + 1, 'X'); // +1 to take into account window borders
     }
 }
 
-void TTYGUIWindow::draw_fruit(nibbler::Position& fruit_pos) {
-    this->draw_pixel(fruit_pos.x, fruit_pos.y, '0');
+void TTYGUIWindow::draw_fruit(const nibbler::Position& fruit_pos) {
+    this->draw_pixel(fruit_pos.x + 1, fruit_pos.y + 1, '0'); // +1 to take into account window borders
 }
 
 nibbler::Key TTYGUIWindow::convert_input_to_key(char ch) {

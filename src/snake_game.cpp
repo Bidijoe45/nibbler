@@ -60,20 +60,12 @@ void SnakeGame::on_key_down(Key key) {
 
 void SnakeGame::initialize_game() {
 
-    std::pair<size_t, size_t> windows_size = this->window_->get_window_size_squares();
     Position start_pos;
-    start_pos.x = windows_size.first / 2;
-    start_pos.y = windows_size.second / 2;
+    start_pos.x = this->config_.gameboard_width_squares / 2;
+    start_pos.y = this->config_.gameboard_height_squares / 2;
 
-    this->snake_.body.segments.clear();
-    this->snake_.body.segments.push_back(start_pos);
-    this->snake_.body.direction = Direction::RIGHT;
-    this->snake_.add_segment();
-    this->snake_.add_segment();
-    this->snake_.add_segment();
-
+    this->snake_ = Snake(start_pos);
     this->score_ = 0;
-
     this->fruit_ = fruit_factory_.create_fruit_random_pos();
 }
 

@@ -57,10 +57,6 @@ void SDLGUIWindow::clear_screen() {
     SDL_RenderPresent(this->render); // Render the screen
 }
 
-std::pair<size_t, size_t> SDLGUIWindow::get_window_size_squares() {
-    //TODO:
-}
-
 void SDLGUIWindow::read_input() {
 
     SDL_Event e;
@@ -84,11 +80,11 @@ void SDLGUIWindow::read_input() {
     }
 }
 
-void SDLGUIWindow::draw_snake(std::vector<nibbler::Position> &snake) {
+void SDLGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake) {
     //TODO:
 }
 
-void SDLGUIWindow::draw_fruit(nibbler::Position& fruit_pos) {
+void SDLGUIWindow::draw_fruit(const nibbler::Position& fruit_pos) {
     //TODO:
 }
 

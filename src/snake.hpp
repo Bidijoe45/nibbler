@@ -21,6 +21,9 @@ struct Snake {
         Direction direction; // direction of the head
     } body;
 
+    Snake();
+    Snake(const Position &start_pos);
+
     void add_segment(void);
     void change_direction(Direction dir);
     void move(double delta_time);

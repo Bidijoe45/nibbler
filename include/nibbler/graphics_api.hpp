@@ -29,10 +29,9 @@ public:
     virtual void add_event_listener_key_up(KeyUpCallback cb) = 0;
     virtual void add_event_listener_key_press(KeyPressCallback cb) = 0;
     virtual void clear_screen() = 0;
-    virtual std::pair<size_t, size_t> get_window_size_squares() = 0;
     virtual void read_input() = 0;
-    virtual void draw_snake(std::vector<Position> &snake) = 0;
-    virtual void draw_fruit(Position& fruit_pos) = 0;
+    virtual void draw_snake(const std::vector<Position> &snake) = 0;
+    virtual void draw_fruit(const Position& fruit_pos) = 0;
     virtual void set_score(int score) = 0;
     virtual void push_message(const std::string &msg) = 0;
 

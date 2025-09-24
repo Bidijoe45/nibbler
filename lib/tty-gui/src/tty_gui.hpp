@@ -31,6 +31,7 @@ public:
     void draw_fruit(const nibbler::Position& fruit_pos) override;
     void push_message(const std::string& msg) override;
     void set_score(int score) override;
+    void render() override;
 
 private:
     static void restore_terminal();

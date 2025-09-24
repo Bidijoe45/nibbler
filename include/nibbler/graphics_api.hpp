@@ -33,6 +33,7 @@ public:
     virtual void draw_snake(const std::vector<Position> &snake) = 0;
     virtual void draw_fruit(const Position& fruit_pos) = 0;
     virtual void set_score(int score) = 0;
+    virtual void render() = 0;
     virtual void push_message(const std::string &msg) = 0;
 
 protected:

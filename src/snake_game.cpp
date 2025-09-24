@@ -92,6 +92,7 @@ void SnakeGame::update(double delta_time) {
     this->window_->set_score(this->score_);
     this->window_->draw_snake(this->snake_.body.segments);
     this->window_->draw_fruit(this->fruit_.pos);
+    this->window_->render();
 }
 
 void SnakeGame::switch_gui()

@@ -77,7 +77,6 @@ void TTYGUIWindow::draw_border() {
         }
     }
     std::cout << "\033[1;1H";
-    std::cout.flush(); // TODO: maybe this should not be flushed on every draw, instead flushed once when everything is draw
 }
 
 
@@ -86,7 +85,10 @@ void TTYGUIWindow::draw_score() {
     std::cout << "\033[" << draw_start << ";1H";
     std::cout << "Score: " << this->score_;
     std::cout << "\033[1;1H";
-    std::cout.flush();  // TODO: maybe this should not be flushed on every draw, instead flushed once when everything is draw
+}
+
+void TTYGUIWindow::render() {
+    std::cout.flush();
 }
 
 // Maybe not the best implementation. Text should go from bottom to top.
@@ -109,7 +111,6 @@ void TTYGUIWindow::draw_messages() {
     }
     
     std::cout << "\033[1;1H";
-    std::cout.flush();  // TODO: maybe this should not be flushed on every draw, instead flushed once when everything is draw
 }
 
 void TTYGUIWindow::push_message(const std::string& msg) {

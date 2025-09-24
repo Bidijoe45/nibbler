@@ -9,15 +9,15 @@ namespace sdlgui {
 
 SDLGUIWindow::SDLGUIWindow(std::size_t width_squares, std::size_t height_squares, std::string title)
     : nibbler::IWindow(width_squares, height_squares, std::move(title)),
-      square_size_px_(20)
+      square_size_px_(20), border_size_px(square_size_px_)
 {
     if (!SDL_CreateWindowAndRenderer(
         title.c_str(),
-        this->square_size_px_ * width_squares,
-        this->square_size_px_ * height_squares,
+        this->square_size_px_ * width_squares + (border_size_px * 2),
+        this->square_size_px_ * height_squares + (border_size_px * 2),
         0,
         &this->window,
-        &this->render))
+        &this->renderer))
     {
         std::cerr << "SDL_CreateWindowAndRenderer error: " << SDL_GetError() << std::endl;
         SDL_DestroyWindow(this->window);
@@ -27,7 +27,7 @@ SDLGUIWindow::SDLGUIWindow(std::size_t width_squares, std::size_t height_squares
 
 SDLGUIWindow::~SDLGUIWindow()
 {
-    SDL_DestroyRenderer(this->render);
+    SDL_DestroyRenderer(this->renderer);
     SDL_DestroyWindow(this->window);
     SDL_PumpEvents(); // needed on macOS
     SDL_Quit();
@@ -45,16 +45,44 @@ void SDLGUIWindow::add_event_listener_key_press(nibbler::IWindow::KeyPressCallba
     //TODO:
 }
 
-void SDLGUIWindow::clear_screen() {
-    SDL_FRect greenSquare {270, 190, 100, 100};
-    
-    SDL_SetRenderDrawColor(this->render, 0, 0, 0, 255); // Set render draw color to black
-    SDL_RenderClear(this->render); // Clear the renderer
+void SDLGUIWindow::draw_border() {
+    std::pair<int, int> window_size = this->get_window_size();
+    SDL_SetRenderDrawColor(this->renderer, 252, 163, 17, 255);
+    SDL_FRect top_border {
+        0,
+        0,
+        static_cast<float>(window_size.first),
+        static_cast<float>(border_size_px)
+    };
+    SDL_FRect bottom_border {
+        0,
+        static_cast<float>(window_size.second - border_size_px),
+        static_cast<float>(window_size.first),
+        static_cast<float>(border_size_px)
+    };
+    SDL_FRect left_border {
+        0,
+        static_cast<float>(border_size_px),
+        static_cast<float>(border_size_px),
+        static_cast<float>(window_size.second)
+    };
+    SDL_FRect right_border {
+        static_cast<float>(window_size.first - border_size_px),
+        static_cast<float>(border_size_px),
+        static_cast<float>(border_size_px),
+        static_cast<float>(window_size.second)
+    };
 
-    SDL_SetRenderDrawColor(this->render, 0, 255, 0, 255); // Set render draw color to green
-    SDL_RenderFillRect(this->render, &greenSquare); // Render the rectangle
-    
-    SDL_RenderPresent(this->render); // Render the screen
+    SDL_RenderFillRect(this->renderer, &top_border);
+    SDL_RenderFillRect(this->renderer, &bottom_border);
+    SDL_RenderFillRect(this->renderer, &left_border);
+    SDL_RenderFillRect(this->renderer, &right_border);
+}
+
+void SDLGUIWindow::clear_screen() {
+    SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
+    SDL_RenderClear(this->renderer);
+    this->draw_border();
 }
 
 void SDLGUIWindow::read_input() {
@@ -75,17 +103,40 @@ void SDLGUIWindow::read_input() {
             case SDLK_1: callback(nibbler::Key::NUMBER_1); break;
             case SDLK_2: callback(nibbler::Key::NUMBER_2); break;
             case SDLK_3: callback(nibbler::Key::NUMBER_3); break;
+            case SDLK_UP: callback(nibbler::Key::ARROW_UP); break;
+            case SDLK_LEFT: callback(nibbler::Key::ARROW_LEFT); break;
+            case SDLK_RIGHT: callback(nibbler::Key::ARROW_RIGHT); break;
+            case SDLK_DOWN: callback(nibbler::Key::ARROW_DOWN); break;
             default: break;
         }
     }
 }
 
 void SDLGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake) {
-    //TODO:
+    std::pair<int, int> window_size = get_window_size();
+    SDL_SetRenderScale(this->renderer, 1, 1);
+    SDL_SetRenderDrawColor(this->renderer, 163, 177, 138, 255);
+
+    for (const nibbler::Position& p : snake) {
+        float x = static_cast<float>(p.x * this->square_size_px_) + this->border_size_px;
+        float y = static_cast<float>(p.y * this->square_size_px_) + this->border_size_px;
+        float width = static_cast<float>(this->square_size_px_);
+        float height = static_cast<float>(this->square_size_px_);
+        SDL_FRect body_square {x, y, width, height};
+        
+        SDL_RenderFillRect(this->renderer, &body_square);
+    }
 }
 
 void SDLGUIWindow::draw_fruit(const nibbler::Position& fruit_pos) {
-    //TODO:
+    std::pair<int, int> window_size = get_window_size();
+    SDL_SetRenderDrawColor(this->renderer, 188, 71, 73, 255);
+    float x = static_cast<float>(fruit_pos.x * this->square_size_px_) + this->border_size_px;
+    float y = static_cast<float>(fruit_pos.y * this->square_size_px_) + this->border_size_px;
+    float width = static_cast<float>(this->square_size_px_);
+    float height = static_cast<float>(this->square_size_px_);
+    SDL_FRect fruit_square {x, y, width, height};
+    SDL_RenderFillRect(this->renderer, &fruit_square);
 }
 
 void SDLGUIWindow::push_message(const std::string& msg) {
@@ -93,7 +144,20 @@ void SDLGUIWindow::push_message(const std::string& msg) {
 }
 
 void SDLGUIWindow::set_score(int score) {
-    //TODO:
+    std::string score_text = std::string("Score:" + std::to_string(score));
+    SDL_SetRenderScale(this->renderer, 2, 2);
+    SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
+    SDL_RenderDebugText(this->renderer, 10, 1, score_text.c_str());
+}
+
+void SDLGUIWindow::render() {
+    SDL_RenderPresent(this->renderer);
+}
+
+std::pair<int, int> SDLGUIWindow::get_window_size() {
+    int w, h;
+    SDL_GetWindowSize(this->window, &w, &h);
+    return std::make_pair(w, h);
 }
 
 SDLGUI::SDLGUI() {}

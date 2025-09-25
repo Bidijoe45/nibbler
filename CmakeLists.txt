@@ -12,6 +12,7 @@ set(CMAKE_BUILD_PARALLEL_LEVEL 6)
 #add_subdirectory(${CMAKE_SOURCE_DIR}/lib/sdl) # SDL
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/tty-gui)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/sdl)
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib/raylib)
 
 # Cmd line parser
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/cmdparser)

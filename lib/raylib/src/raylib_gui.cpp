@@ -1,0 +1,169 @@
+#include "raylib_gui.hpp"
+
+#include "nibbler/graphics_api.hpp"
+#include "raylib.h"
+
+#include <iostream>
+#include <raymath.h>
+
+namespace raylibgui {
+
+RaylibGUIWindow::RaylibGUIWindow(std::size_t width_squares, std::size_t height_squares, std::string title)
+    : nibbler::IWindow(width_squares, height_squares, std::move(title)),
+      square_size_px_(20), border_size_px(square_size_px_)
+{
+    this->camera_.position = (Vector3){ 0.0f, 25.0f, 20.0f };  // Camera position
+    this->camera_.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
+    this->camera_.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
+    this->camera_.fovy = 45.0f;                                // Camera field-of-view Y
+    this->camera_.projection = CAMERA_PERSPECTIVE;             // Camera mode type
+    this->width_squares_ = width_squares;
+    this->height_squares_ = height_squares;
+    InitWindow(640, 480, "raylib [core] example - 3d camera mode");
+}
+
+RaylibGUIWindow::~RaylibGUIWindow()
+{
+    CloseWindow();
+}
+
+void RaylibGUIWindow::add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) {
+    this->key_down_callbacks_.push_back(cb);
+}
+
+void RaylibGUIWindow::add_event_listener_key_up(nibbler::IWindow::KeyUpCallback cb) {
+    //TODO:
+}
+
+void RaylibGUIWindow::add_event_listener_key_press(nibbler::IWindow::KeyPressCallback cb) {
+    //TODO:
+}
+
+void RaylibGUIWindow::draw_border() {
+
+}
+
+void RaylibGUIWindow::clear_screen() {
+    //ClearBackground(RAYWHITE);
+}
+
+void RaylibGUIWindow::read_input() {
+    bool close = WindowShouldClose();
+
+    for (auto& callback : this->key_down_callbacks_) {
+        if (close) {
+            callback(nibbler::Key::ESC);
+            break;
+        }
+        if (IsKeyDown(KEY_UP)) callback(nibbler::Key::ARROW_UP);
+        if (IsKeyDown(KEY_LEFT)) callback(nibbler::Key::ARROW_LEFT);
+        if (IsKeyDown(KEY_DOWN)) callback(nibbler::Key::ARROW_DOWN);
+        if (IsKeyDown(KEY_RIGHT)) callback(nibbler::Key::ARROW_RIGHT);
+    }
+}
+
+//FIXME: maybe this should be set_snake or update_snake instead of draw
+void RaylibGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake) {
+    if (this->snake_.size() != snake.size()) {
+        size_t new_elements = snake.size() - this->snake_.size();
+        this->snake_.assign(snake.begin(), snake.end());
+    }
+
+    auto new_snake_it = snake.begin();
+    auto snake_it = this->snake_.begin();
+
+    for (; new_snake_it != snake.end(); ++new_snake_it, ++snake_it) {
+        *snake_it = *new_snake_it;
+    }
+}
+
+void RaylibGUIWindow::draw_fruit(const nibbler::Position& fruit_pos) {
+    this->fruit_ = fruit_pos;
+}
+
+void RaylibGUIWindow::push_message(const std::string& msg) {
+    //TODO:
+}
+
+void RaylibGUIWindow::set_score(int score) {
+
+}
+
+void RaylibGUIWindow::render() {
+    BeginDrawing();
+    ClearBackground(RAYWHITE);
+    BeginMode3D(this->camera_);
+
+    // Grid
+    Vector3 gridCellV3 = { 0, 0, 0.0f };
+    for (int x=0; x < width_squares_; x++) {
+        for (int y=0; y < height_squares_; y++) {
+            gridCellV3.x = x;
+            gridCellV3.z = y;
+
+            DrawCube(gridCellV3, 1.0f, 0.0f, 1.0f, GRAY);
+            DrawCubeWires(gridCellV3, 1.0f, 0.1f, 1.0f, BLACK);
+        }
+    }
+
+    const nibbler::Position& head = this->snake_.front();
+    Vector3 headV3 = {
+        static_cast<float>(head.x),
+        0.0f,
+        static_cast<float>(head.y)
+    };
+
+    this->camera_.target =  Vector3Add(this->camera_.target, Vector3Scale(Vector3Subtract(headV3, this->camera_.target), 0.04f));
+    this->camera_.position.x = this->camera_.target.x;
+    //this->camera_.position.z = this->camera_.target.z;
+    //this->camera_.position += Vector3Add(this->camera_.position, Vector3Scale(Vector3Subtract(headV3, this->camera_.position), 0.01f));
+
+    for (const nibbler::Position& segment : this->snake_) {
+        Vector3 cubePosition = {
+            static_cast<float>(segment.x),
+            0.5f,
+            static_cast<float>(segment.y)
+        };
+        DrawCube(cubePosition, 1.0f, 1.0f, 1.0f, LIME);
+        DrawCubeWires(cubePosition, 1.0f, 1.0f, 1.0f, GREEN);
+    }
+
+    Vector3 fruiPosition = {
+        static_cast<float>(this->fruit_.x),
+        0.5f,
+        static_cast<float>(this->fruit_.y)
+    };
+    DrawCube(fruiPosition, 1.0f, 1.0f, 1.0f, RED);
+    DrawCubeWires(fruiPosition, 1.0f, 1.0f, 1.0f, MAROON);
+
+    EndMode3D();
+    DrawFPS(10, 10);
+
+    EndDrawing();
+}
+
+std::pair<int, int> RaylibGUIWindow::get_window_size() {
+
+}
+
+RaylibGUI::RaylibGUI() {}
+RaylibGUI::~RaylibGUI() {}
+
+std::unique_ptr<nibbler::IWindow>
+RaylibGUI::create_window(std::size_t width_squares, std::size_t height_squares, std::string title) {
+    return std::make_unique<RaylibGUIWindow>(width_squares, height_squares, std::move(title));
+}
+
+}
+
+extern "C" {
+
+nibbler::INibblerGraphicsApi* create_graphics_library() {
+    return new raylibgui::RaylibGUI();
+}
+
+void destroy_graphics_library(nibbler::INibblerGraphicsApi* lib) {
+    delete lib;
+}
+
+}

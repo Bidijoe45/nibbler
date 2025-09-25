@@ -2,7 +2,6 @@
 #ifndef NIBBLER_CONFIG
 #define NIBBLER_CONFIG
 
-#include <cstdint>
 #include <string>
 #include <vector>
 

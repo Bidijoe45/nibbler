@@ -19,8 +19,10 @@ SDLGUIWindow::SDLGUIWindow(std::size_t width_squares, std::size_t height_squares
         &this->window,
         &this->renderer))
     {
+        // FIXME: should probably throw an exception or something so that the caller will have some sort of feedback of whether construction failed
         std::cerr << "SDL_CreateWindowAndRenderer error: " << SDL_GetError() << std::endl;
         SDL_DestroyWindow(this->window);
+        SDL_PumpEvents(); // needed on macOS
         SDL_Quit();
     }
 }

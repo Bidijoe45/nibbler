@@ -23,7 +23,7 @@ public:
     typedef std::function<void(Key)> Callback, KeyDownCallback, KeyUpCallback, KeyPressCallback;
 
     IWindow() = delete;
-    inline virtual ~IWindow() {};
+    inline virtual ~IWindow() {}
 
     virtual void add_event_listener_key_down(KeyDownCallback cb) = 0;
     virtual void add_event_listener_key_up(KeyUpCallback cb) = 0;
@@ -37,7 +37,7 @@ public:
     virtual void push_message(const std::string &msg) = 0;
 
 protected:
-    inline IWindow(size_t width_squares, size_t height_squares, std::string title) {}; // FIXME: why does this receive these three params if unused by the interface?
+    inline IWindow(size_t width_squares, size_t height_squares, std::string title) {}
 };
 
 class INibblerGraphicsApi {

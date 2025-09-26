@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TTY_GUI_HPP
-#define TTY_GUI_HPP
+#ifndef SDL_GUI_HPP
+#define SDL_GUI_HPP
 
 #include "nibbler/graphics_api.hpp"
 
@@ -31,7 +31,6 @@ private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
-    int score_;
     const int square_size_px_;
     const int border_size_px;
 };

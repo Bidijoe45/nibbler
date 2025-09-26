@@ -9,10 +9,10 @@ set(CMAKE_BUILD_PARALLEL_LEVEL 6)
 # LIBRARIES
 
 # Install graphics libraries (SDL, raylib, glfw)
-#add_subdirectory(${CMAKE_SOURCE_DIR}/lib/sdl) # SDL
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/tty-gui)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/sdl)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/raylib)
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib/glfw)
 
 # Cmd line parser
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/cmdparser)

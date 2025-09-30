@@ -1,16 +1,16 @@
 #pragma once
-#ifndef GLFW_GUI_HPP
-#define GLFW_GUI_HPP
+#ifndef SFML_GUI_HPP
+#define SFML_GUI_HPP
 
 #include "nibbler/graphics_api.hpp"
-#include <GLFW/glfw3.h>
+#include <SFML/Window.hpp>
 
-namespace glfwgui {
+namespace sfmlgui {
 
-class GLFWGUIWindow : public nibbler::IWindow {
+class SFMLGUIWindow : public nibbler::IWindow {
     public:
-        GLFWGUIWindow(size_t width_squares, size_t height_squares, std::string title);
-        ~GLFWGUIWindow();
+        SFMLGUIWindow(size_t width_squares, size_t height_squares, std::string title);
+        ~SFMLGUIWindow();
 
         void add_event_listener_key_down(KeyDownCallback cb) override;
         void add_event_listener_key_up(KeyUpCallback cb) override;
@@ -24,18 +24,16 @@ class GLFWGUIWindow : public nibbler::IWindow {
         void push_message(const std::string &msg) override;
 
     private:
-        GLFWwindow* window;
+        sf::Window window;
         std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
         const int square_size_px_;
-        const int border_size_px;
-
-        static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+        const int border_size_px_;
 };
 
-class GLFWGUI : public nibbler::INibblerGraphicsApi {
+class SFMLGUI : public nibbler::INibblerGraphicsApi {
     public:
-        GLFWGUI();
-        ~GLFWGUI();
+        SFMLGUI();
+        ~SFMLGUI();
         std::unique_ptr<nibbler::IWindow> create_window(std::size_t width_squares, std::size_t height_squares, std::string title) override;
 };
 

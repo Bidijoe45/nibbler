@@ -17,5 +17,8 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/lib/sfml)
 # Cmd line parser
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/cmdparser)
 
+#JSON parser
+add_subdirectory(${CMAKE_SOURCE_DIR}/lib/json)
+
 add_subdirectory(src)
 add_subdirectory(test)

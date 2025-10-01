@@ -10,12 +10,14 @@ set(SRCS
     src/sfml_gui.cpp
 )
 
+message(STATUS "Fetching SFML_GUI(SFML/SFML) ...")
 include(FetchContent)
 FetchContent_Declare(
     SFML
     GIT_REPOSITORY https://github.com/SFML/SFML
     GIT_TAG 3.0.2
 )
+message(STATUS "Fetching SFML_GUI(SFML/SFML) ...")
 
 FetchContent_MakeAvailable(SFML)
 add_library(${PROJECT_NAME} SHARED ${SRCS})

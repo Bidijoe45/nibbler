@@ -8,6 +8,7 @@ set(SRCS
     src/sdl_gui.cpp
 )
 
+message(STATUS "Fetching SDL_GUI(libsdl-org/SDL) ...")
 include(FetchContent)
 FetchContent_Declare(
     SDL
@@ -15,6 +16,7 @@ FetchContent_Declare(
     GIT_TAG release-3.2.16
 )
 FetchContent_MakeAvailable(SDL)
+message(STATUS "DONE Fetching SDL_GUI(libsdl-org/SDL) ...")
 
 add_library(${PROJECT_NAME} SHARED ${SRCS})
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)

@@ -10,6 +10,7 @@ set(SRCS
     src/raylib_gui.cpp
 )
 
+message(STATUS "Fetching RAYLIB_GUI(raysan5/raylib) ...")
 include(FetchContent)
 FetchContent_Declare(
     RAYLIB
@@ -17,6 +18,7 @@ FetchContent_Declare(
     GIT_TAG 5.5
 )
 FetchContent_MakeAvailable(RAYLIB)
+message(STATUS "DONE Fetching RAYLIB_GUI(raysan5/raylib) ...")
 
 add_library(${PROJECT_NAME} SHARED ${SRCS})
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)

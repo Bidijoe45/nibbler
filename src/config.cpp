@@ -4,9 +4,6 @@
 
 namespace nibbler {
 
-/**
- * TODO: implement this
- */
 Configuration ConfigParser::parseConfigFile(const std::string &file_path) {
     Configuration config;
 

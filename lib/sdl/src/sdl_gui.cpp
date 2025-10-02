@@ -105,6 +105,13 @@ void SDLGUIWindow::read_input() {
             case SDLK_1: callback(nibbler::Key::NUMBER_1); break;
             case SDLK_2: callback(nibbler::Key::NUMBER_2); break;
             case SDLK_3: callback(nibbler::Key::NUMBER_3); break;
+            case SDLK_4: callback(nibbler::Key::NUMBER_4); break;
+            case SDLK_5: callback(nibbler::Key::NUMBER_5); break;
+            case SDLK_6: callback(nibbler::Key::NUMBER_6); break;
+            case SDLK_7: callback(nibbler::Key::NUMBER_7); break;
+            case SDLK_8: callback(nibbler::Key::NUMBER_8); break;
+            case SDLK_9: callback(nibbler::Key::NUMBER_9); break;
+            case SDLK_0: callback(nibbler::Key::NUMBER_0); break;
             case SDLK_UP: callback(nibbler::Key::ARROW_UP); break;
             case SDLK_LEFT: callback(nibbler::Key::ARROW_LEFT); break;
             case SDLK_RIGHT: callback(nibbler::Key::ARROW_RIGHT); break;

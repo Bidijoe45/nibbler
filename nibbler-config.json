@@ -3,7 +3,7 @@
         {
             "key": "1",
             "name": "SDL_GUI",
-            "path": "build/lib/tty-gui/libTTY_GUI.dylib"
+            "path": "build/lib/sdl/libSDL_GUI.dylib"
         },
         {
             "key": "2",

@@ -22,6 +22,8 @@ int Nibbler::start() {
     std::map<Key, GraphicsApiSharedPtr> gui_instances;
     for (const auto &lib_config : this->config_.gui_libraries)
     {
+        std::cout << "Loading " << lib_config.name << ", key: " << lib_config.key << std::endl;
+
         Key key;
         if (lib_config.key == "0")
             key = Key::NUMBER_0;

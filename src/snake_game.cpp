@@ -97,6 +97,8 @@ void SnakeGame::update(double delta_time) {
 
 void SnakeGame::switch_gui()
 {
+    std::cout << "Switching to GUI " << this->current_gui_ << std::endl;
+
     auto api = this->graphics_apis_.find(this->current_gui_);
     if (api == this->graphics_apis_.end())
         return;
@@ -128,7 +130,6 @@ int SnakeGame::run() {
 
     this->game_state_ = GameState::RUNNING;
     while (this->game_state_ == GameState::RUNNING) {
-
         std::chrono::steady_clock::time_point frame_start = std::chrono::steady_clock::now();
         std::chrono::duration<double> delta_time_s = frame_start - previous_time;
         previous_time = frame_start;

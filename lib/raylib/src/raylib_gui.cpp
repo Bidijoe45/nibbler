@@ -19,7 +19,11 @@ RaylibGUIWindow::RaylibGUIWindow(std::size_t width_squares, std::size_t height_s
     this->camera_.projection = CAMERA_PERSPECTIVE;             // Camera mode type
     this->width_squares_ = width_squares;
     this->height_squares_ = height_squares;
-    InitWindow(640, 480, "raylib [core] example - 3d camera mode");
+    InitWindow(
+        this->width_squares_ * this->square_size_px_,
+        this->height_squares_ * this->square_size_px_,
+        title.c_str());
+    SetWindowFocused();
 }
 
 RaylibGUIWindow::~RaylibGUIWindow()
@@ -55,10 +59,21 @@ void RaylibGUIWindow::read_input() {
             callback(nibbler::Key::ESC);
             break;
         }
-        if (IsKeyDown(KEY_UP)) callback(nibbler::Key::ARROW_UP);
-        if (IsKeyDown(KEY_LEFT)) callback(nibbler::Key::ARROW_LEFT);
-        if (IsKeyDown(KEY_DOWN)) callback(nibbler::Key::ARROW_DOWN);
-        if (IsKeyDown(KEY_RIGHT)) callback(nibbler::Key::ARROW_RIGHT);
+        if (IsKeyDown(KeyboardKey::KEY_SPACE)) callback(nibbler::Key::ESC);
+        if (IsKeyDown(KeyboardKey::KEY_ONE)) callback(nibbler::Key::NUMBER_1);
+        if (IsKeyDown(KeyboardKey::KEY_TWO)) callback(nibbler::Key::NUMBER_2);
+        if (IsKeyDown(KeyboardKey::KEY_THREE)) callback(nibbler::Key::NUMBER_3);
+        if (IsKeyDown(KeyboardKey::KEY_FOUR)) callback(nibbler::Key::NUMBER_4);
+        if (IsKeyDown(KeyboardKey::KEY_FIVE)) callback(nibbler::Key::NUMBER_5);
+        if (IsKeyDown(KeyboardKey::KEY_SIX)) callback(nibbler::Key::NUMBER_6);
+        if (IsKeyDown(KeyboardKey::KEY_SEVEN)) callback(nibbler::Key::NUMBER_7);
+        if (IsKeyDown(KeyboardKey::KEY_EIGHT)) callback(nibbler::Key::NUMBER_8);
+        if (IsKeyDown(KeyboardKey::KEY_NINE)) callback(nibbler::Key::NUMBER_9);
+        if (IsKeyDown(KeyboardKey::KEY_ZERO)) callback(nibbler::Key::NUMBER_0);
+        if (IsKeyDown(KeyboardKey::KEY_UP)) callback(nibbler::Key::ARROW_UP);
+        if (IsKeyDown(KeyboardKey::KEY_LEFT)) callback(nibbler::Key::ARROW_LEFT);
+        if (IsKeyDown(KeyboardKey::KEY_DOWN)) callback(nibbler::Key::ARROW_DOWN);
+        if (IsKeyDown(KeyboardKey::KEY_RIGHT)) callback(nibbler::Key::ARROW_RIGHT);
     }
 }
 

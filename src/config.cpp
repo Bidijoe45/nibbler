@@ -46,11 +46,6 @@ Configuration ConfigParser::parseConfigFile(const std::string &file_path) {
         config.gui_libraries.push_back(lib);
     }
 
-    /*
-    ConfigLibrary tty_gui = { .key="4", .name="TTY_GUI", .path="build/lib/tty-gui/libTTY_GUI.dylib" };
-    config.gui_libraries.push_back(tty_gui);
-    */
-
     return config;
 }
 

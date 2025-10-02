@@ -24,7 +24,7 @@ class SFMLGUIWindow : public nibbler::IWindow {
         void push_message(const std::string &msg) override;
 
     private:
-        sf::Window window;
+        sf::Window window_;
         std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
         const int square_size_px_;
         const int border_size_px_;

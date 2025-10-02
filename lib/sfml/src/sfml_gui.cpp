@@ -11,17 +11,20 @@ SFMLGUIWindow::SFMLGUIWindow(size_t width_squares, size_t height_squares, std::s
       square_size_px_(20),
       border_size_px_(square_size_px_)
 {
-    this->window.create(
+    this->window_.create(
         sf::VideoMode({
             static_cast<unsigned int>(square_size_px_ * width_squares),
             static_cast<unsigned int>(square_size_px_ * height_squares)}),
         title,
         sf::Style::Close | sf::Style::Titlebar,
         sf::State::Windowed);
+
+    this->window_.setKeyRepeatEnabled(false);
 }
 
 SFMLGUIWindow::~SFMLGUIWindow()
 {
+    window_.close();
 }
 
 void SFMLGUIWindow::add_event_listener_key_down(KeyDownCallback callback)
@@ -46,6 +49,67 @@ void SFMLGUIWindow::clear_screen()
 
 void SFMLGUIWindow::read_input()
 {
+    while (const std::optional event = this->window_.pollEvent())
+    {
+        for (auto &callback : this->key_down_callbacks_)
+        {
+            if (event->is<sf::Event::Closed>())
+            {
+                callback(nibbler::Key::ESC);
+            }
+            if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>())
+            {
+                switch (keyPressed->code)
+                {
+                    case sf::Keyboard::Key::Escape:
+                        callback(nibbler::Key::ESC);
+                        break;
+                    case sf::Keyboard::Key::Num1:
+                        callback(nibbler::Key::NUMBER_1);
+                        break;
+                    case sf::Keyboard::Key::Num2:
+                        callback(nibbler::Key::NUMBER_2);
+                        break;
+                    case sf::Keyboard::Key::Num3:
+                        callback(nibbler::Key::NUMBER_3);
+                        break;
+                    case sf::Keyboard::Key::Num4:
+                        callback(nibbler::Key::NUMBER_4);
+                        break;
+                    case sf::Keyboard::Key::Num5:
+                        callback(nibbler::Key::NUMBER_5);
+                        break;
+                    case sf::Keyboard::Key::Num6:
+                        callback(nibbler::Key::NUMBER_6);
+                        break;
+                    case sf::Keyboard::Key::Num7:
+                        callback(nibbler::Key::NUMBER_7);
+                        break;
+                    case sf::Keyboard::Key::Num8:
+                        callback(nibbler::Key::NUMBER_8);
+                        break;
+                    case sf::Keyboard::Key::Num9:
+                        callback(nibbler::Key::NUMBER_9);
+                        break;
+                    case sf::Keyboard::Key::Num0:
+                        callback(nibbler::Key::NUMBER_0);
+                        break;
+                    case sf::Keyboard::Key::Up:
+                        callback(nibbler::Key::ARROW_UP);
+                        break;
+                    case sf::Keyboard::Key::Down:
+                        callback(nibbler::Key::ARROW_DOWN);
+                        break;
+                    case sf::Keyboard::Key::Left:
+                        callback(nibbler::Key::ARROW_LEFT);
+                        break;
+                    case sf::Keyboard::Key::Right:
+                        callback(nibbler::Key::ARROW_RIGHT);
+                        break;
+                }
+            }
+        }
+    }
 }
 
 void SFMLGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake)

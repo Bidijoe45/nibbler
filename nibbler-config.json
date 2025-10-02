@@ -1,9 +1,24 @@
 {
     "gui_libraries": [
         {
-            "key": 1,
-            "name": "lib_name",
-            "path": "lib/gui1/gui1.so"
+            "key": "1",
+            "name": "SDL_GUI",
+            "path": "build/lib/tty-gui/libTTY_GUI.dylib"
+        },
+        {
+            "key": "2",
+            "name": "RAYLIB_GUI",
+            "path": "build/lib/raylib/libRAYLIB_GUI.dylib"
+        },
+        {
+            "key": "3",
+            "name": "SFML_GUI",
+            "path": "build/lib/sfml/libSFML_GUI.dylib"
+        },
+        {
+            "key": "4",
+            "name": "TTY_GUI",
+            "path": "build/lib/tty-gui/libTTY_GUI.dylib"
         }
     ]
 }

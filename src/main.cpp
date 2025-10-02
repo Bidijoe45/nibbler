@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
     config.gameboard_width_squares = game_width_squares;
     config.gameboard_height_squares = game_height_squares;
 
-    nibbler::Nibbler nibbler(config);
+    //nibbler::Nibbler nibbler(config);
     
-    return nibbler.start();
+    //return nibbler.start();
 }

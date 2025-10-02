@@ -20,6 +20,8 @@ struct Configuration {
 
     // These come from the config file
     std::vector<ConfigLibrary> gui_libraries;
+
+    bool valid = false;
 };
 
 class ConfigParser {

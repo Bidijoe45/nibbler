@@ -4,6 +4,7 @@
 
 #include "nibbler/graphics_api.hpp"
 #include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 
 namespace sfmlgui {
 
@@ -24,7 +25,7 @@ class SFMLGUIWindow : public nibbler::IWindow {
         void push_message(const std::string &msg) override;
 
     private:
-        sf::Window window_;
+        sf::RenderWindow window_;
         std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
         const int square_size_px_;
         const int border_size_px_;

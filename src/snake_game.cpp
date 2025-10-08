@@ -97,12 +97,11 @@ void SnakeGame::update(double delta_time) {
 
 void SnakeGame::switch_gui()
 {
-    std::cout << "Switching to GUI " << this->current_gui_ << std::endl;
-
     auto api = this->graphics_apis_.find(this->current_gui_);
     if (api == this->graphics_apis_.end())
         return;
 
+    this->window_ = nullptr; // Destroy the current GUI before constructing the new one!
     this->window_ = api->second->create_window(
         this->config_.gameboard_width_squares,
         this->config_.gameboard_height_squares,

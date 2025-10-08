@@ -12,13 +12,15 @@ RaylibGUIWindow::RaylibGUIWindow(std::size_t width_squares, std::size_t height_s
     : nibbler::IWindow(width_squares, height_squares, std::move(title)),
       square_size_px_(20), border_size_px(square_size_px_)
 {
+    this->width_squares_ = width_squares;
+    this->height_squares_ = height_squares;
     this->camera_.position = (Vector3){ 0.0f, 25.0f, 20.0f };  // Camera position
     this->camera_.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
     this->camera_.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     this->camera_.fovy = 45.0f;                                // Camera field-of-view Y
     this->camera_.projection = CAMERA_PERSPECTIVE;             // Camera mode type
-    this->width_squares_ = width_squares;
-    this->height_squares_ = height_squares;
+
+    SetTraceLogLevel(LOG_WARNING);
     InitWindow(
         this->width_squares_ * this->square_size_px_,
         this->height_squares_ * this->square_size_px_,

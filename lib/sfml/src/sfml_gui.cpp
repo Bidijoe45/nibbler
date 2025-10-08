@@ -24,7 +24,7 @@ SFMLGUIWindow::SFMLGUIWindow(size_t width_squares, size_t height_squares, std::s
 
 SFMLGUIWindow::~SFMLGUIWindow()
 {
-    window_.close();
+    this->window_.close();
 }
 
 void SFMLGUIWindow::add_event_listener_key_down(KeyDownCallback callback)
@@ -44,7 +44,7 @@ void SFMLGUIWindow::add_event_listener_key_press(KeyPressCallback callback)
 
 void SFMLGUIWindow::clear_screen()
 {
-
+    this->window_.clear();
 }
 
 void SFMLGUIWindow::read_input()
@@ -106,6 +106,7 @@ void SFMLGUIWindow::read_input()
                     case sf::Keyboard::Key::Right:
                         callback(nibbler::Key::ARROW_RIGHT);
                         break;
+                    default: break;
                 }
             }
         }
@@ -114,6 +115,9 @@ void SFMLGUIWindow::read_input()
 
 void SFMLGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake)
 {
+    sf::CircleShape shape(50.f);
+    shape.setFillColor(sf::Color(150, 50, 250));
+    this->window_.draw(shape);
 
 }
 
@@ -129,7 +133,7 @@ void SFMLGUIWindow::set_score(int score)
 
 void SFMLGUIWindow::render()
 {
-
+    this->window_.display();
 }
 
 void SFMLGUIWindow::push_message(const std::string &msg)

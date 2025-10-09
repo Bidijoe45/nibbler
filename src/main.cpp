@@ -22,6 +22,11 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    if (game_height_squares < 5 || game_width_squares < 5) {
+        std::cout << "ERROR | arguments: widht and height must be >= 5" << std::endl;
+        return 1;
+    }
+
     nibbler::Configuration config = nibbler::ConfigParser::parseConfigFile(config_file_path);
     config.gameboard_width_squares = game_width_squares;
     config.gameboard_height_squares = game_height_squares;

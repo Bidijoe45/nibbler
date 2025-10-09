@@ -12,6 +12,12 @@ Configuration ConfigParser::parseConfigFile(const std::string &file_path) {
     Configuration config;
 
     std::ifstream file(file_path);
+
+    if (!file.good()) {
+        std::cout << "ERROR | file does not exist: " << file_path << std::endl;
+        return config;
+    }
+
     nlohmann::json data = nlohmann::json::parse(file);
 
     if (!data.contains("gui_libraries")) {

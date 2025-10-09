@@ -14,11 +14,11 @@ RaylibGUIWindow::RaylibGUIWindow(size_t resolution_width, size_t resolution_heig
 {
     this->gameboard_width_ = gameboard_width;
     this->gameboard_height_ = gameboard_height;
-    this->camera_.position = (Vector3){ 0.0f, 25.0f, 20.0f };  // Camera position
-    this->camera_.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
-    this->camera_.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
-    this->camera_.fovy = 45.0f;                                // Camera field-of-view Y
-    this->camera_.projection = CAMERA_PERSPECTIVE;             // Camera mode type
+    this->camera_.position = (Vector3){ 0.0f, 25.0f, 20.0f };
+    this->camera_.target = (Vector3){ 0.0f, 0.0f, 0.0f };
+    this->camera_.up = (Vector3){ 0.0f, 1.0f, 0.0f };
+    this->camera_.fovy = 45.0f;
+    this->camera_.projection = CAMERA_PERSPECTIVE;
 
     SetTraceLogLevel(LOG_WARNING);
     InitWindow(
@@ -37,20 +37,16 @@ void RaylibGUIWindow::add_event_listener_key_down(nibbler::IWindow::KeyDownCallb
     this->key_down_callbacks_.push_back(cb);
 }
 
-void RaylibGUIWindow::add_event_listener_key_up(nibbler::IWindow::KeyUpCallback cb) {
-    //TODO:
-}
+void RaylibGUIWindow::add_event_listener_key_up(nibbler::IWindow::KeyUpCallback cb) { }
 
-void RaylibGUIWindow::add_event_listener_key_press(nibbler::IWindow::KeyPressCallback cb) {
-    //TODO:
-}
+void RaylibGUIWindow::add_event_listener_key_press(nibbler::IWindow::KeyPressCallback cb) { }
 
 void RaylibGUIWindow::draw_border() {
-
+    // No need to implement border, it's 3D
 }
 
 void RaylibGUIWindow::clear_screen() {
-    //ClearBackground(RAYWHITE);
+    // This is done in the render function. This is how the library works
 }
 
 void RaylibGUIWindow::read_input() {
@@ -103,7 +99,7 @@ void RaylibGUIWindow::push_message(const std::string& msg) {
 }
 
 void RaylibGUIWindow::set_score(int score) {
-
+    this->score_ = score;
 }
 
 void RaylibGUIWindow::render() {
@@ -132,8 +128,7 @@ void RaylibGUIWindow::render() {
 
     this->camera_.target =  Vector3Add(this->camera_.target, Vector3Scale(Vector3Subtract(headV3, this->camera_.target), 0.04f));
     this->camera_.position.x = this->camera_.target.x;
-    //this->camera_.position.z = this->camera_.target.z;
-    //this->camera_.position += Vector3Add(this->camera_.position, Vector3Scale(Vector3Subtract(headV3, this->camera_.position), 0.01f));
+    this->camera_.position.z = this->camera_.target.z + 15;
 
     for (const nibbler::Position& segment : this->snake_) {
         Vector3 cubePosition = {
@@ -141,8 +136,8 @@ void RaylibGUIWindow::render() {
             0.5f,
             static_cast<float>(segment.y)
         };
-        DrawCube(cubePosition, 1.0f, 1.0f, 1.0f, LIME);
-        DrawCubeWires(cubePosition, 1.0f, 1.0f, 1.0f, GREEN);
+        DrawCube(cubePosition, 1.0f, 1.0f, 1.0f, BLUE);
+        DrawCubeWires(cubePosition, 1.0f, 1.0f, 1.0f, SKYBLUE);
     }
 
     Vector3 fruiPosition = {
@@ -154,13 +149,13 @@ void RaylibGUIWindow::render() {
     DrawCubeWires(fruiPosition, 1.0f, 1.0f, 1.0f, MAROON);
 
     EndMode3D();
-    DrawFPS(10, 10);
+    DrawText(TextFormat("Score: %i", this->score_), 20, 20, 20, ORANGE);
 
     EndDrawing();
 }
 
 std::pair<int, int> RaylibGUIWindow::get_window_size() {
-
+    return std::make_pair(GetScreenWidth(), GetScreenWidth());
 }
 
 RaylibGUI::RaylibGUI() {}

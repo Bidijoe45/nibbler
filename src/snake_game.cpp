@@ -104,8 +104,6 @@ void SnakeGame::switch_gui()
     if (api == this->graphics_apis_.end())
         return;
 
-    std::cout << "create window " << (*api_config).second.resolution_height << std::endl;
-
     this->window_ = nullptr; // Destroy the current GUI before constructing the new one!
     this->window_ = api->second->create_window(
         (*api_config).second.resolution_width,

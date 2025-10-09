@@ -4,18 +4,23 @@
 #include <SDL3/SDL.h>
 
 #include <iostream>
+#include <numeric>
 
 namespace sdlgui {
 
-SDLGUIWindow::SDLGUIWindow(std::size_t width_squares, std::size_t height_squares, std::string title)
-    : nibbler::IWindow(width_squares, height_squares, std::move(title)),
-      square_size_px_(20), border_size_px(square_size_px_)
+SDLGUIWindow::SDLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title)
+    : nibbler::IWindow(resolution_width, resolution_height, width_squares, height_squares, std::move(title)),
+      width_squares_(width_squares), height_squares_(height_squares)
 {
+    this->square_size_px_ = std::min((resolution_width / width_squares),(resolution_height / height_squares));
+    this->padding_x_ = (resolution_width - (this->square_size_px_ * width_squares)) / 2;
+    this->padding_y_ = (resolution_height - (this->square_size_px_ * height_squares)) / 2;
+
     if (!SDL_CreateWindowAndRenderer(
         title.c_str(),
-        this->square_size_px_ * width_squares + (border_size_px * 2),
-        this->square_size_px_ * height_squares + (border_size_px * 2),
-        0,
+        resolution_width,
+        resolution_height,
+        SDL_WINDOW_RESIZABLE,
         &this->window,
         &this->renderer))
     {
@@ -54,25 +59,25 @@ void SDLGUIWindow::draw_border() {
         0,
         0,
         static_cast<float>(window_size.first),
-        static_cast<float>(border_size_px)
+        static_cast<float>(padding_y_)
     };
     SDL_FRect bottom_border {
         0,
-        static_cast<float>(window_size.second - border_size_px),
+        static_cast<float>(window_size.second - padding_y_),
         static_cast<float>(window_size.first),
-        static_cast<float>(border_size_px)
+        static_cast<float>(padding_y_)
     };
     SDL_FRect left_border {
         0,
-        static_cast<float>(border_size_px),
-        static_cast<float>(border_size_px),
-        static_cast<float>(window_size.second)
+        static_cast<float>(padding_y_),
+        static_cast<float>(padding_x_),
+        static_cast<float>(window_size.first - (padding_y_ * 2))
     };
     SDL_FRect right_border {
-        static_cast<float>(window_size.first - border_size_px),
-        static_cast<float>(border_size_px),
-        static_cast<float>(border_size_px),
-        static_cast<float>(window_size.second)
+        static_cast<float>(window_size.first - padding_x_),
+        static_cast<float>(padding_y_),
+        static_cast<float>(padding_x_),
+        static_cast<float>(window_size.second - (padding_x_ * 2))
     };
 
     SDL_RenderFillRect(this->renderer, &top_border);
@@ -99,6 +104,13 @@ void SDLGUIWindow::read_input() {
             callback(nibbler::Key::ESC);
             break;
         }
+        else if (e.type == SDL_EVENT_WINDOW_RESIZED) {
+            std::pair<int, int> res = this->get_window_size();
+            this->square_size_px_ = std::min((res.first / this->width_squares_),(res.second / this->height_squares_));
+            this->padding_x_ = (res.first - (this->square_size_px_ * this->width_squares_)) / 2;
+            this->padding_y_ = (res.second - (this->square_size_px_ * this->height_squares_)) / 2;
+        }
+
         switch (e.key.key)
         {
             case SDLK_ESCAPE: callback(nibbler::Key::ESC); break;
@@ -127,8 +139,8 @@ void SDLGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake) {
     SDL_SetRenderDrawColor(this->renderer, 163, 177, 138, 255);
 
     for (const nibbler::Position& p : snake) {
-        float x = static_cast<float>(p.x * this->square_size_px_) + this->border_size_px;
-        float y = static_cast<float>(p.y * this->square_size_px_) + this->border_size_px;
+        float x = static_cast<float>(p.x * this->square_size_px_) + this->padding_x_;
+        float y = static_cast<float>(p.y * this->square_size_px_) + this->padding_y_;
         float width = static_cast<float>(this->square_size_px_);
         float height = static_cast<float>(this->square_size_px_);
         SDL_FRect body_square {x, y, width, height};
@@ -140,8 +152,8 @@ void SDLGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake) {
 void SDLGUIWindow::draw_fruit(const nibbler::Position& fruit_pos) {
     std::pair<int, int> window_size = get_window_size();
     SDL_SetRenderDrawColor(this->renderer, 188, 71, 73, 255);
-    float x = static_cast<float>(fruit_pos.x * this->square_size_px_) + this->border_size_px;
-    float y = static_cast<float>(fruit_pos.y * this->square_size_px_) + this->border_size_px;
+    float x = static_cast<float>(fruit_pos.x * this->square_size_px_) + this->padding_x_;
+    float y = static_cast<float>(fruit_pos.y * this->square_size_px_) + this->padding_y_;
     float width = static_cast<float>(this->square_size_px_);
     float height = static_cast<float>(this->square_size_px_);
     SDL_FRect fruit_square {x, y, width, height};
@@ -173,8 +185,8 @@ SDLGUI::SDLGUI() {}
 SDLGUI::~SDLGUI() {}
 
 std::unique_ptr<nibbler::IWindow>
-SDLGUI::create_window(std::size_t width_squares, std::size_t height_squares, std::string title) {
-    return std::make_unique<SDLGUIWindow>(width_squares, height_squares, std::move(title));
+SDLGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title) {
+    return std::make_unique<SDLGUIWindow>(resolution_width, resolution_height, width_squares, height_squares, std::move(title));
 }
 
 }

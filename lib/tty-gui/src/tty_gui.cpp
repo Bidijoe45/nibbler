@@ -17,8 +17,8 @@ termios TTYGUIWindow::orig_termios;
 int TTYGUIWindow::score_rows = 1;
 int TTYGUIWindow::messages_rows = 3;
 
-TTYGUIWindow::TTYGUIWindow(std::size_t width_squares, std::size_t height_squares, std::string title)
-    : nibbler::IWindow(width_squares, height_squares, std::move(title))
+TTYGUIWindow::TTYGUIWindow(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title)
+    : nibbler::IWindow(resolution_width, resolution_height, width_squares, height_squares, std::move(title))
 {
     std::atexit(TTYGUIWindow::restore_terminal);
     std::signal(SIGWINCH, TTYGUIWindow::handle_resize);
@@ -242,8 +242,8 @@ TTYGUI::TTYGUI() {}
 TTYGUI::~TTYGUI() {}
 
 std::unique_ptr<nibbler::IWindow>
-TTYGUI::create_window(std::size_t width_squares, std::size_t height_squares, std::string title) {
-    return std::make_unique<TTYGUIWindow>(width_squares, height_squares, std::move(title));
+TTYGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title) {
+    return std::make_unique<TTYGUIWindow>(resolution_width, resolution_height, width_squares, height_squares, std::move(title));
 }
 
 }

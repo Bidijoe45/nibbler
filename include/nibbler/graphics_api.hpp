@@ -37,14 +37,18 @@ public:
     virtual void push_message(const std::string &msg) = 0;
 
 protected:
-    inline IWindow(size_t width_squares, size_t height_squares, std::string title) {}
+    inline IWindow(size_t resolution_width, size_t resolution_height, size_t width_squares, size_t height_squares, std::string title)
+        : resolution_height_(resolution_height), resolution_width_(resolution_width) {}
+
+    size_t resolution_width_ = 0;
+    size_t resolution_height_ = 0;
 };
 
 class INibblerGraphicsApi {
 
 public:
     inline virtual ~INibblerGraphicsApi() {};
-    virtual std::unique_ptr<IWindow> create_window(size_t width_squares, size_t height_squares, std::string title) = 0;
+    virtual std::unique_ptr<IWindow> create_window(size_t resolution_width, size_t resolution_height, size_t width_squares, size_t height_squares, std::string title) = 0;
 };
 
 typedef INibblerGraphicsApi* (*INibblerGraphicsApiConstructor)();

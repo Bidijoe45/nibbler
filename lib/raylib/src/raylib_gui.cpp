@@ -8,12 +8,12 @@
 
 namespace raylibgui {
 
-RaylibGUIWindow::RaylibGUIWindow(std::size_t width_squares, std::size_t height_squares, std::string title)
-    : nibbler::IWindow(width_squares, height_squares, std::move(title)),
+RaylibGUIWindow::RaylibGUIWindow(size_t resolution_width, size_t resolution_height, std::size_t gameboard_width, std::size_t gameboard_height, std::string title)
+    : nibbler::IWindow(resolution_width, resolution_height, gameboard_width, gameboard_height, std::move(title)),
       square_size_px_(20), border_size_px(square_size_px_)
 {
-    this->width_squares_ = width_squares;
-    this->height_squares_ = height_squares;
+    this->gameboard_width_ = gameboard_width;
+    this->gameboard_height_ = gameboard_height;
     this->camera_.position = (Vector3){ 0.0f, 25.0f, 20.0f };  // Camera position
     this->camera_.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
     this->camera_.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
@@ -22,8 +22,8 @@ RaylibGUIWindow::RaylibGUIWindow(std::size_t width_squares, std::size_t height_s
 
     SetTraceLogLevel(LOG_WARNING);
     InitWindow(
-        this->width_squares_ * this->square_size_px_,
-        this->height_squares_ * this->square_size_px_,
+        this->resolution_width_,
+        this->resolution_height_,
         title.c_str());
     SetWindowFocused();
 }
@@ -113,8 +113,8 @@ void RaylibGUIWindow::render() {
 
     // Grid
     Vector3 gridCellV3 = { 0, 0, 0.0f };
-    for (int x=0; x < width_squares_; x++) {
-        for (int y=0; y < height_squares_; y++) {
+    for (int x=0; x < gameboard_width_; x++) {
+        for (int y=0; y < gameboard_height_; y++) {
             gridCellV3.x = x;
             gridCellV3.z = y;
 
@@ -167,8 +167,8 @@ RaylibGUI::RaylibGUI() {}
 RaylibGUI::~RaylibGUI() {}
 
 std::unique_ptr<nibbler::IWindow>
-RaylibGUI::create_window(std::size_t width_squares, std::size_t height_squares, std::string title) {
-    return std::make_unique<RaylibGUIWindow>(width_squares, height_squares, std::move(title));
+RaylibGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title) {
+    return std::make_unique<RaylibGUIWindow>(resolution_width, resolution_height, width_squares, height_squares, std::move(title));
 }
 
 }

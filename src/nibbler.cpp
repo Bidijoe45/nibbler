@@ -20,6 +20,7 @@ int Nibbler::start() {
 
     std::vector<std::unique_ptr<DynamicLib>> libs;
     std::map<Key, GraphicsApiSharedPtr> gui_instances;
+    std::map<Key, ConfigLibrary> gui_config_instances;
     for (const auto &lib_config : this->config_.gui_libraries)
     {
         std::cout << "Loading " << lib_config.name << ", key: " << lib_config.key << std::endl;
@@ -70,11 +71,12 @@ int Nibbler::start() {
 
         GraphicsApiSharedPtr graphics_api(gui_api_constructor(), gui_api_destructor);
         gui_instances.insert(std::make_pair(key, graphics_api));
+        gui_config_instances.insert(std::make_pair(key, lib_config));
 
         libs.push_back(std::move(lib)); // store the libs to avoid them being destroyed every turn of the loop
     }
 
-    SnakeGame game(this->config_, gui_instances);
+    SnakeGame game(this->config_, gui_instances, gui_config_instances);
     return game.run();
 }
 

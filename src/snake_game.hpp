@@ -22,7 +22,9 @@ class SnakeGame {
 public:
     SnakeGame(
         Configuration config,
-        const std::map<Key, GraphicsApiSharedPtr> &graphics_apis);
+        const std::map<Key, GraphicsApiSharedPtr> &graphics_apis,
+        const std::map<Key, ConfigLibrary> &graphics_apis_configs
+    );
 
     ~SnakeGame();
 
@@ -36,6 +38,7 @@ private:
 
     Configuration config_;
     std::map<Key, GraphicsApiSharedPtr> graphics_apis_;
+    std::map<Key, ConfigLibrary> graphics_apis_configs_;
     std::unique_ptr<IWindow> window_;
     Key current_gui_;
 

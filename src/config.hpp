@@ -11,12 +11,14 @@ struct ConfigLibrary {
     std::string key;
     std::string name;
     std::string path;
+    size_t resolution_width;
+    size_t resolution_height;
 };
 
 struct Configuration {
     // These come from the CLI
-    size_t gameboard_width_squares = 30;
-    size_t gameboard_height_squares = 30;
+    size_t gameboard_width_squares = 0;
+    size_t gameboard_height_squares = 0;
 
     // These come from the config file
     std::vector<ConfigLibrary> gui_libraries;

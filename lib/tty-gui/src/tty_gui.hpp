@@ -14,12 +14,7 @@ namespace ttygui {
 
 class TTYGUIWindow : public nibbler::IWindow {
 public:
-    // TODO: this gui does not seem to need the width and height because they are deduced from the
-    // TODO: terminal size. perhaps we could remove them from the constructor (remove them from
-    // TODO: the IWindow constructor too, since the IWindow does not need them either, it is an
-    // TODO: implementation variable and it is up to the implementation to decide what it wants
-    // TODO: and where to store it I think????).  It does not seem to use the title either.
-    TTYGUIWindow(std::size_t width_squares, std::size_t height_squares, std::string title);
+    TTYGUIWindow(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title);
     ~TTYGUIWindow();
 
     void add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) override;
@@ -63,7 +58,7 @@ public:
     ~TTYGUI();
 
     std::unique_ptr<nibbler::IWindow>
-    create_window(std::size_t width_squares, std::size_t height_squares, std::string title) override;
+    create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title) override;
 };
 
 } 

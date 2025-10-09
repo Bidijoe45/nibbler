@@ -10,7 +10,7 @@ namespace sdlgui {
 
 class SDLGUIWindow : public nibbler::IWindow {
 public:
-    SDLGUIWindow(std::size_t width_squares, std::size_t height_squares, std::string title);
+    SDLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title);
     ~SDLGUIWindow();
 
     void add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) override;
@@ -31,8 +31,12 @@ private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
-    const int square_size_px_;
-    const int border_size_px;
+
+    int width_squares_;
+    int height_squares_;
+    int square_size_px_;
+    int padding_x_;
+    int padding_y_;
 };
 
 class SDLGUI : public nibbler::INibblerGraphicsApi {
@@ -41,7 +45,7 @@ class SDLGUI : public nibbler::INibblerGraphicsApi {
         ~SDLGUI();
 
     std::unique_ptr<nibbler::IWindow>
-    create_window(std::size_t width_squares, std::size_t height_squares, std::string title) override;
+    create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title) override;
 };
 
 }

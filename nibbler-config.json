@@ -3,22 +3,38 @@
         {
             "key": "1",
             "name": "SDL_GUI",
-            "path": "build/lib/sdl/libSDL_GUI.dylib"
+            "path": "build/lib/sdl/libSDL_GUI.dylib",
+            "resolution": {
+                "width": 640,
+                "height": 480
+            }
         },
         {
             "key": "2",
             "name": "RAYLIB_GUI",
-            "path": "build/lib/raylib/libRAYLIB_GUI.dylib"
+            "path": "build/lib/raylib/libRAYLIB_GUI.dylib",
+            "resolution": {
+                "width": 640,
+                "height": 480
+            }
         },
         {
             "key": "3",
             "name": "SFML_GUI",
-            "path": "build/lib/sfml/libSFML_GUI.dylib"
+            "path": "build/lib/sfml/libSFML_GUI.dylib",
+            "resolution": {
+                "width": 640,
+                "height": 480
+            }
         },
         {
             "key": "4",
             "name": "TTY_GUI",
-            "path": "build/lib/tty-gui/libTTY_GUI.dylib"
+            "path": "build/lib/tty-gui/libTTY_GUI.dylib",
+            "resolution": {
+                "width": 640,
+                "height": 480
+            }
         }
     ]
 }

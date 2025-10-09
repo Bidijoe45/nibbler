@@ -6,8 +6,8 @@
 
 namespace sfmlgui {
 
-SFMLGUIWindow::SFMLGUIWindow(size_t width_squares, size_t height_squares, std::string title)
-    : nibbler::IWindow(width_squares, height_squares, std::move(title)),
+SFMLGUIWindow::SFMLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, size_t width_squares, size_t height_squares, std::string title)
+    : nibbler::IWindow(resolution_width, resolution_height, width_squares, height_squares, std::move(title)),
       square_size_px_(20),
       border_size_px_(square_size_px_)
 {
@@ -146,9 +146,9 @@ void SFMLGUIWindow::push_message(const std::string &msg)
 SFMLGUI::SFMLGUI() {}
 SFMLGUI::~SFMLGUI() {}
 
-std::unique_ptr<nibbler::IWindow> SFMLGUI::create_window(std::size_t width_squares, std::size_t height_squares, std::string title)
+std::unique_ptr<nibbler::IWindow> SFMLGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title)
 {
-    return std::make_unique<SFMLGUIWindow>(width_squares, height_squares, std::move(title));
+    return std::make_unique<SFMLGUIWindow>(resolution_width, resolution_height, width_squares, height_squares, std::move(title));
 }
 
 } // namespace sfmlgui

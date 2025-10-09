@@ -6,9 +6,11 @@
 namespace nibbler {
 SnakeGame::SnakeGame(
     Configuration config,
-    const std::map<Key, GraphicsApiSharedPtr> &graphics_apis
+    const std::map<Key, GraphicsApiSharedPtr> &graphics_apis,
+    const std::map<Key, ConfigLibrary> &graphics_apis_configs
 ) : config_(config),
     graphics_apis_(graphics_apis),
+    graphics_apis_configs_(graphics_apis_configs),
     fruit_factory_(config_.gameboard_width_squares, config_.gameboard_height_squares)
 {
     if (!graphics_apis.empty())
@@ -98,11 +100,16 @@ void SnakeGame::update(double delta_time) {
 void SnakeGame::switch_gui()
 {
     auto api = this->graphics_apis_.find(this->current_gui_);
+    auto api_config = this->graphics_apis_configs_.find(this->current_gui_);
     if (api == this->graphics_apis_.end())
         return;
 
+    std::cout << "create window " << (*api_config).second.resolution_height << std::endl;
+
     this->window_ = nullptr; // Destroy the current GUI before constructing the new one!
     this->window_ = api->second->create_window(
+        (*api_config).second.resolution_width,
+        (*api_config).second.resolution_height,
         this->config_.gameboard_width_squares,
         this->config_.gameboard_height_squares,
         "Nibbler");

@@ -14,13 +14,14 @@ RaylibGUIWindow::RaylibGUIWindow(size_t resolution_width, size_t resolution_heig
 {
     this->gameboard_width_ = gameboard_width;
     this->gameboard_height_ = gameboard_height;
-    this->camera_.position = (Vector3){ 0.0f, 25.0f, 20.0f };
+    this->camera_.position = (Vector3){ 0.0f, 25.0f, 30.0f };
     this->camera_.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     this->camera_.up = (Vector3){ 0.0f, 1.0f, 0.0f };
-    this->camera_.fovy = 45.0f;
+    this->camera_.fovy = 60.0f;
     this->camera_.projection = CAMERA_PERSPECTIVE;
 
     SetTraceLogLevel(LOG_WARNING);
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(
         this->resolution_width_,
         this->resolution_height_,

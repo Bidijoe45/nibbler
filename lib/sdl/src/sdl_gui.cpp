@@ -71,13 +71,13 @@ void SDLGUIWindow::draw_border() {
         0,
         static_cast<float>(padding_y_),
         static_cast<float>(padding_x_),
-        static_cast<float>(window_size.first - (padding_y_ * 2))
+        static_cast<float>(window_size.second - (padding_y_ * 2))
     };
     SDL_FRect right_border {
         static_cast<float>(window_size.first - padding_x_),
         static_cast<float>(padding_y_),
         static_cast<float>(padding_x_),
-        static_cast<float>(window_size.second - (padding_x_ * 2))
+        static_cast<float>(window_size.second - (padding_y_ * 2))
     };
 
     SDL_RenderFillRect(this->renderer, &top_border);

@@ -27,8 +27,7 @@ class SFMLGUIWindow : public nibbler::IWindow {
     private:
         sf::RenderWindow window_;
         std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
-        const int square_size_px_;
-        const int border_size_px_;
+        int square_size_px_;
 };
 
 class SFMLGUI : public nibbler::INibblerGraphicsApi {

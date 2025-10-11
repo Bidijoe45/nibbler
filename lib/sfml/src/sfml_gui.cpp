@@ -7,10 +7,11 @@
 namespace sfmlgui {
 
 SFMLGUIWindow::SFMLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, size_t width_squares, size_t height_squares, std::string title)
-    : nibbler::IWindow(resolution_width, resolution_height, width_squares, height_squares, std::move(title)),
-      square_size_px_(20),
-      border_size_px_(square_size_px_)
+    : nibbler::IWindow(resolution_width, resolution_height, width_squares, height_squares, std::move(title))
 {
+    this->square_size_px_ = std::min((resolution_width / width_squares),
+                                     (resolution_height / height_squares));
+
     this->window_.create(
         sf::VideoMode({
             static_cast<unsigned int>(square_size_px_ * width_squares),
@@ -44,7 +45,7 @@ void SFMLGUIWindow::add_event_listener_key_press(KeyPressCallback callback)
 
 void SFMLGUIWindow::clear_screen()
 {
-    this->window_.clear();
+    this->window_.clear(sf::Color(250, 150, 100));
 }
 
 void SFMLGUIWindow::read_input()
@@ -115,20 +116,34 @@ void SFMLGUIWindow::read_input()
 
 void SFMLGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake)
 {
-    sf::CircleShape shape(50.f);
-    shape.setFillColor(sf::Color(150, 50, 250));
-    this->window_.draw(shape);
-
+    for (const nibbler::Position &p : snake)
+    {
+        sf::RectangleShape square({
+            static_cast<float>(this->square_size_px_),
+            static_cast<float>(this->square_size_px_)});
+        square.setFillColor(sf::Color(150, 50, 250));
+        square.setPosition({static_cast<float>(p.x * this->square_size_px_),
+                            static_cast<float>(p.y * this->square_size_px_)});
+        square.setOutlineThickness(0.f);
+        this->window_.draw(square);
+    }
 }
 
 void SFMLGUIWindow::draw_fruit(const nibbler::Position& fruit_pos)
 {
-
+    sf::RectangleShape fruit({
+            static_cast<float>(this->square_size_px_),
+            static_cast<float>(this->square_size_px_)});
+    fruit.setFillColor(sf::Color(188, 71, 73));
+    fruit.setPosition({static_cast<float>(fruit_pos.x * this->square_size_px_),
+                        static_cast<float>(fruit_pos.y * this->square_size_px_)});
+    fruit.setOutlineThickness(0.f);
+    this->window_.draw(fruit);
 }
 
 void SFMLGUIWindow::set_score(int score)
 {
-
+    // TODO:
 }
 
 void SFMLGUIWindow::render()
@@ -138,7 +153,7 @@ void SFMLGUIWindow::render()
 
 void SFMLGUIWindow::push_message(const std::string &msg)
 {
-
+    // TODO:
 }
 
 

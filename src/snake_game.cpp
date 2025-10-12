@@ -110,6 +110,7 @@ void SnakeGame::switch_gui()
         (*api_config).second.resolution_height,
         this->config_.gameboard_width_squares,
         this->config_.gameboard_height_squares,
+        (*api_config).second.font_path,
         "Nibbler");
 
     this->window_->add_event_listener_key_down(std::bind(&SnakeGame::on_key_down, this, std::placeholders::_1));

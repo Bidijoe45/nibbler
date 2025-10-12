@@ -11,8 +11,6 @@ set(SRCS
 
 set(CMAKE_CXX_FLAGS, "g")
 
-configure_file("../nibbler-config.json" "nibbler-config.json")
-
 add_library(${NIBBLER_MAIN_LIB} ${SRCS})
 target_link_libraries(${NIBBLER_MAIN_LIB} PRIVATE JSONParser)
 target_include_directories(${NIBBLER_MAIN_LIB} PUBLIC

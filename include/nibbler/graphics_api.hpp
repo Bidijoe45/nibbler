@@ -48,7 +48,7 @@ class INibblerGraphicsApi {
 
 public:
     inline virtual ~INibblerGraphicsApi() {};
-    virtual std::unique_ptr<IWindow> create_window(size_t resolution_width, size_t resolution_height, size_t width_squares, size_t height_squares, std::string title) = 0;
+    virtual std::unique_ptr<IWindow> create_window(size_t resolution_width, size_t resolution_height, size_t width_squares, size_t height_squares, std::string font_path, std::string title) = 0;
 };
 
 typedef INibblerGraphicsApi* (*INibblerGraphicsApiConstructor)();

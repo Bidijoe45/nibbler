@@ -66,6 +66,7 @@ Configuration ConfigParser::parseConfigFile(const std::string &file_path) {
             return config;
         }
 
+        // TODO: add these mins (or maxes) should be in some sort of constant, and should be checked when RESIZING the windows too!!
         if (element["resolution"]["width"] <= 63 || element["resolution"]["height"] <= 63) {
             std::cout << "ERROR|> config file: resolution widht or height must be >= 64" << file_path << std::endl;
             return config;
@@ -77,6 +78,8 @@ Configuration ConfigParser::parseConfigFile(const std::string &file_path) {
         lib.path = std::string(element["path"]);
         lib.resolution_height = element["resolution"]["height"];
         lib.resolution_width = element["resolution"]["width"];
+        if (element.contains("font_path"))
+            lib.font_path = std::string(element["font_path"]);
 
         config.gui_libraries.push_back(lib);
     }

@@ -32,8 +32,8 @@ private:
     SDL_Renderer* renderer;
     std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
 
-    int width_squares_;
-    int height_squares_;
+    const int width_squares_;
+    const int height_squares_;
     int square_size_px_;
     int padding_x_;
     int padding_y_;
@@ -45,7 +45,7 @@ class SDLGUI : public nibbler::INibblerGraphicsApi {
         ~SDLGUI();
 
     std::unique_ptr<nibbler::IWindow>
-    create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title) override;
+    create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) override;
 };
 
 }

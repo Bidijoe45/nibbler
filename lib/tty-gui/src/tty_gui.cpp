@@ -242,7 +242,7 @@ TTYGUI::TTYGUI() {}
 TTYGUI::~TTYGUI() {}
 
 std::unique_ptr<nibbler::IWindow>
-TTYGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title) {
+TTYGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) {
     return std::make_unique<TTYGUIWindow>(resolution_width, resolution_height, width_squares, height_squares, std::move(title));
 }
 

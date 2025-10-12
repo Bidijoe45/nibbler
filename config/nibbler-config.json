@@ -22,6 +22,7 @@
             "key": "3",
             "name": "SFML_GUI",
             "path": "build/lib/sfml/libSFML_GUI.dylib",
+            "font_path": "config/Technology.ttf",
             "resolution": {
                 "width": 640,
                 "height": 480

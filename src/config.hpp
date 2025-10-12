@@ -11,6 +11,7 @@ struct ConfigLibrary {
     std::string key;
     std::string name;
     std::string path;
+    std::string font_path;
     size_t resolution_width;
     size_t resolution_height;
 };

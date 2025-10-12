@@ -163,7 +163,7 @@ RaylibGUI::RaylibGUI() {}
 RaylibGUI::~RaylibGUI() {}
 
 std::unique_ptr<nibbler::IWindow>
-RaylibGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title) {
+RaylibGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) {
     return std::make_unique<RaylibGUIWindow>(resolution_width, resolution_height, width_squares, height_squares, std::move(title));
 }
 

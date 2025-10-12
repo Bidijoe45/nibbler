@@ -1,23 +1,31 @@
-#include "nibbler/graphics_api.hpp"
 #include "sfml_gui.hpp"
+#include "nibbler/graphics_api.hpp"
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 
 #include <iostream>
-#include <SFML/Window.hpp>
 
 namespace sfmlgui {
 
-SFMLGUIWindow::SFMLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, size_t width_squares, size_t height_squares, std::string title)
-    : nibbler::IWindow(resolution_width, resolution_height, width_squares, height_squares, std::move(title))
+SFMLGUIWindow::SFMLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, size_t width_squares, size_t height_squares, std::string font_path, std::string title)
+    : nibbler::IWindow(resolution_width, resolution_height, width_squares, height_squares, std::move(title)),
+      width_squares_(width_squares), height_squares_(height_squares)
 {
-    this->square_size_px_ = std::min((resolution_width / width_squares),
-                                     (resolution_height / height_squares));
+    this->square_width_px_ = static_cast<float>(resolution_width) / width_squares;
+    this->square_height_px_ = static_cast<float>(resolution_height) / height_squares;
+
+    if (!this->font_.openFromFile(font_path))
+    {
+        // FIXME: throw or something
+        std::cerr << "Error while loading font from " << font_path << std::endl;
+    }
 
     this->window_.create(
         sf::VideoMode({
-            static_cast<unsigned int>(square_size_px_ * width_squares),
-            static_cast<unsigned int>(square_size_px_ * height_squares)}),
+            static_cast<unsigned int>(resolution_width),
+            static_cast<unsigned int>(resolution_height)}),
         title,
-        sf::Style::Close | sf::Style::Titlebar,
+        sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize,
         sf::State::Windowed);
 
     this->window_.setKeyRepeatEnabled(false);
@@ -52,13 +60,23 @@ void SFMLGUIWindow::read_input()
 {
     while (const std::optional event = this->window_.pollEvent())
     {
+        if (const auto *resized = event->getIf<sf::Event::Resized>())
+        {
+            sf::Vector2u res = this->window_.getSize();
+            // Reset GUI view to avoid default stretching
+            sf::FloatRect visibleArea({0.f, 0.f}, {static_cast<float>(res.x), static_cast<float>(res.y)});
+            this->window_.setView(sf::View(visibleArea));
+            // Update square size
+            this->square_width_px_ = static_cast<float>(res.x) / this->width_squares_;
+            this->square_height_px_ = static_cast<float>(res.y) / this->height_squares_;
+        }
         for (auto &callback : this->key_down_callbacks_)
         {
             if (event->is<sf::Event::Closed>())
             {
                 callback(nibbler::Key::ESC);
             }
-            if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>())
+            else if (const auto *keyPressed = event->getIf<sf::Event::KeyPressed>())
             {
                 switch (keyPressed->code)
                 {
@@ -119,11 +137,11 @@ void SFMLGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake)
     for (const nibbler::Position &p : snake)
     {
         sf::RectangleShape square({
-            static_cast<float>(this->square_size_px_),
-            static_cast<float>(this->square_size_px_)});
+            this->square_width_px_,
+            this->square_height_px_});
         square.setFillColor(sf::Color(150, 50, 250));
-        square.setPosition({static_cast<float>(p.x * this->square_size_px_),
-                            static_cast<float>(p.y * this->square_size_px_)});
+        square.setPosition({p.x * this->square_width_px_,
+                            p.y * this->square_height_px_});
         square.setOutlineThickness(0.f);
         this->window_.draw(square);
     }
@@ -132,18 +150,22 @@ void SFMLGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake)
 void SFMLGUIWindow::draw_fruit(const nibbler::Position& fruit_pos)
 {
     sf::RectangleShape fruit({
-            static_cast<float>(this->square_size_px_),
-            static_cast<float>(this->square_size_px_)});
+            this->square_width_px_,
+            this->square_height_px_});
     fruit.setFillColor(sf::Color(188, 71, 73));
-    fruit.setPosition({static_cast<float>(fruit_pos.x * this->square_size_px_),
-                        static_cast<float>(fruit_pos.y * this->square_size_px_)});
+    fruit.setPosition({fruit_pos.x * this->square_width_px_,
+                        fruit_pos.y * this->square_height_px_});
     fruit.setOutlineThickness(0.f);
     this->window_.draw(fruit);
 }
 
 void SFMLGUIWindow::set_score(int score)
 {
-    // TODO:
+    sf::Text score_text(this->font_);
+    score_text.setString("Score: " + std::to_string(score));
+    score_text.setCharacterSize(std::max(this->window_.getSize().x / 25, this->window_.getSize().y / 25));
+    score_text.setFillColor(sf::Color::Black);
+    this->window_.draw(score_text);
 }
 
 void SFMLGUIWindow::render()
@@ -156,14 +178,12 @@ void SFMLGUIWindow::push_message(const std::string &msg)
     // TODO:
 }
 
-
-
 SFMLGUI::SFMLGUI() {}
 SFMLGUI::~SFMLGUI() {}
 
-std::unique_ptr<nibbler::IWindow> SFMLGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title)
+std::unique_ptr<nibbler::IWindow> SFMLGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title)
 {
-    return std::make_unique<SFMLGUIWindow>(resolution_width, resolution_height, width_squares, height_squares, std::move(title));
+    return std::make_unique<SFMLGUIWindow>(resolution_width, resolution_height, width_squares, height_squares, font_path, std::move(title));
 }
 
 } // namespace sfmlgui

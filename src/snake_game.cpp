@@ -108,6 +108,7 @@ void SnakeGame::switch_gui()
     this->window_ = api->second->create_window(
         (*api_config).second.resolution_width,
         (*api_config).second.resolution_height,
+        this->config_.min_resolution,
         this->config_.gameboard_width_squares,
         this->config_.gameboard_height_squares,
         (*api_config).second.font_path,

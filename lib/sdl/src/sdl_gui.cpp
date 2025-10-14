@@ -8,8 +8,8 @@
 
 namespace sdlgui {
 
-SDLGUIWindow::SDLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title)
-    : nibbler::IWindow(resolution_width, resolution_height, width_squares, height_squares, std::move(title)),
+SDLGUIWindow::SDLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string title)
+    : nibbler::IWindow(resolution_width, resolution_height, min_resolution, width_squares, height_squares, std::move(title)),
       width_squares_(width_squares), height_squares_(height_squares)
 {
     this->square_size_px_ = std::min((resolution_width / width_squares),(resolution_height / height_squares));
@@ -106,6 +106,13 @@ void SDLGUIWindow::read_input() {
         }
         else if (e.type == SDL_EVENT_WINDOW_RESIZED) {
             std::pair<int, int> res = this->get_window_size();
+
+            if (res.first < this->min_resolution_)
+                res.first = this->min_resolution_;
+            if (res.second < this->min_resolution_)
+                res.second = this->min_resolution_;
+            SDL_SetWindowSize(this->window, res.first, res.second);
+
             this->square_size_px_ = std::min((res.first / this->width_squares_),(res.second / this->height_squares_));
             this->padding_x_ = (res.first - (this->square_size_px_ * this->width_squares_)) / 2;
             this->padding_y_ = (res.second - (this->square_size_px_ * this->height_squares_)) / 2;
@@ -185,8 +192,8 @@ SDLGUI::SDLGUI() {}
 SDLGUI::~SDLGUI() {}
 
 std::unique_ptr<nibbler::IWindow>
-SDLGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) {
-    return std::make_unique<SDLGUIWindow>(resolution_width, resolution_height, width_squares, height_squares, std::move(title));
+SDLGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) {
+    return std::make_unique<SDLGUIWindow>(resolution_width, resolution_height, min_resolution, width_squares, height_squares, std::move(title));
 }
 
 }

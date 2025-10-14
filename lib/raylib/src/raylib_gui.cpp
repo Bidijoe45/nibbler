@@ -8,8 +8,8 @@
 
 namespace raylibgui {
 
-RaylibGUIWindow::RaylibGUIWindow(size_t resolution_width, size_t resolution_height, std::size_t gameboard_width, std::size_t gameboard_height, std::string title)
-    : nibbler::IWindow(resolution_width, resolution_height, gameboard_width, gameboard_height, std::move(title)),
+RaylibGUIWindow::RaylibGUIWindow(size_t resolution_width, size_t resolution_height, size_t min_resolution, std::size_t gameboard_width, std::size_t gameboard_height, std::string title)
+    : nibbler::IWindow(resolution_width, resolution_height, min_resolution, gameboard_width, gameboard_height, std::move(title)),
       square_size_px_(20), border_size_px(square_size_px_)
 {
     this->gameboard_width_ = gameboard_width;
@@ -26,6 +26,7 @@ RaylibGUIWindow::RaylibGUIWindow(size_t resolution_width, size_t resolution_heig
         this->resolution_width_,
         this->resolution_height_,
         title.c_str());
+    SetWindowMinSize(this->min_resolution_, this->min_resolution_);
     SetWindowFocused();
 }
 
@@ -38,9 +39,13 @@ void RaylibGUIWindow::add_event_listener_key_down(nibbler::IWindow::KeyDownCallb
     this->key_down_callbacks_.push_back(cb);
 }
 
-void RaylibGUIWindow::add_event_listener_key_up(nibbler::IWindow::KeyUpCallback cb) { }
+void RaylibGUIWindow::add_event_listener_key_up(nibbler::IWindow::KeyUpCallback cb) {
+    //TODO:
+}
 
-void RaylibGUIWindow::add_event_listener_key_press(nibbler::IWindow::KeyPressCallback cb) { }
+void RaylibGUIWindow::add_event_listener_key_press(nibbler::IWindow::KeyPressCallback cb) {
+    //TODO:
+}
 
 void RaylibGUIWindow::draw_border() {
     // No need to implement border, it's 3D
@@ -163,8 +168,8 @@ RaylibGUI::RaylibGUI() {}
 RaylibGUI::~RaylibGUI() {}
 
 std::unique_ptr<nibbler::IWindow>
-RaylibGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) {
-    return std::make_unique<RaylibGUIWindow>(resolution_width, resolution_height, width_squares, height_squares, std::move(title));
+RaylibGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) {
+    return std::make_unique<RaylibGUIWindow>(resolution_width, resolution_height, min_resolution, width_squares, height_squares, std::move(title));
 }
 
 }

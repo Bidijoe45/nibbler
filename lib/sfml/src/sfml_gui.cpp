@@ -7,8 +7,8 @@
 
 namespace sfmlgui {
 
-SFMLGUIWindow::SFMLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, size_t width_squares, size_t height_squares, std::string font_path, std::string title)
-    : nibbler::IWindow(resolution_width, resolution_height, width_squares, height_squares, std::move(title)),
+SFMLGUIWindow::SFMLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, size_t min_resolution, size_t width_squares, size_t height_squares, std::string font_path, std::string title)
+    : nibbler::IWindow(resolution_width, resolution_height, min_resolution, width_squares, height_squares, std::move(title)),
       width_squares_(width_squares), height_squares_(height_squares)
 {
     this->square_width_px_ = static_cast<float>(resolution_width) / width_squares;
@@ -63,6 +63,12 @@ void SFMLGUIWindow::read_input()
         if (const auto *resized = event->getIf<sf::Event::Resized>())
         {
             sf::Vector2u res = this->window_.getSize();
+            if (res.x < this->min_resolution_)
+                res.x = this->min_resolution_;
+            if (res.y < this->min_resolution_)
+                res.y = this->min_resolution_;
+            this->window_.setSize(res);
+
             // Reset GUI view to avoid default stretching
             sf::FloatRect visibleArea({0.f, 0.f}, {static_cast<float>(res.x), static_cast<float>(res.y)});
             this->window_.setView(sf::View(visibleArea));
@@ -181,9 +187,9 @@ void SFMLGUIWindow::push_message(const std::string &msg)
 SFMLGUI::SFMLGUI() {}
 SFMLGUI::~SFMLGUI() {}
 
-std::unique_ptr<nibbler::IWindow> SFMLGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title)
+std::unique_ptr<nibbler::IWindow> SFMLGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title)
 {
-    return std::make_unique<SFMLGUIWindow>(resolution_width, resolution_height, width_squares, height_squares, font_path, std::move(title));
+    return std::make_unique<SFMLGUIWindow>(resolution_width, resolution_height, min_resolution, width_squares, height_squares, font_path, std::move(title));
 }
 
 } // namespace sfmlgui

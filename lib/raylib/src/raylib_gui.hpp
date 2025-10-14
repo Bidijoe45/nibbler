@@ -10,7 +10,7 @@ namespace raylibgui {
 
 class RaylibGUIWindow : public nibbler::IWindow {
 public:
-    RaylibGUIWindow(size_t resolution_width, size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title);
+    RaylibGUIWindow(size_t resolution_width, size_t resolution_height, size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string title);
     ~RaylibGUIWindow();
 
     void add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) override;
@@ -45,7 +45,7 @@ class RaylibGUI : public nibbler::INibblerGraphicsApi {
         ~RaylibGUI();
 
     std::unique_ptr<nibbler::IWindow>
-    create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) override;
+    create_window(std::size_t resolution_width, std::size_t resolution_height, size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) override;
 };
 
 }

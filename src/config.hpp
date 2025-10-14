@@ -25,6 +25,8 @@ struct Configuration {
     std::vector<ConfigLibrary> gui_libraries;
 
     bool valid = false;
+
+    static constexpr size_t min_resolution = 200;
 };
 
 class ConfigParser {

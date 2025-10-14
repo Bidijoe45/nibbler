@@ -17,8 +17,8 @@ termios TTYGUIWindow::orig_termios;
 int TTYGUIWindow::score_rows = 1;
 int TTYGUIWindow::messages_rows = 3;
 
-TTYGUIWindow::TTYGUIWindow(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string title)
-    : nibbler::IWindow(resolution_width, resolution_height, width_squares, height_squares, std::move(title))
+TTYGUIWindow::TTYGUIWindow(std::size_t resolution_width, std::size_t resolution_height, std::size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string title)
+    : nibbler::IWindow(resolution_width, resolution_height, min_resolution, width_squares, height_squares, std::move(title))
 {
     std::atexit(TTYGUIWindow::restore_terminal);
     std::signal(SIGWINCH, TTYGUIWindow::handle_resize);
@@ -189,7 +189,7 @@ nibbler::Key TTYGUIWindow::convert_input_to_key(char ch) {
             break;
 
         case 7:
-            return nibbler::Key::ESC; // FIXME: why is ESC here but also in read_input()?
+            return nibbler::Key::ESC;
             break;
 
         default:
@@ -242,8 +242,8 @@ TTYGUI::TTYGUI() {}
 TTYGUI::~TTYGUI() {}
 
 std::unique_ptr<nibbler::IWindow>
-TTYGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) {
-    return std::make_unique<TTYGUIWindow>(resolution_width, resolution_height, width_squares, height_squares, std::move(title));
+TTYGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) {
+    return std::make_unique<TTYGUIWindow>(resolution_width, resolution_height, min_resolution, width_squares, height_squares, std::move(title));
 }
 
 }

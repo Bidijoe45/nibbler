@@ -20,19 +20,18 @@ void Snake::add_segment(void)
         return;
     }
 
-    const Position &prev_seg_pos = *(this->body.segments.end() - 2);
+    const Position &last_seg_pos = *(this->body.segments.end() - 1);
 
     if (this->body.segments.size() == 1) {
-        this->body.segments.push_back(Position({prev_seg_pos.x - 1, prev_seg_pos.y}));
+        this->body.segments.push_back(Position({last_seg_pos.x - 1, last_seg_pos.y}));
         return;
     }
 
-    const Position &prev_prev_seg_pos = *(this->body.segments.end() - 1);
+    const Position &second_to_last_seg_pos = *(this->body.segments.end() - 2);
 
-    int diff_x = prev_prev_seg_pos.x - prev_seg_pos.x;
-    int diff_y = prev_prev_seg_pos.y - prev_seg_pos.y;
-
-    this->body.segments.push_back(Position({prev_seg_pos.x - diff_x, prev_seg_pos.y - diff_y}));
+    int diff_x = second_to_last_seg_pos.x - last_seg_pos.x;
+    int diff_y = second_to_last_seg_pos.y - last_seg_pos.y;
+    this->body.segments.push_back(Position({last_seg_pos.x - diff_x, last_seg_pos.y - diff_y}));
 }
 
 void Snake::move(double delta_time) {

@@ -34,7 +34,7 @@ public:
 
 private:
     void initialize_game();
-    void switch_gui();
+    bool switch_gui();
 
     Configuration config_;
     std::map<Key, GraphicsApiSharedPtr> graphics_apis_;

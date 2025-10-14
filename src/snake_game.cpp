@@ -16,7 +16,6 @@ SnakeGame::SnakeGame(
     if (!graphics_apis.empty())
     {
         this->current_gui_ = this->graphics_apis_.begin()->first;
-        this->switch_gui(); // create the initial window
     }
 }
 
@@ -98,12 +97,12 @@ void SnakeGame::update(double delta_time) {
     this->window_->render();
 }
 
-void SnakeGame::switch_gui()
+bool SnakeGame::switch_gui()
 {
     auto api = this->graphics_apis_.find(this->current_gui_);
     auto api_config = this->graphics_apis_configs_.find(this->current_gui_);
     if (api == this->graphics_apis_.end())
-        return;
+        return true;
 
     this->window_ = nullptr; // Destroy the current GUI before constructing the new one!
     this->window_ = api->second->create_window(
@@ -115,7 +114,11 @@ void SnakeGame::switch_gui()
         (*api_config).second.font_path,
         "Nibbler");
 
+    if (!this->window_)
+        return false;
+
     this->window_->add_event_listener_key_down(std::bind(&SnakeGame::on_key_down, this, std::placeholders::_1));
+    return true;
 }
 
 int SnakeGame::run() {
@@ -125,6 +128,9 @@ int SnakeGame::run() {
         std::cerr << "Error: no graphics APIs" << std::endl;
         return 1;
     }
+
+    if (!this->switch_gui()) // create the initial window
+        return 1;
 
     const size_t target_frames_per_s = 60;
     const std::chrono::nanoseconds target_frame_duration(std::chrono::nanoseconds(std::chrono::seconds(1)) / target_frames_per_s);
@@ -144,7 +150,8 @@ int SnakeGame::run() {
         this->window_->read_input();
 
         if (this->current_gui_ != prev_gui) {
-            this->switch_gui();
+            if (!this->switch_gui())
+                return 1;
             prev_gui = this->current_gui_;
         }
 

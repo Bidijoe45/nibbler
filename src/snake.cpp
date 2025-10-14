@@ -115,4 +115,10 @@ bool Snake::check_body_collision() {
     return false;
 }
 
+void Snake::increase_speed()
+{
+    if (this->move_interval_s > 0.01)
+        this->move_interval_s -= 0.01;
+}
+
 }

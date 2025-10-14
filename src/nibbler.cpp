@@ -76,8 +76,16 @@ int Nibbler::start() {
         libs.push_back(std::move(lib)); // store the libs to avoid them being destroyed every turn of the loop
     }
 
-    SnakeGame game(this->config_, gui_instances, gui_config_instances);
-    return game.run();
+    try
+    {
+        SnakeGame game(this->config_, gui_instances, gui_config_instances);
+        return game.run();
+    }
+    catch (const std::runtime_error &e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
 }
 
 }

@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     }
 
     if (game_height_squares < 5 || game_width_squares < 5) {
-        std::cout << "ERROR | arguments: widht and height must be >= 5" << std::endl;
+        std::cerr << "ERROR | arguments: widht and height must be >= 5" << std::endl;
         return 1;
     }
 

@@ -2,8 +2,6 @@
 
 #include "nibbler/graphics_api.hpp"
 #include "raylib.h"
-
-#include <iostream>
 #include <raymath.h>
 
 namespace raylibgui {
@@ -26,6 +24,10 @@ RaylibGUIWindow::RaylibGUIWindow(size_t resolution_width, size_t resolution_heig
         this->resolution_width_,
         this->resolution_height_,
         title.c_str());
+
+    if (!IsWindowReady())
+        throw std::runtime_error("Failed to initialize RAYLIB window.");
+
     SetWindowMinSize(this->min_resolution_, this->min_resolution_);
     SetWindowFocused();
 }

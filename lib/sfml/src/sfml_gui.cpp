@@ -3,8 +3,6 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-#include <iostream>
-
 namespace sfmlgui {
 
 SFMLGUIWindow::SFMLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, size_t min_resolution, size_t width_squares, size_t height_squares, std::string font_path, std::string title)
@@ -15,10 +13,7 @@ SFMLGUIWindow::SFMLGUIWindow(std::size_t resolution_width, std::size_t resolutio
     this->square_height_px_ = static_cast<float>(resolution_height) / height_squares;
 
     if (!this->font_.openFromFile(font_path))
-    {
-        // FIXME: throw or something
-        std::cerr << "Error while loading font from " << font_path << std::endl;
-    }
+        throw std::runtime_error("Failed to load font from " + font_path);
 
     this->window_.create(
         sf::VideoMode({
@@ -27,6 +22,9 @@ SFMLGUIWindow::SFMLGUIWindow(std::size_t resolution_width, std::size_t resolutio
         title,
         sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize,
         sf::State::Windowed);
+
+    if (!this->window_.isOpen())
+        throw std::runtime_error("Failed to open SFML window.");
 
     this->window_.setKeyRepeatEnabled(false);
 }

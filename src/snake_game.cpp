@@ -88,6 +88,7 @@ void SnakeGame::update(double delta_time) {
         this->fruit_ = this->fruit_factory_.create_fruit_random_pos();
         this->score_ += 1;
         this->snake_.add_segment();
+        this->snake_.increase_speed();
     }
 
     this->window_->clear_screen();

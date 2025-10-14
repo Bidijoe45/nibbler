@@ -3,9 +3,6 @@
 
 #include <SDL3/SDL.h>
 
-#include <iostream>
-#include <numeric>
-
 namespace sdlgui {
 
 SDLGUIWindow::SDLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string title)
@@ -24,11 +21,9 @@ SDLGUIWindow::SDLGUIWindow(std::size_t resolution_width, std::size_t resolution_
         &this->window,
         &this->renderer))
     {
-        // FIXME: should probably throw an exception or something so that the caller will have some sort of feedback of whether construction failed
-        std::cerr << "SDL_CreateWindowAndRenderer error: " << SDL_GetError() << std::endl;
-        SDL_DestroyWindow(this->window);
-        SDL_PumpEvents(); // needed on macOS
+        std::string error_msg = std::string("Failed to create SDL window: ") + std::string(SDL_GetError());
         SDL_Quit();
+        throw std::runtime_error(error_msg);
     }
 }
 

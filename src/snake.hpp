@@ -34,6 +34,7 @@ struct Snake {
 
     float move_timer_s = 0;
     float move_interval_s = 0.3;
+    Position last_tail_segment = {0, 0};
 };
 
 }

@@ -8,10 +8,10 @@ Snake::Snake() {}
 Snake::Snake(const Position &start_pos)
 {
     this->body.segments.push_back(start_pos);
+    this->body.segments.push_back({start_pos.x - 1, start_pos.y});
+    this->body.segments.push_back({start_pos.x - 2, start_pos.y});
+    this->body.segments.push_back({start_pos.x - 3, start_pos.y});
     this->body.direction = Direction::RIGHT;
-    this->add_segment();
-    this->add_segment();
-    this->add_segment();
 }
 
 void Snake::add_segment(void)
@@ -19,24 +19,15 @@ void Snake::add_segment(void)
     if (this->body.segments.size() == 0) {
         return;
     }
-
-    const Position &last_seg_pos = *(this->body.segments.end() - 1);
-
-    if (this->body.segments.size() == 1) {
-        this->body.segments.push_back(Position({last_seg_pos.x - 1, last_seg_pos.y}));
-        return;
-    }
-
-    const Position &second_to_last_seg_pos = *(this->body.segments.end() - 2);
-
-    int32_t diff_x = second_to_last_seg_pos.x - last_seg_pos.x;
-    int32_t diff_y = second_to_last_seg_pos.y - last_seg_pos.y;
-    this->body.segments.push_back(Position({last_seg_pos.x - diff_x, last_seg_pos.y - diff_y}));
+    this->body.segments.push_back(this->last_tail_segment);
 }
 
 void Snake::move(double delta_time) {
     if (this->body.segments.empty())
         return;
+
+    // Store the last position of the last segment of the body, to be used if add_segment() is called:
+    this->last_tail_segment = this->body.segments.back();
 
     this->move_timer_s += delta_time;
     if (this->move_timer_s >= move_interval_s) {

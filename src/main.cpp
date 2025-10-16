@@ -8,22 +8,31 @@
 
 int main(int argc, char **argv) {
     int32_t game_width_squares, game_height_squares = 0;
-    std::string config_file_path = "./nibbler-config.json";
+    std::string config_file_path = "./config/nibbler-config.json";
+    std::vector<std::string> wrong_args;
 
     auto cli = (
-        clipp::required("-w").doc("Set the game area's width (measured in squares)") & clipp::value("width", game_width_squares),
-        clipp::required("-h").doc("Set the game area's height (measured in squares)") & clipp::value("height", game_height_squares),
-        clipp::option("-f").doc("Path to the json configuration file") & clipp::value("config_file_path", config_file_path)
+        clipp::required("-w").doc("Set the game area's width (measured in squares)") & clipp::number("width", game_width_squares),
+        clipp::required("-h").doc("Set the game area's height (measured in squares)") & clipp::number("height", game_height_squares),
+        clipp::option("-f").doc("Path to the json configuration file") & clipp::value("config_file_path", config_file_path),
+        clipp::any_other(wrong_args)
     );
 
-    if (!clipp::parse(argc, argv, cli))
+    auto res = clipp::parse(argc, argv, cli);
+    if (res.any_error() || !wrong_args.empty())
     {
+        for (const auto &arg : wrong_args) 
+            std::cout << "Invalid argument: '" << arg << "'" << std::endl;
+        for (const auto &m : res.missing()) {
+            if (!m.param()->label().empty())
+                std::cout << "Missing argument: " << m.param()->label() << std::endl;
+        }
         std::cout << clipp::make_man_page(cli, argv[0]);
         return 1;
     }
 
-    if (game_height_squares < 5 || game_width_squares < 5) {
-        std::cerr << "ERROR | arguments: widht and height must be >= 5" << std::endl;
+    if (game_height_squares < 8 || game_width_squares < 8) {
+        std::cerr << "ERROR | arguments: width and height must be >= 8" << std::endl;
         return 1;
     }
 

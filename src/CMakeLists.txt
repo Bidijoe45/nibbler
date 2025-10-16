@@ -9,7 +9,7 @@ set(SRCS
     fruit.cpp
 )
 
-set(CMAKE_CXX_FLAGS, "g")
+set(CMAKE_CXX_FLAGS "-g -Wall -Wextra -Werror")
 
 add_library(${NIBBLER_MAIN_LIB} ${SRCS})
 target_link_libraries(${NIBBLER_MAIN_LIB} PRIVATE JSONParser)

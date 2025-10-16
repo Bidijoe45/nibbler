@@ -6,20 +6,25 @@
 
 namespace sfmlgui {
 
-SFMLGUIWindow::SFMLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, size_t min_resolution, size_t width_squares, size_t height_squares, std::string font_path, std::string title)
-    : nibbler::IWindow(resolution_width, resolution_height, min_resolution, width_squares, height_squares, std::move(title)),
-      width_squares_(width_squares), height_squares_(height_squares)
+SFMLGUIWindow::SFMLGUIWindow(int32_t resolution_width_px,
+    int32_t resolution_height_px,
+    int32_t min_resolution_px,
+    int32_t gameboard_width_squares,
+    int32_t gameboard_height_squares,
+    std::string font_path,
+    std::string title)
+    : nibbler::IWindow(resolution_width_px, resolution_height_px, min_resolution_px, gameboard_width_squares, gameboard_height_squares)
 {
-    this->square_width_px_ = static_cast<float>(resolution_width) / width_squares;
-    this->square_height_px_ = static_cast<float>(resolution_height) / height_squares;
+    this->square_width_px_ = static_cast<float>(resolution_width_px) / gameboard_width_squares;
+    this->square_height_px_ = static_cast<float>(resolution_height_px) / gameboard_height_squares;
 
     if (!this->font_.openFromFile(font_path))
         throw std::runtime_error("Failed to load font from " + font_path);
 
     this->window_.create(
         sf::VideoMode({
-            static_cast<unsigned int>(resolution_width),
-            static_cast<unsigned int>(resolution_height)}),
+            static_cast<unsigned int>(resolution_width_px),
+            static_cast<unsigned int>(resolution_height_px)}),
         title,
         sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize,
         sf::State::Windowed);
@@ -62,18 +67,18 @@ void SFMLGUIWindow::read_input()
         if (const auto *resized = event->getIf<sf::Event::Resized>())
         {
             sf::Vector2u res = this->window_.getSize();
-            if (res.x < this->min_resolution_)
-                res.x = this->min_resolution_;
-            if (res.y < this->min_resolution_)
-                res.y = this->min_resolution_;
+            if (res.x < this->min_resolution_px_)
+                res.x = this->min_resolution_px_;
+            if (res.y < this->min_resolution_px_)
+                res.y = this->min_resolution_px_;
             this->window_.setSize(res);
 
             // Reset GUI view to avoid default stretching
             sf::FloatRect visibleArea({0.f, 0.f}, {static_cast<float>(res.x), static_cast<float>(res.y)});
             this->window_.setView(sf::View(visibleArea));
             // Update square size
-            this->square_width_px_ = static_cast<float>(res.x) / this->width_squares_;
-            this->square_height_px_ = static_cast<float>(res.y) / this->height_squares_;
+            this->square_width_px_ = static_cast<float>(res.x) / this->gameboard_width_squares_;
+            this->square_height_px_ = static_cast<float>(res.y) / this->gameboard_height_squares_;
         }
         for (auto &callback : this->key_down_callbacks_)
         {
@@ -164,7 +169,7 @@ void SFMLGUIWindow::draw_fruit(const nibbler::Position& fruit_pos)
     this->window_.draw(fruit);
 }
 
-void SFMLGUIWindow::set_score(int score)
+void SFMLGUIWindow::set_score(int32_t score)
 {
     sf::Text score_text(this->font_);
     score_text.setString("Score: " + std::to_string(score));
@@ -186,13 +191,27 @@ void SFMLGUIWindow::push_message(const std::string &msg)
 SFMLGUI::SFMLGUI() {}
 SFMLGUI::~SFMLGUI() {}
 
-std::unique_ptr<nibbler::IWindow> SFMLGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title)
+std::unique_ptr<nibbler::IWindow> SFMLGUI::create_window(
+    int32_t resolution_width_px,
+    int32_t resolution_height_px,
+    int32_t min_resolution_px,
+    int32_t gameboard_width_squares,
+    int32_t gameboard_height_squares,
+    std::string font_path,
+    std::string title)
 {
     try
     {
-        return std::make_unique<SFMLGUIWindow>(resolution_width, resolution_height, min_resolution, width_squares, height_squares, font_path, std::move(title));
+        return std::make_unique<SFMLGUIWindow>(
+            resolution_width_px,
+            resolution_height_px,
+            min_resolution_px,
+            gameboard_width_squares,
+            gameboard_height_squares,
+            font_path,
+            std::move(title));
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         std::cerr << "Error: " << e.what() << std::endl;
         return nullptr;

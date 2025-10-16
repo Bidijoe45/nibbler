@@ -27,7 +27,7 @@ struct Snake {
     void add_segment(void);
     void change_direction(Direction dir);
     void move(double delta_time);
-    bool check_wall_collision(size_t gameboard_width, size_t gameboard_height);
+    bool check_wall_collision(int32_t gameboard_width, int32_t gameboard_height);
     bool check_fruit_collision(Position fruit_pos);
     bool check_body_collision();
     void increase_speed();

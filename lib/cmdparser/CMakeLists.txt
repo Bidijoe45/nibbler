@@ -7,7 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 message(STATUS "Fetching ClippCmdParser(muellan/clipp) ...")
 include(FetchContent)
 FetchContent_Declare(
-    ${PROJECT_NAME}
+    ${PROJECT_NAME} SYSTEM
     GIT_REPOSITORY https://github.com/muellan/clipp
     GIT_TAG v1.1.0
 )
@@ -23,3 +23,6 @@ FetchContent_GetProperties(
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE ${ClippCmdParser_SOURCE_DIR}/include)
+
+# to avoid warnings which would turn into errors with our -Werror flag:
+target_compile_options(${PROJECT_NAME} PRIVATE INTERFACE "-w")

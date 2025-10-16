@@ -12,21 +12,21 @@ struct ConfigLibrary {
     std::string name;
     std::string path;
     std::string font_path;
-    size_t resolution_width;
-    size_t resolution_height;
+    int32_t resolution_width;
+    int32_t resolution_height;
 };
 
 struct Configuration {
     // These come from the CLI
-    size_t gameboard_width_squares = 0;
-    size_t gameboard_height_squares = 0;
+    int32_t gameboard_width_squares = 0;
+    int32_t gameboard_height_squares = 0;
 
     // These come from the config file
     std::vector<ConfigLibrary> gui_libraries;
 
     bool valid = false;
 
-    static constexpr size_t min_resolution = 200;
+    static constexpr int32_t min_resolution = 200;
 };
 
 class ConfigParser {

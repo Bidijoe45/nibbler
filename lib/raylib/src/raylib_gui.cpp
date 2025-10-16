@@ -7,12 +7,15 @@
 
 namespace raylibgui {
 
-RaylibGUIWindow::RaylibGUIWindow(size_t resolution_width, size_t resolution_height, size_t min_resolution, std::size_t gameboard_width, std::size_t gameboard_height, std::string title)
-    : nibbler::IWindow(resolution_width, resolution_height, min_resolution, gameboard_width, gameboard_height, std::move(title)),
-      square_size_px_(20), border_size_px(square_size_px_)
+RaylibGUIWindow::RaylibGUIWindow(
+    int32_t resolution_width_px,
+    int32_t resolution_height_px,
+    int32_t min_resolution_px,
+    int32_t gameboard_width_squares,
+    int32_t gameboard_height_squares,
+    std::string title)
+    : nibbler::IWindow(resolution_width_px, resolution_height_px, min_resolution_px, gameboard_width_squares, gameboard_height_squares)
 {
-    this->gameboard_width_ = gameboard_width;
-    this->gameboard_height_ = gameboard_height;
     this->camera_.position = (Vector3){ 0.0f, 25.0f, 30.0f };
     this->camera_.target = (Vector3){ 0.0f, 0.0f, 0.0f };
     this->camera_.up = (Vector3){ 0.0f, 1.0f, 0.0f };
@@ -22,14 +25,14 @@ RaylibGUIWindow::RaylibGUIWindow(size_t resolution_width, size_t resolution_heig
     SetTraceLogLevel(LOG_WARNING);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(
-        this->resolution_width_,
-        this->resolution_height_,
+        this->resolution_width_px_,
+        this->resolution_height_px_,
         title.c_str());
 
     if (!IsWindowReady())
         throw std::runtime_error("Failed to initialize RAYLIB window.");
 
-    SetWindowMinSize(this->min_resolution_, this->min_resolution_);
+    SetWindowMinSize(this->min_resolution_px_, this->min_resolution_px_);
     SetWindowFocused();
 }
 
@@ -87,7 +90,7 @@ void RaylibGUIWindow::read_input() {
 //FIXME: maybe this should be set_snake or update_snake instead of draw
 void RaylibGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake) {
     if (this->snake_.size() != snake.size()) {
-        size_t new_elements = snake.size() - this->snake_.size();
+        int32_t new_elements = snake.size() - this->snake_.size();
         this->snake_.assign(snake.begin(), snake.end());
     }
 
@@ -107,7 +110,7 @@ void RaylibGUIWindow::push_message(const std::string& msg) {
     //TODO:
 }
 
-void RaylibGUIWindow::set_score(int score) {
+void RaylibGUIWindow::set_score(int32_t score) {
     this->score_ = score;
 }
 
@@ -118,8 +121,8 @@ void RaylibGUIWindow::render() {
 
     // Grid
     Vector3 gridCellV3 = { 0, 0, 0.0f };
-    for (int x=0; x < gameboard_width_; x++) {
-        for (int y=0; y < gameboard_height_; y++) {
+    for (int32_t x = 0; x < this->gameboard_width_squares_; x++) {
+        for (int32_t y =0; y < this->gameboard_height_squares_; y++) {
             gridCellV3.x = x;
             gridCellV3.z = y;
 
@@ -171,12 +174,26 @@ RaylibGUI::RaylibGUI() {}
 RaylibGUI::~RaylibGUI() {}
 
 std::unique_ptr<nibbler::IWindow>
-RaylibGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) {
+RaylibGUI::create_window(
+    int32_t resolution_width_px,
+    int32_t resolution_height_px,
+    int32_t min_resolution_px,
+    int32_t gameboard_width_squares,
+    int32_t gameboard_height_squares,
+    std::string font_path,
+    std::string title
+) {
     try
     {
-        return std::make_unique<RaylibGUIWindow>(resolution_width, resolution_height, min_resolution, width_squares, height_squares, std::move(title));
+        return std::make_unique<RaylibGUIWindow>(
+            resolution_width_px,
+            resolution_height_px,
+            min_resolution_px,
+            gameboard_width_squares,
+            gameboard_height_squares,
+            std::move(title));
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         std::cerr << "Error: " << e.what() << std::endl;
         return nullptr;

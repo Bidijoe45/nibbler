@@ -10,7 +10,14 @@ namespace sfmlgui {
 
 class SFMLGUIWindow : public nibbler::IWindow {
     public:
-        SFMLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title);
+        SFMLGUIWindow(
+            int32_t resolution_width_px,
+            int32_t resolution_height_px,
+            int32_t min_resolution_px,
+            int32_t gameboard_width_squares,
+            int32_t gameboard_height_squares,
+            std::string font_path,
+            std::string title);
         ~SFMLGUIWindow();
 
         void add_event_listener_key_down(KeyDownCallback cb) override;
@@ -20,7 +27,7 @@ class SFMLGUIWindow : public nibbler::IWindow {
         void read_input() override;
         void draw_snake(const std::vector<nibbler::Position> &snake) override;
         void draw_fruit(const nibbler::Position& fruit_pos) override;
-        void set_score(int score) override;
+        void set_score(int32_t score) override;
         void render() override;
         void push_message(const std::string &msg) override;
 
@@ -29,8 +36,6 @@ class SFMLGUIWindow : public nibbler::IWindow {
         std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
         float square_width_px_;
         float square_height_px_;
-        const int width_squares_;
-        const int height_squares_;
         sf::Font font_;
 };
 
@@ -38,7 +43,14 @@ class SFMLGUI : public nibbler::INibblerGraphicsApi {
     public:
         SFMLGUI();
         ~SFMLGUI();
-        std::unique_ptr<nibbler::IWindow> create_window(std::size_t resolution_width, std::size_t resolution_height, size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) override;
+        std::unique_ptr<nibbler::IWindow> create_window(
+            int32_t resolution_width_px,
+            int32_t resolution_height_px,
+            int32_t min_resolution_px,
+            int32_t gameboard_width_squares,
+            int32_t gameboard_height_squares,
+            std::string font_path,
+            std::string title) override;
 };
 
 }

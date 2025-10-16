@@ -43,7 +43,7 @@ private:
     Key current_gui_;
 
     GameState game_state_;
-    size_t score_ = 0;
+    int32_t score_ = 0;
     Snake snake_;
     Fruit fruit_;
     FruitFactory fruit_factory_;

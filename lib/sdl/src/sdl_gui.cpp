@@ -6,21 +6,26 @@
 
 namespace sdlgui {
 
-SDLGUIWindow::SDLGUIWindow(std::size_t resolution_width, std::size_t resolution_height, size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string title)
-    : nibbler::IWindow(resolution_width, resolution_height, min_resolution, width_squares, height_squares, std::move(title)),
-      width_squares_(width_squares), height_squares_(height_squares)
+SDLGUIWindow::SDLGUIWindow(
+    int32_t resolution_width_px,
+    int32_t resolution_height_px,
+    int32_t min_resolution_px,
+    int32_t gameboard_width_squares,
+    int32_t gameboard_height_squares,
+    std::string title)
+    : nibbler::IWindow(resolution_width_px, resolution_height_px, min_resolution_px, gameboard_width_squares, gameboard_height_squares)
 {
-    this->square_size_px_ = std::min((resolution_width / width_squares),(resolution_height / height_squares));
-    this->padding_x_ = (resolution_width - (this->square_size_px_ * width_squares)) / 2;
-    this->padding_y_ = (resolution_height - (this->square_size_px_ * height_squares)) / 2;
+    this->square_size_px_ = std::min((this->resolution_width_px_ / this->gameboard_width_squares_),(this->resolution_height_px_ / this->gameboard_height_squares_));
+    this->padding_x_ = (this->resolution_width_px_ - (this->square_size_px_ * this->gameboard_width_squares_)) / 2;
+    this->padding_y_ = (this->resolution_height_px_ - (this->square_size_px_ * this->gameboard_height_squares_)) / 2;
 
     if (!SDL_CreateWindowAndRenderer(
         title.c_str(),
-        resolution_width,
-        resolution_height,
+        this->resolution_width_px_,
+        this->resolution_height_px_,
         SDL_WINDOW_RESIZABLE,
-        &this->window,
-        &this->renderer))
+        &this->window_,
+        &this->renderer_))
     {
         std::string error_msg = std::string("Failed to create SDL window: ") + std::string(SDL_GetError());
         SDL_Quit();
@@ -30,8 +35,8 @@ SDLGUIWindow::SDLGUIWindow(std::size_t resolution_width, std::size_t resolution_
 
 SDLGUIWindow::~SDLGUIWindow()
 {
-    SDL_DestroyRenderer(this->renderer);
-    SDL_DestroyWindow(this->window);
+    SDL_DestroyRenderer(this->renderer_);
+    SDL_DestroyWindow(this->window_);
     SDL_PumpEvents(); // needed on macOS
     SDL_Quit();
 }
@@ -50,7 +55,7 @@ void SDLGUIWindow::add_event_listener_key_press(nibbler::IWindow::KeyPressCallba
 
 void SDLGUIWindow::draw_border() {
     std::pair<int, int> window_size = this->get_window_size();
-    SDL_SetRenderDrawColor(this->renderer, 252, 163, 17, 255);
+    SDL_SetRenderDrawColor(this->renderer_, 252, 163, 17, 255);
     SDL_FRect top_border {
         0,
         0,
@@ -76,15 +81,15 @@ void SDLGUIWindow::draw_border() {
         static_cast<float>(window_size.second - (padding_y_ * 2))
     };
 
-    SDL_RenderFillRect(this->renderer, &top_border);
-    SDL_RenderFillRect(this->renderer, &bottom_border);
-    SDL_RenderFillRect(this->renderer, &left_border);
-    SDL_RenderFillRect(this->renderer, &right_border);
+    SDL_RenderFillRect(this->renderer_, &top_border);
+    SDL_RenderFillRect(this->renderer_, &bottom_border);
+    SDL_RenderFillRect(this->renderer_, &left_border);
+    SDL_RenderFillRect(this->renderer_, &right_border);
 }
 
 void SDLGUIWindow::clear_screen() {
-    SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
-    SDL_RenderClear(this->renderer);
+    SDL_SetRenderDrawColor(this->renderer_, 0, 0, 0, 255);
+    SDL_RenderClear(this->renderer_);
     this->draw_border();
 }
 
@@ -103,15 +108,15 @@ void SDLGUIWindow::read_input() {
         else if (e.type == SDL_EVENT_WINDOW_RESIZED) {
             std::pair<int, int> res = this->get_window_size();
 
-            if (res.first < this->min_resolution_)
-                res.first = this->min_resolution_;
-            if (res.second < this->min_resolution_)
-                res.second = this->min_resolution_;
-            SDL_SetWindowSize(this->window, res.first, res.second);
+            if (res.first < this->min_resolution_px_)
+                res.first = this->min_resolution_px_;
+            if (res.second < this->min_resolution_px_)
+                res.second = this->min_resolution_px_;
+            SDL_SetWindowSize(this->window_, res.first, res.second);
 
-            this->square_size_px_ = std::min((res.first / this->width_squares_),(res.second / this->height_squares_));
-            this->padding_x_ = (res.first - (this->square_size_px_ * this->width_squares_)) / 2;
-            this->padding_y_ = (res.second - (this->square_size_px_ * this->height_squares_)) / 2;
+            this->square_size_px_ = std::min((res.first / this->gameboard_width_squares_),(res.second / this->gameboard_height_squares_));
+            this->padding_x_ = (res.first - (this->square_size_px_ * this->gameboard_width_squares_)) / 2;
+            this->padding_y_ = (res.second - (this->square_size_px_ * this->gameboard_height_squares_)) / 2;
         }
 
         switch (e.key.key)
@@ -138,8 +143,8 @@ void SDLGUIWindow::read_input() {
 
 void SDLGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake) {
     std::pair<int, int> window_size = get_window_size();
-    SDL_SetRenderScale(this->renderer, 1, 1);
-    SDL_SetRenderDrawColor(this->renderer, 163, 177, 138, 255);
+    SDL_SetRenderScale(this->renderer_, 1, 1);
+    SDL_SetRenderDrawColor(this->renderer_, 163, 177, 138, 255);
 
     for (const nibbler::Position& p : snake) {
         float x = static_cast<float>(p.x * this->square_size_px_) + this->padding_x_;
@@ -148,39 +153,39 @@ void SDLGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake) {
         float height = static_cast<float>(this->square_size_px_);
         SDL_FRect body_square {x, y, width, height};
         
-        SDL_RenderFillRect(this->renderer, &body_square);
+        SDL_RenderFillRect(this->renderer_, &body_square);
     }
 }
 
 void SDLGUIWindow::draw_fruit(const nibbler::Position& fruit_pos) {
     std::pair<int, int> window_size = get_window_size();
-    SDL_SetRenderDrawColor(this->renderer, 188, 71, 73, 255);
+    SDL_SetRenderDrawColor(this->renderer_, 188, 71, 73, 255);
     float x = static_cast<float>(fruit_pos.x * this->square_size_px_) + this->padding_x_;
     float y = static_cast<float>(fruit_pos.y * this->square_size_px_) + this->padding_y_;
     float width = static_cast<float>(this->square_size_px_);
     float height = static_cast<float>(this->square_size_px_);
     SDL_FRect fruit_square {x, y, width, height};
-    SDL_RenderFillRect(this->renderer, &fruit_square);
+    SDL_RenderFillRect(this->renderer_, &fruit_square);
 }
 
 void SDLGUIWindow::push_message(const std::string& msg) {
     //TODO:
 }
 
-void SDLGUIWindow::set_score(int score) {
+void SDLGUIWindow::set_score(int32_t score) {
     std::string score_text = std::string("Score:" + std::to_string(score));
-    SDL_SetRenderScale(this->renderer, 2, 2);
-    SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
-    SDL_RenderDebugText(this->renderer, 10, 1, score_text.c_str());
+    SDL_SetRenderScale(this->renderer_, 2, 2);
+    SDL_SetRenderDrawColor(this->renderer_, 255, 255, 255, 255);
+    SDL_RenderDebugText(this->renderer_, 10, 1, score_text.c_str());
 }
 
 void SDLGUIWindow::render() {
-    SDL_RenderPresent(this->renderer);
+    SDL_RenderPresent(this->renderer_);
 }
 
 std::pair<int, int> SDLGUIWindow::get_window_size() {
     int w, h;
-    SDL_GetWindowSize(this->window, &w, &h);
+    SDL_GetWindowSize(this->window_, &w, &h);
     return std::make_pair(w, h);
 }
 
@@ -188,12 +193,26 @@ SDLGUI::SDLGUI() {}
 SDLGUI::~SDLGUI() {}
 
 std::unique_ptr<nibbler::IWindow>
-SDLGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, std::size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) {
+SDLGUI::create_window(
+    int32_t resolution_width_px,
+    int32_t resolution_height_px,
+    int32_t min_resolution_px,
+    int32_t gameboard_width_squares,
+    int32_t gameboard_height_squares,
+    std::string font_path,
+    std::string title
+) {
     try
     {
-        return std::make_unique<SDLGUIWindow>(resolution_width, resolution_height, min_resolution, width_squares, height_squares, std::move(title));
+        return std::make_unique<SDLGUIWindow>(
+            resolution_width_px,
+            resolution_height_px,
+            min_resolution_px,
+            gameboard_width_squares,
+            gameboard_height_squares,
+            std::move(title));
     }
-    catch (const std::exception& e)
+    catch (const std::exception &e)
     {
         std::cerr << "Error: " << e.what() << std::endl;
         return nullptr;

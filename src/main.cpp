@@ -7,7 +7,7 @@
 #include "config.hpp"
 
 int main(int argc, char **argv) {
-    size_t game_width_squares, game_height_squares = 0;
+    int32_t game_width_squares, game_height_squares = 0;
     std::string config_file_path = "./nibbler-config.json";
 
     auto cli = (

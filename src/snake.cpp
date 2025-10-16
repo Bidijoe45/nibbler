@@ -29,20 +29,21 @@ void Snake::add_segment(void)
 
     const Position &second_to_last_seg_pos = *(this->body.segments.end() - 2);
 
-    int diff_x = second_to_last_seg_pos.x - last_seg_pos.x;
-    int diff_y = second_to_last_seg_pos.y - last_seg_pos.y;
+    int32_t diff_x = second_to_last_seg_pos.x - last_seg_pos.x;
+    int32_t diff_y = second_to_last_seg_pos.y - last_seg_pos.y;
     this->body.segments.push_back(Position({last_seg_pos.x - diff_x, last_seg_pos.y - diff_y}));
 }
 
 void Snake::move(double delta_time) {
-    if (this->body.segments.empty()) return;
+    if (this->body.segments.empty())
+        return;
 
     this->move_timer_s += delta_time;
     if (this->move_timer_s >= move_interval_s) {
         this->move_timer_s -= move_interval_s;
 
         // move body from back to front
-        for (int i = this->body.segments.size() - 1; i > 0; --i) {
+        for (size_t i = this->body.segments.size() - 1; i > 0; --i) {
             this->body.segments[i] = this->body.segments[i - 1];
         }
 
@@ -63,7 +64,6 @@ void Snake::move(double delta_time) {
                 break;
         }
     }
-
 }
 
 void Snake::change_direction(Direction dir) {
@@ -82,7 +82,7 @@ void Snake::change_direction(Direction dir) {
     this->body.direction = dir;
 }
 
-bool Snake::check_wall_collision(size_t gameboard_width, size_t gameboard_height) {
+bool Snake::check_wall_collision(int32_t gameboard_width, int32_t gameboard_height) {
     Position& snake_head = this->body.segments[0];
 
     if (snake_head.x < 0) return true;
@@ -96,7 +96,8 @@ bool Snake::check_wall_collision(size_t gameboard_width, size_t gameboard_height
 bool Snake::check_fruit_collision(Position fruit_pos) {
     Position& snake_head = this->body.segments[0];
 
-    if (snake_head.x == fruit_pos.x && snake_head.y == fruit_pos.y) return true;
+    if (snake_head.x == fruit_pos.x && snake_head.y == fruit_pos.y)
+        return true;
 
     return false;
 }

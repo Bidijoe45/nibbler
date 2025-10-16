@@ -17,8 +17,14 @@ termios TTYGUIWindow::orig_termios;
 int TTYGUIWindow::score_rows = 1;
 int TTYGUIWindow::messages_rows = 3;
 
-TTYGUIWindow::TTYGUIWindow(std::size_t resolution_width, std::size_t resolution_height, std::size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string title)
-    : nibbler::IWindow(resolution_width, resolution_height, min_resolution, width_squares, height_squares, std::move(title))
+TTYGUIWindow::TTYGUIWindow(
+    int32_t resolution_width_px,
+    int32_t resolution_height_px,
+    int32_t min_resolution_px,
+    int32_t gameboard_width_squares,
+    int32_t gameboard_height_squares,
+    std::string title)
+    : nibbler::IWindow(resolution_width_px, resolution_height_px, min_resolution_px, gameboard_width_squares, gameboard_height_squares)
 {
     std::atexit(TTYGUIWindow::restore_terminal);
     std::signal(SIGWINCH, TTYGUIWindow::handle_resize);
@@ -26,8 +32,8 @@ TTYGUIWindow::TTYGUIWindow(std::size_t resolution_width, std::size_t resolution_
 
     this->set_noncanonical_mode();
     //TTYGUIWindow::update_terminal_size();
-    TTYGUIWindow::term_cols = width_squares;
-    TTYGUIWindow::term_rows = height_squares;
+    TTYGUIWindow::term_cols = gameboard_width_squares;
+    TTYGUIWindow::term_rows = gameboard_height_squares;
 
     this->draw_border();
 }
@@ -117,7 +123,7 @@ void TTYGUIWindow::push_message(const std::string& msg) {
     this->messages_.push_back(msg);
 }
 
-void TTYGUIWindow::set_score(int score) {
+void TTYGUIWindow::set_score(int32_t score) {
     this->score_ = score;
 }
 
@@ -155,7 +161,7 @@ void TTYGUIWindow::clear_screen() {
     this->draw_messages();
 }
 
-void TTYGUIWindow::draw_pixel(size_t x, size_t y, char c) {
+void TTYGUIWindow::draw_pixel(int32_t x, int32_t y, char c) {
     // top left corner is 1,1 !!!
     x += 1; y += 1;
 
@@ -242,8 +248,22 @@ TTYGUI::TTYGUI() {}
 TTYGUI::~TTYGUI() {}
 
 std::unique_ptr<nibbler::IWindow>
-TTYGUI::create_window(std::size_t resolution_width, std::size_t resolution_height, size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) {
-    return std::make_unique<TTYGUIWindow>(resolution_width, resolution_height, min_resolution, width_squares, height_squares, std::move(title));
+TTYGUI::create_window(
+    int32_t resolution_width_px,
+    int32_t resolution_height_px,
+    int32_t min_resolution_px,
+    int32_t gameboard_width_squares,
+    int32_t gameboard_height_squares,
+    std::string font_path,
+    std::string title)
+{
+    return std::make_unique<TTYGUIWindow>(
+            resolution_width_px,
+            resolution_height_px,
+            min_resolution_px,
+            gameboard_width_squares,
+            gameboard_height_squares,
+            std::move(title));
 }
 
 }

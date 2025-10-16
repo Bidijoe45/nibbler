@@ -14,7 +14,12 @@ namespace ttygui {
 
 class TTYGUIWindow : public nibbler::IWindow {
 public:
-    TTYGUIWindow(std::size_t resolution_width, std::size_t resolution_height, std::size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string title);
+    TTYGUIWindow(int32_t resolution_width_px,
+        int32_t resolution_height_px,
+        int32_t min_resolution_px,
+        int32_t gameboard_width_squares,
+        int32_t gameboard_height_squares,
+        std::string title);
     ~TTYGUIWindow();
 
     void add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) override;
@@ -25,7 +30,7 @@ public:
     void draw_snake(const std::vector<nibbler::Position> &snake) override;
     void draw_fruit(const nibbler::Position& fruit_pos) override;
     void push_message(const std::string& msg) override;
-    void set_score(int score) override;
+    void set_score(int32_t score) override;
     void render() override;
 
 private:
@@ -41,14 +46,14 @@ private:
     void set_noncanonical_mode();
     void set_non_blocking(bool enable);
     nibbler::Key convert_input_to_key(char ch);
-    void draw_pixel(size_t x, size_t y, char c);
+    void draw_pixel(int32_t x, int32_t y, char c);
     void draw_score();
     void draw_messages();
 
     static int score_rows; // Space for the score line
     static int messages_rows; // Space for the messages
     std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
-    int score_;
+    int32_t score_;
     std::deque<std::string> messages_;
 };
 
@@ -57,8 +62,14 @@ public:
     TTYGUI();
     ~TTYGUI();
 
-    std::unique_ptr<nibbler::IWindow>
-    create_window(std::size_t resolution_width, std::size_t resolution_height, size_t min_resolution, std::size_t width_squares, std::size_t height_squares, std::string font_path, std::string title) override;
+    std::unique_ptr<nibbler::IWindow> create_window(
+        int32_t resolution_width_px,
+        int32_t resolution_height_px,
+        int32_t min_resolution_px,
+        int32_t gameboard_width_squares,
+        int32_t gameboard_height_squares,
+        std::string font_path,
+        std::string title) override;
 };
 
 } 

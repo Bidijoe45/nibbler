@@ -14,8 +14,8 @@ enum Key {
 };
 
 struct Position {
-    int x;
-    int y;
+    int32_t x;
+    int32_t y;
 };
 
 class IWindow {
@@ -32,24 +32,43 @@ public:
     virtual void read_input() = 0;
     virtual void draw_snake(const std::vector<Position> &snake) = 0;
     virtual void draw_fruit(const Position& fruit_pos) = 0;
-    virtual void set_score(int score) = 0;
+    virtual void set_score(int32_t score) = 0;
     virtual void render() = 0;
     virtual void push_message(const std::string &msg) = 0;
 
 protected:
-    inline IWindow(size_t resolution_width, size_t resolution_height, size_t min_resolution, size_t width_squares, size_t height_squares, std::string title)
-        : resolution_height_(resolution_height), resolution_width_(resolution_width), min_resolution_(min_resolution) {}
+    inline IWindow(
+        int32_t resolution_width_px,
+        int32_t resolution_height_px,
+        int32_t min_resolution_px,
+        int32_t gameboard_width_squares,
+        int32_t gameboard_height_squares)
+        : resolution_width_px_(resolution_width_px),
+          resolution_height_px_(resolution_height_px),
+          min_resolution_px_(min_resolution_px),
+          gameboard_width_squares_(gameboard_width_squares),
+          gameboard_height_squares_(gameboard_height_squares)
+        {}
 
-    size_t resolution_width_ = 0;
-    size_t resolution_height_ = 0;
-    const size_t min_resolution_ = 0;
+    int32_t resolution_width_px_ = 0;
+    int32_t resolution_height_px_ = 0;
+    const int32_t min_resolution_px_ = 0;
+    const int32_t gameboard_width_squares_ = 0;
+    const int32_t gameboard_height_squares_ = 0;
 };
 
 class INibblerGraphicsApi {
 
 public:
     inline virtual ~INibblerGraphicsApi() {};
-    virtual std::unique_ptr<IWindow> create_window(size_t resolution_width, size_t resolution_height, size_t min_resolution, size_t width_squares, size_t height_squares, std::string font_path, std::string title) = 0;
+    virtual std::unique_ptr<IWindow> create_window(
+        int32_t resolution_width_px,
+        int32_t resolution_height_px,
+        int32_t min_resolution_px,
+        int32_t gameboard_width_squares,
+        int32_t gameboard_height_squares,
+        std::string font_path,
+        std::string title) = 0;
 };
 
 typedef INibblerGraphicsApi* (*INibblerGraphicsApiConstructor)();

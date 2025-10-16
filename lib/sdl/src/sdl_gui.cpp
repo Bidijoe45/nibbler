@@ -13,16 +13,16 @@ SDLGUIWindow::SDLGUIWindow(
     int32_t gameboard_width_squares,
     int32_t gameboard_height_squares,
     std::string title)
-    : nibbler::IWindow(resolution_width_px, resolution_height_px, min_resolution_px, gameboard_width_squares, gameboard_height_squares)
+    : min_resolution_px_(min_resolution_px), gameboard_width_squares_(gameboard_width_squares), gameboard_height_squares_(gameboard_height_squares)
 {
-    this->square_size_px_ = std::min((this->resolution_width_px_ / this->gameboard_width_squares_),(this->resolution_height_px_ / this->gameboard_height_squares_));
-    this->padding_x_ = (this->resolution_width_px_ - (this->square_size_px_ * this->gameboard_width_squares_)) / 2;
-    this->padding_y_ = (this->resolution_height_px_ - (this->square_size_px_ * this->gameboard_height_squares_)) / 2;
+    this->square_size_px_ = std::min((resolution_height_px / this->gameboard_width_squares_),(resolution_height_px / this->gameboard_height_squares_));
+    this->padding_x_ = (resolution_height_px - (this->square_size_px_ * this->gameboard_width_squares_)) / 2;
+    this->padding_y_ = (resolution_height_px - (this->square_size_px_ * this->gameboard_height_squares_)) / 2;
 
     if (!SDL_CreateWindowAndRenderer(
         title.c_str(),
-        this->resolution_width_px_,
-        this->resolution_height_px_,
+        resolution_height_px,
+        resolution_height_px,
         SDL_WINDOW_RESIZABLE,
         &this->window_,
         &this->renderer_))

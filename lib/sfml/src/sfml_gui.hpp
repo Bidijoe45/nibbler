@@ -34,6 +34,9 @@ class SFMLGUIWindow : public nibbler::IWindow {
     private:
         sf::RenderWindow window_;
         std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
+        const int32_t min_resolution_px_ = 0;
+        const int32_t gameboard_width_squares_ = 0;
+        const int32_t gameboard_height_squares_ = 0;
         float square_width_px_;
         float square_height_px_;
         sf::Font font_;

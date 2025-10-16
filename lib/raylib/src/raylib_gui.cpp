@@ -14,7 +14,7 @@ RaylibGUIWindow::RaylibGUIWindow(
     int32_t gameboard_width_squares,
     int32_t gameboard_height_squares,
     std::string title)
-    : nibbler::IWindow(resolution_width_px, resolution_height_px, min_resolution_px, gameboard_width_squares, gameboard_height_squares)
+    : gameboard_width_squares_(gameboard_width_squares), gameboard_height_squares_(gameboard_height_squares)
 {
     this->camera_.position = (Vector3){ 0.0f, 25.0f, 30.0f };
     this->camera_.target = (Vector3){ 0.0f, 0.0f, 0.0f };
@@ -25,14 +25,14 @@ RaylibGUIWindow::RaylibGUIWindow(
     SetTraceLogLevel(LOG_WARNING);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(
-        this->resolution_width_px_,
-        this->resolution_height_px_,
+        resolution_width_px,
+        resolution_height_px,
         title.c_str());
 
     if (!IsWindowReady())
         throw std::runtime_error("Failed to initialize RAYLIB window.");
 
-    SetWindowMinSize(this->min_resolution_px_, this->min_resolution_px_);
+    SetWindowMinSize(min_resolution_px, min_resolution_px);
     SetWindowFocused();
 }
 

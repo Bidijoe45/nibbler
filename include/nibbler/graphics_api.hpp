@@ -22,7 +22,6 @@ class IWindow {
 public:
     typedef std::function<void(Key)> Callback, KeyDownCallback, KeyUpCallback, KeyPressCallback;
 
-    IWindow() = delete;
     inline virtual ~IWindow() {}
 
     virtual void add_event_listener_key_down(KeyDownCallback cb) = 0;
@@ -35,26 +34,6 @@ public:
     virtual void set_score(int32_t score) = 0;
     virtual void render() = 0;
     virtual void push_message(const std::string &msg) = 0;
-
-protected:
-    inline IWindow(
-        int32_t resolution_width_px,
-        int32_t resolution_height_px,
-        int32_t min_resolution_px,
-        int32_t gameboard_width_squares,
-        int32_t gameboard_height_squares)
-        : resolution_width_px_(resolution_width_px),
-          resolution_height_px_(resolution_height_px),
-          min_resolution_px_(min_resolution_px),
-          gameboard_width_squares_(gameboard_width_squares),
-          gameboard_height_squares_(gameboard_height_squares)
-        {}
-
-    int32_t resolution_width_px_ = 0;
-    int32_t resolution_height_px_ = 0;
-    const int32_t min_resolution_px_ = 0;
-    const int32_t gameboard_width_squares_ = 0;
-    const int32_t gameboard_height_squares_ = 0;
 };
 
 class INibblerGraphicsApi {

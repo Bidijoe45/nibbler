@@ -39,6 +39,8 @@ private:
     Camera3D camera_;
     std::vector<nibbler::Position> snake_;
     nibbler::Position fruit_;
+    const int32_t gameboard_width_squares_ = 0;
+    const int32_t gameboard_height_squares_ = 0;
 };
 
 class RaylibGUI : public nibbler::INibblerGraphicsApi {

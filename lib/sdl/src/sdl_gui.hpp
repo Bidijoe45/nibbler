@@ -39,6 +39,9 @@ private:
     SDL_Renderer* renderer_;
     std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
 
+    const int32_t min_resolution_px_ = 0;
+    const int32_t gameboard_width_squares_ = 0;
+    const int32_t gameboard_height_squares_ = 0;
     int32_t square_size_px_;
     int32_t padding_x_;
     int32_t padding_y_;

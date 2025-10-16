@@ -24,7 +24,6 @@ TTYGUIWindow::TTYGUIWindow(
     int32_t gameboard_width_squares,
     int32_t gameboard_height_squares,
     std::string title)
-    : nibbler::IWindow(resolution_width_px, resolution_height_px, min_resolution_px, gameboard_width_squares, gameboard_height_squares)
 {
     std::atexit(TTYGUIWindow::restore_terminal);
     std::signal(SIGWINCH, TTYGUIWindow::handle_resize);

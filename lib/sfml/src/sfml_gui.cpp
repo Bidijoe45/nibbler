@@ -13,10 +13,10 @@ SFMLGUIWindow::SFMLGUIWindow(int32_t resolution_width_px,
     int32_t gameboard_height_squares,
     std::string font_path,
     std::string title)
-    : nibbler::IWindow(resolution_width_px, resolution_height_px, min_resolution_px, gameboard_width_squares, gameboard_height_squares)
+    : min_resolution_px_(min_resolution_px), gameboard_width_squares_(gameboard_width_squares), gameboard_height_squares_(gameboard_height_squares)
 {
-    this->square_width_px_ = static_cast<float>(resolution_width_px) / gameboard_width_squares;
-    this->square_height_px_ = static_cast<float>(resolution_height_px) / gameboard_height_squares;
+    this->square_width_px_ = static_cast<float>(resolution_width_px) / this->gameboard_width_squares_;
+    this->square_height_px_ = static_cast<float>(resolution_height_px) / this->gameboard_height_squares_;
 
     if (!this->font_.openFromFile(font_path))
         throw std::runtime_error("Failed to load font from " + font_path);

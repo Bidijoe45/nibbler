@@ -17,6 +17,7 @@ class FruitFactory {
     public:
         FruitFactory(std::size_t width_squares, std::size_t height_squares);
         Fruit create_fruit_random_pos();
+        Fruit create_fruit_random_pos(const std::vector<Position> &snake_body); // this overload avoids clash of fruit position with the snake body
 
     private:
         std::random_device rd;

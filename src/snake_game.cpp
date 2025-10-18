@@ -67,7 +67,7 @@ void SnakeGame::initialize_game() {
 
     this->snake_ = Snake(start_pos);
     this->score_ = 0;
-    this->fruit_ = fruit_factory_.create_fruit_random_pos();
+    this->fruit_ = fruit_factory_.create_fruit_random_pos(this->snake_.body.segments);
 }
 
 // This function is called 59.9 times per second. Game logic goes here
@@ -84,7 +84,7 @@ void SnakeGame::update(double delta_time) {
 
     bool fruit_collision = this->snake_.check_fruit_collision(this->fruit_.pos);
     if (fruit_collision) {
-        this->fruit_ = this->fruit_factory_.create_fruit_random_pos();
+        this->fruit_ = this->fruit_factory_.create_fruit_random_pos(this->snake_.body.segments);
         this->score_ += 1;
         this->snake_.add_segment();
         this->snake_.increase_speed();

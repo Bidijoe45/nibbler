@@ -16,12 +16,12 @@ SDLGUIWindow::SDLGUIWindow(
     : min_resolution_px_(min_resolution_px), gameboard_width_squares_(gameboard_width_squares), gameboard_height_squares_(gameboard_height_squares)
 {
     this->square_size_px_ = std::min((resolution_height_px / this->gameboard_width_squares_),(resolution_height_px / this->gameboard_height_squares_));
-    this->padding_x_ = (resolution_height_px - (this->square_size_px_ * this->gameboard_width_squares_)) / 2;
+    this->padding_x_ = (resolution_width_px - (this->square_size_px_ * this->gameboard_width_squares_)) / 2;
     this->padding_y_ = (resolution_height_px - (this->square_size_px_ * this->gameboard_height_squares_)) / 2;
 
     if (!SDL_CreateWindowAndRenderer(
         title.c_str(),
-        resolution_height_px,
+        resolution_width_px,
         resolution_height_px,
         SDL_WINDOW_RESIZABLE,
         &this->window_,

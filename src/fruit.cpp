@@ -20,4 +20,18 @@ Fruit FruitFactory::create_fruit_random_pos() {
     return f;
 }
 
+Fruit FruitFactory::create_fruit_random_pos(const std::vector<Position> &snake_body) {
+    Fruit f;
+
+    do {
+        f = this->create_fruit_random_pos();
+    } while (std::find_if(snake_body.begin(), snake_body.end(),
+        [&f](const auto &snake_segment){
+            return f.pos.x == snake_segment.x && f.pos.y == snake_segment.y;
+        }) != snake_body.end());
+
+    return f;
+}
+
+
 }

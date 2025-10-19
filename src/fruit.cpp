@@ -2,6 +2,9 @@
 
 namespace nibbler {
 
+FruitFactory::FruitFactory()
+    : width_squares_(0), height_squares_(0) {}
+
 FruitFactory::FruitFactory(std::size_t width_squares, std::size_t height_squares)
     : width_squares_(width_squares), height_squares_(height_squares)
 {
@@ -10,10 +13,32 @@ FruitFactory::FruitFactory(std::size_t width_squares, std::size_t height_squares
     this->distribution_h = std::uniform_int_distribution<>(0, height_squares_ - 1);
 }
 
+FruitFactory::FruitFactory(const FruitFactory &other)
+    : gen(other.gen),
+      distribution_w(other.distribution_w),
+      distribution_h(other.distribution_h),
+      width_squares_(other.width_squares_),
+      height_squares_(other.height_squares_)
+{}
+
+FruitFactory &FruitFactory::operator=(const FruitFactory &other)
+{
+    if (this != &other)
+    {
+        this->gen = other.gen;
+        this->distribution_w = other.distribution_w;
+        this->distribution_h = other.distribution_h;
+        this->width_squares_ = other.width_squares_;
+        this->height_squares_ = other.height_squares_;
+    }
+    return *this;
+}
+
+FruitFactory::~FruitFactory() {}
+
 Fruit FruitFactory::create_fruit_random_pos() {
     Fruit f;
 
-    //FIXME: There is a chance to generate the behind the snake body. Something better is needed
     f.pos.x = distribution_w(this->gen);
     f.pos.y = distribution_h(this->gen);
 

@@ -10,14 +10,16 @@ namespace sdlgui {
 
 class SDLGUIWindow : public nibbler::IWindow {
 public:
+    SDLGUIWindow();
     SDLGUIWindow(
         int32_t resolution_width_px,
         int32_t resolution_height_px,
-        int32_t min_resolution_px,
         int32_t gameboard_width_squares,
         int32_t gameboard_height_squares,
         std::string title
     );
+    SDLGUIWindow(const SDLGUIWindow &other);
+    SDLGUIWindow &operator=(const SDLGUIWindow &other);
     ~SDLGUIWindow();
 
     void add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) override;
@@ -32,19 +34,20 @@ public:
     void render() override;
 
 private:
-    std::pair<int, int> get_window_size();
+    void init(int32_t resolution_width_px, int32_t resolution_height_px);
+    const std::pair<int, int> get_window_size() const;
     void draw_border();
 
     SDL_Window* window_;
     SDL_Renderer* renderer_;
     std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
 
-    const int32_t min_resolution_px_ = 0;
-    const int32_t gameboard_width_squares_ = 0;
-    const int32_t gameboard_height_squares_ = 0;
+    int32_t gameboard_width_squares_;
+    int32_t gameboard_height_squares_;
     int32_t square_size_px_;
     int32_t padding_x_;
     int32_t padding_y_;
+    std::string title_;
 };
 
 class SDLGUI : public nibbler::INibblerGraphicsApi {
@@ -55,7 +58,6 @@ class SDLGUI : public nibbler::INibblerGraphicsApi {
     std::unique_ptr<nibbler::IWindow> create_window(
         int32_t resolution_width_px,
         int32_t resolution_height_px,
-        int32_t min_resolution_px,
         int32_t gameboard_width_squares,
         int32_t gameboard_height_squares,
         std::string font_path,

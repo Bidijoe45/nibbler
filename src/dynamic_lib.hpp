@@ -8,14 +8,16 @@
 namespace nibbler {
 
 struct DynamicLib {
+    DynamicLib();
     DynamicLib(const std::string path, void *handle);
+    DynamicLib(const DynamicLib &other);
+    DynamicLib &operator=(const DynamicLib &other);
     ~DynamicLib();
 
     void* get_symbol(const std::string &symbol_name);
-
-    const std::string path;
-
+    
 private:
+    std::string path_;
     void* handle_;
 };
 

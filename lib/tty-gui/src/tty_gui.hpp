@@ -14,12 +14,10 @@ namespace ttygui {
 
 class TTYGUIWindow : public nibbler::IWindow {
 public:
-    TTYGUIWindow(int32_t resolution_width_px,
-        int32_t resolution_height_px,
-        int32_t min_resolution_px,
-        int32_t gameboard_width_squares,
-        int32_t gameboard_height_squares,
-        std::string title);
+    TTYGUIWindow();
+    TTYGUIWindow(int32_t gameboard_width_squares, int32_t gameboard_height_squares);
+    TTYGUIWindow(const TTYGUIWindow &other);
+    TTYGUIWindow &operator=(const TTYGUIWindow &other);
     ~TTYGUIWindow();
 
     void add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) override;
@@ -43,6 +41,7 @@ private:
     static int term_rows;
     static termios orig_termios;
 
+    void init();
     void set_noncanonical_mode();
     void set_non_blocking(bool enable);
     nibbler::Key convert_input_to_key(char ch);
@@ -55,6 +54,8 @@ private:
     std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
     int32_t score_;
     std::deque<std::string> messages_;
+    int32_t gameboard_width_squares_ = 0;
+    int32_t gameboard_height_squares_ = 0;
 };
 
 class TTYGUI : public nibbler::INibblerGraphicsApi {
@@ -65,7 +66,6 @@ public:
     std::unique_ptr<nibbler::IWindow> create_window(
         int32_t resolution_width_px,
         int32_t resolution_height_px,
-        int32_t min_resolution_px,
         int32_t gameboard_width_squares,
         int32_t gameboard_height_squares,
         std::string font_path,

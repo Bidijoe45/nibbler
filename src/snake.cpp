@@ -14,6 +14,27 @@ Snake::Snake(const Position &start_pos)
     this->body.direction = Direction::RIGHT;
 }
 
+Snake::Snake(const Snake &other)
+    : body(other.body),
+      move_timer_s(other.move_timer_s),
+      move_interval_s(other.move_interval_s),
+      last_tail_segment(other.last_tail_segment)
+{}
+
+Snake &Snake::operator=(const Snake &other)
+{
+    if (this != &other)
+    {
+        this->body = other.body;
+        this->move_timer_s = other.move_timer_s;
+        this->move_interval_s = other.move_interval_s;
+        this->last_tail_segment = other.last_tail_segment;
+    }
+    return *this;
+}
+
+Snake::~Snake() {}
+
 void Snake::add_segment(void)
 {
     if (this->body.segments.size() == 0) {

@@ -11,7 +11,12 @@ namespace nibbler {
 
 class Nibbler {
 public:
+    Nibbler();
     Nibbler(Configuration config);
+    Nibbler(const Nibbler &other);
+    Nibbler &operator=(const Nibbler &other);
+    ~Nibbler();
+
     int start();
 
 private:

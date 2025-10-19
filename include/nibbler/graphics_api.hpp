@@ -5,6 +5,12 @@
 #include <memory>
 #include <functional>
 
+static constexpr int32_t default_gameboard_x_squares = 16;
+static constexpr int32_t default_gameboard_y_squares = 16;
+static constexpr int32_t default_res_x_px = 640;
+static constexpr int32_t default_res_y_px = 480;
+static constexpr int32_t min_resolution_px = 200;
+
 namespace nibbler {
 
 enum Key {
@@ -39,11 +45,11 @@ public:
 class INibblerGraphicsApi {
 
 public:
-    inline virtual ~INibblerGraphicsApi() {};
+    inline virtual ~INibblerGraphicsApi() {}
+
     virtual std::unique_ptr<IWindow> create_window(
         int32_t resolution_width_px,
         int32_t resolution_height_px,
-        int32_t min_resolution_px,
         int32_t gameboard_width_squares,
         int32_t gameboard_height_squares,
         std::string font_path,

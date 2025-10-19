@@ -7,14 +7,69 @@
 
 namespace raylibgui {
 
+RaylibGUIWindow::RaylibGUIWindow()
+    : score_(0),
+      fruit_({0, 0}),
+      gameboard_width_squares_(default_gameboard_x_squares),
+      gameboard_height_squares_(default_gameboard_y_squares),
+      title_("No title")
+{
+    this->init(default_res_x_px, default_res_y_px);
+}
+
 RaylibGUIWindow::RaylibGUIWindow(
     int32_t resolution_width_px,
     int32_t resolution_height_px,
-    int32_t min_resolution_px,
     int32_t gameboard_width_squares,
     int32_t gameboard_height_squares,
     std::string title)
-    : gameboard_width_squares_(gameboard_width_squares), gameboard_height_squares_(gameboard_height_squares)
+    : score_(0),
+      fruit_({0, 0}),
+      gameboard_width_squares_(gameboard_width_squares),
+      gameboard_height_squares_(gameboard_height_squares),
+      title_(title)
+{
+    this->init(resolution_width_px, resolution_height_px);
+}
+
+RaylibGUIWindow::RaylibGUIWindow(const RaylibGUIWindow &other)
+    : score_(other.score_),
+      snake_(other.snake_),
+      fruit_(other.fruit_),
+      gameboard_width_squares_(other.gameboard_width_squares_),
+      gameboard_height_squares_(other.gameboard_height_squares_),
+      title_(other.title_)
+{
+    std::pair<int, int> res = other.get_window_size();
+    this->init(res.first, res.second);
+    this->key_down_callbacks_ = other.key_down_callbacks_;
+}
+
+RaylibGUIWindow &RaylibGUIWindow::operator=(const RaylibGUIWindow &other)
+{
+    if (this != &other)
+    {
+        this->score_ = other.score_;
+        this->snake_ = other.snake_;
+        this->fruit_ = other.fruit_;
+        this->gameboard_width_squares_ = other.gameboard_width_squares_;
+        this->gameboard_height_squares_ = other.gameboard_height_squares_;
+        this->title_ = other.title_;
+
+        std::pair<int, int> res = other.get_window_size();
+        this->init(res.first, res.second);
+
+        this->key_down_callbacks_ = other.key_down_callbacks_;
+    }
+    return *this;
+}
+
+RaylibGUIWindow::~RaylibGUIWindow()
+{
+    CloseWindow();
+}
+
+void RaylibGUIWindow::init(int32_t resolution_width_px, int32_t resolution_height_px)
 {
     this->camera_.position = (Vector3){ 0.0f, 25.0f, 30.0f };
     this->camera_.target = (Vector3){ 0.0f, 0.0f, 0.0f };
@@ -27,18 +82,13 @@ RaylibGUIWindow::RaylibGUIWindow(
     InitWindow(
         resolution_width_px,
         resolution_height_px,
-        title.c_str());
+        this->title_.c_str());
 
     if (!IsWindowReady())
         throw std::runtime_error("Failed to initialize RAYLIB window.");
 
     SetWindowMinSize(min_resolution_px, min_resolution_px);
     SetWindowFocused();
-}
-
-RaylibGUIWindow::~RaylibGUIWindow()
-{
-    CloseWindow();
 }
 
 void RaylibGUIWindow::add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) {
@@ -166,7 +216,7 @@ void RaylibGUIWindow::render() {
     EndDrawing();
 }
 
-std::pair<int, int> RaylibGUIWindow::get_window_size() {
+const std::pair<int, int> RaylibGUIWindow::get_window_size() const {
     return std::make_pair(GetScreenWidth(), GetScreenWidth());
 }
 
@@ -177,7 +227,6 @@ std::unique_ptr<nibbler::IWindow>
 RaylibGUI::create_window(
     int32_t resolution_width_px,
     int32_t resolution_height_px,
-    int32_t min_resolution_px,
     int32_t gameboard_width_squares,
     int32_t gameboard_height_squares,
     std::string font_path,
@@ -188,7 +237,6 @@ RaylibGUI::create_window(
         return std::make_unique<RaylibGUIWindow>(
             resolution_width_px,
             resolution_height_px,
-            min_resolution_px,
             gameboard_width_squares,
             gameboard_height_squares,
             std::move(title));

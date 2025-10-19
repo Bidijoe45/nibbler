@@ -6,7 +6,21 @@
 
 namespace nibbler {
 
-DynamicLib::DynamicLib(const std::string path, void *handle) : path(path), handle_(handle) { }
+DynamicLib::DynamicLib() : path_(""), handle_(nullptr) {}
+
+DynamicLib::DynamicLib(const std::string path, void *handle) : path_(path), handle_(handle) {}
+
+DynamicLib::DynamicLib(const DynamicLib &other) : path_(other.path_), handle_(other.handle_) {}
+
+DynamicLib &DynamicLib::operator=(const DynamicLib &other)
+{
+    if (&other != this)
+    {
+        this->path_ = other.path_;
+        this->handle_ = other.handle_;
+    }
+    return *this;
+}
 
 DynamicLib::~DynamicLib() {
     dlclose(this->handle_);

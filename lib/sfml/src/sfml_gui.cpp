@@ -6,26 +6,71 @@
 
 namespace sfmlgui {
 
+SFMLGUIWindow::SFMLGUIWindow()
+    : gameboard_width_squares_(default_gameboard_x_squares),
+      gameboard_height_squares_(default_gameboard_y_squares),
+      title_("No title")
+{
+    this->init(default_res_x_px, default_res_y_px);
+}
+
 SFMLGUIWindow::SFMLGUIWindow(int32_t resolution_width_px,
     int32_t resolution_height_px,
-    int32_t min_resolution_px,
     int32_t gameboard_width_squares,
     int32_t gameboard_height_squares,
     std::string font_path,
     std::string title)
-    : min_resolution_px_(min_resolution_px), gameboard_width_squares_(gameboard_width_squares), gameboard_height_squares_(gameboard_height_squares)
+    : gameboard_width_squares_(gameboard_width_squares), gameboard_height_squares_(gameboard_height_squares)
+{
+    if (!this->font_.openFromFile(font_path))
+        throw std::runtime_error("Failed to load font from " + font_path);
+
+    this->init(resolution_width_px, resolution_height_px);
+}
+
+SFMLGUIWindow::SFMLGUIWindow(const SFMLGUIWindow &other)
+    : gameboard_width_squares_(other.gameboard_width_squares_),
+      gameboard_height_squares_(other.gameboard_height_squares_),
+      font_(other.font_),
+      title_(other.title_)
+{
+    std::pair<int, int> res = other.get_window_size();
+    this->init(res.first, res.second);
+    this->key_down_callbacks_ = other.key_down_callbacks_;
+}
+
+SFMLGUIWindow &SFMLGUIWindow::operator=(const SFMLGUIWindow &other)
+{
+    if (this != &other)
+    {
+        this->gameboard_width_squares_ = other.gameboard_width_squares_;
+        this->gameboard_height_squares_ = other.gameboard_height_squares_;
+        this->font_ = other.font_;
+        this->title_ = other.title_;
+
+        std::pair<int, int> res = other.get_window_size();
+        this->init(res.first, res.second);
+
+        this->key_down_callbacks_ = other.key_down_callbacks_;
+    }
+    return *this;
+}
+
+SFMLGUIWindow::~SFMLGUIWindow()
+{
+    this->window_.close();
+}
+
+void SFMLGUIWindow::init(int32_t resolution_width_px, int32_t resolution_height_px)
 {
     this->square_width_px_ = static_cast<float>(resolution_width_px) / this->gameboard_width_squares_;
     this->square_height_px_ = static_cast<float>(resolution_height_px) / this->gameboard_height_squares_;
-
-    if (!this->font_.openFromFile(font_path))
-        throw std::runtime_error("Failed to load font from " + font_path);
 
     this->window_.create(
         sf::VideoMode({
             static_cast<unsigned int>(resolution_width_px),
             static_cast<unsigned int>(resolution_height_px)}),
-        title,
+        this->title_,
         sf::Style::Close | sf::Style::Titlebar | sf::Style::Resize,
         sf::State::Windowed);
 
@@ -35,9 +80,10 @@ SFMLGUIWindow::SFMLGUIWindow(int32_t resolution_width_px,
     this->window_.setKeyRepeatEnabled(false);
 }
 
-SFMLGUIWindow::~SFMLGUIWindow()
+const std::pair<int, int> SFMLGUIWindow::get_window_size() const
 {
-    this->window_.close();
+    sf::Vector2u res = this->window_.getSize();
+    return std::make_pair(res.x, res.y);
 }
 
 void SFMLGUIWindow::add_event_listener_key_down(KeyDownCallback callback)
@@ -67,10 +113,10 @@ void SFMLGUIWindow::read_input()
         if (const auto *resized = event->getIf<sf::Event::Resized>())
         {
             sf::Vector2u res = this->window_.getSize();
-            if (res.x < this->min_resolution_px_)
-                res.x = this->min_resolution_px_;
-            if (res.y < this->min_resolution_px_)
-                res.y = this->min_resolution_px_;
+            if (res.x < min_resolution_px)
+                res.x = min_resolution_px;
+            if (res.y < min_resolution_px)
+                res.y = min_resolution_px;
             this->window_.setSize(res);
 
             // Reset GUI view to avoid default stretching
@@ -173,7 +219,8 @@ void SFMLGUIWindow::set_score(int32_t score)
 {
     sf::Text score_text(this->font_);
     score_text.setString("Score: " + std::to_string(score));
-    score_text.setCharacterSize(std::max(this->window_.getSize().x / 25, this->window_.getSize().y / 25));
+    std::pair<int, int> res = this->get_window_size();
+    score_text.setCharacterSize(std::max(res.first / 25, res.second / 25));
     score_text.setFillColor(sf::Color::Black);
     this->window_.draw(score_text);
 }
@@ -194,7 +241,6 @@ SFMLGUI::~SFMLGUI() {}
 std::unique_ptr<nibbler::IWindow> SFMLGUI::create_window(
     int32_t resolution_width_px,
     int32_t resolution_height_px,
-    int32_t min_resolution_px,
     int32_t gameboard_width_squares,
     int32_t gameboard_height_squares,
     std::string font_path,
@@ -205,7 +251,6 @@ std::unique_ptr<nibbler::IWindow> SFMLGUI::create_window(
         return std::make_unique<SFMLGUIWindow>(
             resolution_width_px,
             resolution_height_px,
-            min_resolution_px,
             gameboard_width_squares,
             gameboard_height_squares,
             font_path,

@@ -6,21 +6,69 @@
 
 namespace sdlgui {
 
+SDLGUIWindow::SDLGUIWindow()
+    : gameboard_width_squares_(default_gameboard_x_squares),
+      gameboard_height_squares_(default_gameboard_y_squares),
+      title_("No title")
+{
+    this->init(default_res_x_px, default_res_y_px);
+}
+
 SDLGUIWindow::SDLGUIWindow(
     int32_t resolution_width_px,
     int32_t resolution_height_px,
-    int32_t min_resolution_px,
     int32_t gameboard_width_squares,
     int32_t gameboard_height_squares,
     std::string title)
-    : min_resolution_px_(min_resolution_px), gameboard_width_squares_(gameboard_width_squares), gameboard_height_squares_(gameboard_height_squares)
+    : gameboard_width_squares_(gameboard_width_squares),
+      gameboard_height_squares_(gameboard_height_squares),
+      title_(title)
 {
-    this->square_size_px_ = std::min((resolution_height_px / this->gameboard_width_squares_),(resolution_height_px / this->gameboard_height_squares_));
+    this->init(resolution_width_px, resolution_height_px);
+}
+
+SDLGUIWindow::SDLGUIWindow(const SDLGUIWindow &other)
+    : gameboard_width_squares_(other.gameboard_width_squares_),
+      gameboard_height_squares_(other.gameboard_height_squares_),
+      title_(other.title_)
+{
+    const std::pair<int, int> res = other.get_window_size();
+    this->init(res.first, res.second);
+    this->key_down_callbacks_ = other.key_down_callbacks_;
+}
+
+SDLGUIWindow &SDLGUIWindow::operator=(const SDLGUIWindow &other)
+{
+    if (this != &other)
+    {
+        this->gameboard_width_squares_ = other.gameboard_width_squares_;
+        this->gameboard_height_squares_ = other.gameboard_height_squares_;
+        this->title_ = other.title_;
+
+        const std::pair<int, int> res = other.get_window_size();
+        this->init(res.first, res.second);
+
+        this->key_down_callbacks_ = other.key_down_callbacks_;
+    }
+    return *this;
+}
+
+SDLGUIWindow::~SDLGUIWindow()
+{
+    SDL_DestroyRenderer(this->renderer_);
+    SDL_DestroyWindow(this->window_);
+    SDL_PumpEvents(); // needed on macOS
+    SDL_Quit();
+}
+
+void SDLGUIWindow::init(int32_t resolution_width_px, int32_t resolution_height_px)
+{
+    this->square_size_px_ = std::min((resolution_height_px / this->gameboard_width_squares_), (resolution_height_px / this->gameboard_height_squares_));
     this->padding_x_ = (resolution_width_px - (this->square_size_px_ * this->gameboard_width_squares_)) / 2;
     this->padding_y_ = (resolution_height_px - (this->square_size_px_ * this->gameboard_height_squares_)) / 2;
 
     if (!SDL_CreateWindowAndRenderer(
-        title.c_str(),
+        this->title_.c_str(),
         resolution_width_px,
         resolution_height_px,
         SDL_WINDOW_RESIZABLE,
@@ -31,14 +79,6 @@ SDLGUIWindow::SDLGUIWindow(
         SDL_Quit();
         throw std::runtime_error(error_msg);
     }
-}
-
-SDLGUIWindow::~SDLGUIWindow()
-{
-    SDL_DestroyRenderer(this->renderer_);
-    SDL_DestroyWindow(this->window_);
-    SDL_PumpEvents(); // needed on macOS
-    SDL_Quit();
 }
 
 void SDLGUIWindow::add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) {
@@ -108,10 +148,10 @@ void SDLGUIWindow::read_input() {
         else if (e.type == SDL_EVENT_WINDOW_RESIZED) {
             std::pair<int, int> res = this->get_window_size();
 
-            if (res.first < this->min_resolution_px_)
-                res.first = this->min_resolution_px_;
-            if (res.second < this->min_resolution_px_)
-                res.second = this->min_resolution_px_;
+            if (res.first < min_resolution_px)
+                res.first = min_resolution_px;
+            if (res.second < min_resolution_px)
+                res.second = min_resolution_px;
             SDL_SetWindowSize(this->window_, res.first, res.second);
 
             this->square_size_px_ = std::min((res.first / this->gameboard_width_squares_),(res.second / this->gameboard_height_squares_));
@@ -183,7 +223,7 @@ void SDLGUIWindow::render() {
     SDL_RenderPresent(this->renderer_);
 }
 
-std::pair<int, int> SDLGUIWindow::get_window_size() {
+const std::pair<int, int> SDLGUIWindow::get_window_size() const {
     int w, h;
     SDL_GetWindowSize(this->window_, &w, &h);
     return std::make_pair(w, h);
@@ -196,7 +236,6 @@ std::unique_ptr<nibbler::IWindow>
 SDLGUI::create_window(
     int32_t resolution_width_px,
     int32_t resolution_height_px,
-    int32_t min_resolution_px,
     int32_t gameboard_width_squares,
     int32_t gameboard_height_squares,
     std::string font_path,
@@ -207,7 +246,6 @@ SDLGUI::create_window(
         return std::make_unique<SDLGUIWindow>(
             resolution_width_px,
             resolution_height_px,
-            min_resolution_px,
             gameboard_width_squares,
             gameboard_height_squares,
             std::move(title));

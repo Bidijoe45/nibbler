@@ -10,13 +10,17 @@ namespace raylibgui {
 
 class RaylibGUIWindow : public nibbler::IWindow {
 public:
+    RaylibGUIWindow();
+    
     RaylibGUIWindow(
         int32_t resolution_width_px,
         int32_t resolution_height_px,
-        int32_t min_resolution_px,
         int32_t gameboard_width_squares,
         int32_t gameboard_height_squares,
         std::string title);
+
+    RaylibGUIWindow(const RaylibGUIWindow &other);
+    RaylibGUIWindow &operator=(const RaylibGUIWindow &other);
     ~RaylibGUIWindow();
 
     void add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) override;
@@ -31,16 +35,18 @@ public:
     void render() override;
 
 private:
-    std::pair<int, int> get_window_size();
+    void init(int32_t resolution_width_px, int32_t resolution_height_px);
+    const std::pair<int, int> get_window_size() const;
     void draw_border();
 
     std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
     int32_t score_;
-    Camera3D camera_;
     std::vector<nibbler::Position> snake_;
     nibbler::Position fruit_;
-    const int32_t gameboard_width_squares_ = 0;
-    const int32_t gameboard_height_squares_ = 0;
+    Camera3D camera_;
+    int32_t gameboard_width_squares_;
+    int32_t gameboard_height_squares_;
+    std::string title_;
 };
 
 class RaylibGUI : public nibbler::INibblerGraphicsApi {
@@ -51,7 +57,6 @@ class RaylibGUI : public nibbler::INibblerGraphicsApi {
     std::unique_ptr<nibbler::IWindow> create_window(
         int32_t resolution_width_px,
         int32_t resolution_height_px,
-        int32_t min_resolution_px,
         int32_t gameboard_width_squares,
         int32_t gameboard_height_squares,
         std::string font_path,

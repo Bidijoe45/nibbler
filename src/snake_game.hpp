@@ -20,12 +20,15 @@ enum GameState {
 class SnakeGame {
 
 public:
+    SnakeGame();
     SnakeGame(
         Configuration config,
         const std::map<Key, GraphicsApiSharedPtr> &graphics_apis,
         const std::map<Key, ConfigLibrary> &graphics_apis_configs
     );
 
+    SnakeGame(const SnakeGame &other);
+    SnakeGame &operator=(const SnakeGame &other);
     ~SnakeGame();
 
     void on_key_down(Key key);

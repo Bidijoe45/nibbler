@@ -9,7 +9,21 @@
 
 namespace nibbler {
 
-Nibbler::Nibbler(Configuration config) : config_(config) { }
+Nibbler::Nibbler() {}
+
+Nibbler::Nibbler(Configuration config) : config_(config) {}
+
+Nibbler::Nibbler(const Nibbler &other) : config_(other.config_) {}
+
+Nibbler &Nibbler::operator=(const Nibbler &other)
+{
+    if (this != &other)
+        this->config_ = other.config_;
+
+    return *this;
+}
+
+Nibbler::~Nibbler() {}
 
 int Nibbler::start() {
 

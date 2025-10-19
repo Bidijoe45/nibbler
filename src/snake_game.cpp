@@ -4,6 +4,9 @@
 #include <iostream>
 
 namespace nibbler {
+
+SnakeGame::SnakeGame() {}
+
 SnakeGame::SnakeGame(
     Configuration config,
     const std::map<Key, GraphicsApiSharedPtr> &graphics_apis,
@@ -17,6 +20,37 @@ SnakeGame::SnakeGame(
     {
         this->current_gui_ = this->graphics_apis_.begin()->first;
     }
+}
+
+SnakeGame::SnakeGame(const SnakeGame &other)
+    : config_(other.config_),
+      graphics_apis_(other.graphics_apis_),
+      graphics_apis_configs_(other.graphics_apis_configs_),
+      window_(nullptr),
+      current_gui_(other.current_gui_),
+      game_state_(other.game_state_),
+      score_(other.score_),
+      snake_(other.snake_),
+      fruit_(other.fruit_),
+      fruit_factory_(other.fruit_factory_)
+{}
+
+SnakeGame &SnakeGame::operator=(const SnakeGame &other)
+{
+    if (this != &other)
+    {
+        this->config_ = other.config_;
+        this->graphics_apis_ = other.graphics_apis_;
+        this->graphics_apis_configs_ = other.graphics_apis_configs_;
+        this->window_ = nullptr;
+        this->current_gui_ = other.current_gui_;
+        this->game_state_ = other.game_state_;
+        this->score_ = other.score_;
+        this->snake_ = other.snake_;
+        this->fruit_ = other.fruit_;
+        this->fruit_factory_ = other.fruit_factory_;
+    }
+    return *this;
 }
 
 SnakeGame::~SnakeGame() {}
@@ -73,6 +107,9 @@ void SnakeGame::initialize_game() {
 // This function is called 59.9 times per second. Game logic goes here
 void SnakeGame::update(double delta_time) {
 
+    if (!this->window_)
+        return;
+
     this->snake_.move(delta_time);
 
     // If collision, just restart the game for now
@@ -108,7 +145,6 @@ bool SnakeGame::switch_gui()
     this->window_ = api->second->create_window(
         (*api_config).second.resolution_width,
         (*api_config).second.resolution_height,
-        this->config_.min_resolution,
         this->config_.gameboard_width_squares,
         this->config_.gameboard_height_squares,
         (*api_config).second.font_path,

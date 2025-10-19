@@ -10,14 +10,16 @@ namespace sfmlgui {
 
 class SFMLGUIWindow : public nibbler::IWindow {
     public:
+        SFMLGUIWindow();
         SFMLGUIWindow(
             int32_t resolution_width_px,
             int32_t resolution_height_px,
-            int32_t min_resolution_px,
             int32_t gameboard_width_squares,
             int32_t gameboard_height_squares,
             std::string font_path,
             std::string title);
+        SFMLGUIWindow(const SFMLGUIWindow &other);
+        SFMLGUIWindow &operator=(const SFMLGUIWindow &other);
         ~SFMLGUIWindow();
 
         void add_event_listener_key_down(KeyDownCallback cb) override;
@@ -32,14 +34,17 @@ class SFMLGUIWindow : public nibbler::IWindow {
         void push_message(const std::string &msg) override;
 
     private:
+        void init(int32_t resolution_width_px, int32_t resolution_height_px);
+        const std::pair<int, int> get_window_size() const;
+
         sf::RenderWindow window_;
         std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
-        const int32_t min_resolution_px_ = 0;
-        const int32_t gameboard_width_squares_ = 0;
-        const int32_t gameboard_height_squares_ = 0;
+        int32_t gameboard_width_squares_ = 0;
+        int32_t gameboard_height_squares_ = 0;
         float square_width_px_;
         float square_height_px_;
         sf::Font font_;
+        std::string title_;
 };
 
 class SFMLGUI : public nibbler::INibblerGraphicsApi {
@@ -49,7 +54,6 @@ class SFMLGUI : public nibbler::INibblerGraphicsApi {
         std::unique_ptr<nibbler::IWindow> create_window(
             int32_t resolution_width_px,
             int32_t resolution_height_px,
-            int32_t min_resolution_px,
             int32_t gameboard_width_squares,
             int32_t gameboard_height_squares,
             std::string font_path,

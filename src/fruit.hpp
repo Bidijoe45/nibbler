@@ -15,7 +15,12 @@ struct Fruit {
 
 class FruitFactory {
     public:
+        FruitFactory();
         FruitFactory(std::size_t width_squares, std::size_t height_squares);
+        FruitFactory(const FruitFactory &other);
+        FruitFactory &operator=(const FruitFactory &other);
+        ~FruitFactory();
+
         Fruit create_fruit_random_pos();
         Fruit create_fruit_random_pos(const std::vector<Position> &snake_body); // this overload avoids clash of fruit position with the snake body
 
@@ -25,8 +30,8 @@ class FruitFactory {
         std::uniform_int_distribution<> distribution_w;
         std::uniform_int_distribution<> distribution_h;
 
-        std::size_t width_squares_ = 0;
-        std::size_t height_squares_ = 0;
+        std::size_t width_squares_;
+        std::size_t height_squares_;
 };
 
 }

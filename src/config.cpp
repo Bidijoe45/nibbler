@@ -1,4 +1,5 @@
 #include "config.hpp"
+#include "nibbler/graphics_api.hpp"
 
 #include "nlohmann/json.hpp"
 
@@ -66,9 +67,9 @@ Configuration ConfigParser::parseConfigFile(const std::string &file_path) {
             return config;
         }
 
-        if (element["resolution"]["width"] <= Configuration::min_resolution
-            || element["resolution"]["height"] <= Configuration::min_resolution) {
-            std::cerr << "ERROR|> config file: resolution width and height must be >= " << Configuration::min_resolution << file_path << std::endl;
+        if (element["resolution"]["width"] <= min_resolution_px
+            || element["resolution"]["height"] <= min_resolution_px) {
+            std::cerr << "ERROR|> config file: resolution width and height must be >= " << min_resolution_px << file_path << std::endl;
             return config;
         }
 

@@ -17,13 +17,47 @@ termios TTYGUIWindow::orig_termios;
 int TTYGUIWindow::score_rows = 1;
 int TTYGUIWindow::messages_rows = 3;
 
-TTYGUIWindow::TTYGUIWindow(
-    int32_t resolution_width_px,
-    int32_t resolution_height_px,
-    int32_t min_resolution_px,
-    int32_t gameboard_width_squares,
-    int32_t gameboard_height_squares,
-    std::string title)
+TTYGUIWindow::TTYGUIWindow()
+    : score_(0),
+      gameboard_width_squares_(default_gameboard_x_squares),
+      gameboard_height_squares_(default_gameboard_y_squares)
+{
+    this->init();
+}
+
+TTYGUIWindow::TTYGUIWindow(int32_t gameboard_width_squares, int32_t gameboard_height_squares)
+    : score_(0),
+      gameboard_width_squares_(gameboard_width_squares),
+      gameboard_height_squares_(gameboard_height_squares)
+{
+    this->init();
+}
+
+TTYGUIWindow::TTYGUIWindow(const TTYGUIWindow &other)
+    : score_(other.score_),
+      gameboard_width_squares_(other.gameboard_width_squares_),
+      gameboard_height_squares_(other.gameboard_height_squares_)
+{
+    this->init();
+    this->key_down_callbacks_ = other.key_down_callbacks_;
+    this->messages_ = other.messages_;
+}
+
+TTYGUIWindow &TTYGUIWindow::operator=(const TTYGUIWindow &other)
+{
+    if (this != &other)
+    {
+        this->score_ = other.score_;
+        this->gameboard_width_squares_ = other.gameboard_width_squares_;
+        this->gameboard_height_squares_ = other.gameboard_height_squares_;
+        this->init();
+        this->key_down_callbacks_ = other.key_down_callbacks_;
+        this->messages_ = other.messages_;
+    }
+    return *this;
+}
+
+void TTYGUIWindow::init()
 {
     std::atexit(TTYGUIWindow::restore_terminal);
     std::signal(SIGWINCH, TTYGUIWindow::handle_resize);
@@ -31,8 +65,8 @@ TTYGUIWindow::TTYGUIWindow(
 
     this->set_noncanonical_mode();
     //TTYGUIWindow::update_terminal_size();
-    TTYGUIWindow::term_cols = gameboard_width_squares;
-    TTYGUIWindow::term_rows = gameboard_height_squares;
+    TTYGUIWindow::term_cols = this->gameboard_width_squares_;
+    TTYGUIWindow::term_rows = this->gameboard_height_squares_;
 
     this->draw_border();
 }
@@ -250,19 +284,13 @@ std::unique_ptr<nibbler::IWindow>
 TTYGUI::create_window(
     int32_t resolution_width_px,
     int32_t resolution_height_px,
-    int32_t min_resolution_px,
     int32_t gameboard_width_squares,
     int32_t gameboard_height_squares,
     std::string font_path,
     std::string title)
 {
-    return std::make_unique<TTYGUIWindow>(
-            resolution_width_px,
-            resolution_height_px,
-            min_resolution_px,
-            gameboard_width_squares,
-            gameboard_height_squares,
-            std::move(title));
+    return std::make_unique<TTYGUIWindow>(gameboard_width_squares,
+        gameboard_height_squares);
 }
 
 }

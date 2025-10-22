@@ -19,8 +19,8 @@ public:
         int32_t gameboard_height_squares,
         std::string title);
 
-    RaylibGUIWindow(const RaylibGUIWindow &other);
-    RaylibGUIWindow &operator=(const RaylibGUIWindow &other);
+    RaylibGUIWindow(const RaylibGUIWindow &other) = delete;
+    RaylibGUIWindow &operator=(const RaylibGUIWindow &other) = delete;
     ~RaylibGUIWindow();
 
     void add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) override;

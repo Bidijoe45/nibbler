@@ -32,38 +32,6 @@ RaylibGUIWindow::RaylibGUIWindow(
     this->init(resolution_width_px, resolution_height_px);
 }
 
-RaylibGUIWindow::RaylibGUIWindow(const RaylibGUIWindow &other)
-    : score_(other.score_),
-      snake_(other.snake_),
-      fruit_(other.fruit_),
-      gameboard_width_squares_(other.gameboard_width_squares_),
-      gameboard_height_squares_(other.gameboard_height_squares_),
-      title_(other.title_)
-{
-    std::pair<int, int> res = other.get_window_size();
-    this->init(res.first, res.second);
-    this->key_down_callbacks_ = other.key_down_callbacks_;
-}
-
-RaylibGUIWindow &RaylibGUIWindow::operator=(const RaylibGUIWindow &other)
-{
-    if (this != &other)
-    {
-        this->score_ = other.score_;
-        this->snake_ = other.snake_;
-        this->fruit_ = other.fruit_;
-        this->gameboard_width_squares_ = other.gameboard_width_squares_;
-        this->gameboard_height_squares_ = other.gameboard_height_squares_;
-        this->title_ = other.title_;
-
-        std::pair<int, int> res = other.get_window_size();
-        this->init(res.first, res.second);
-
-        this->key_down_callbacks_ = other.key_down_callbacks_;
-    }
-    return *this;
-}
-
 RaylibGUIWindow::~RaylibGUIWindow()
 {
     CloseWindow();

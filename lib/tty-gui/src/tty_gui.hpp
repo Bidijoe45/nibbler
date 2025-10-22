@@ -16,8 +16,8 @@ class TTYGUIWindow : public nibbler::IWindow {
 public:
     TTYGUIWindow();
     TTYGUIWindow(int32_t gameboard_width_squares, int32_t gameboard_height_squares);
-    TTYGUIWindow(const TTYGUIWindow &other);
-    TTYGUIWindow &operator=(const TTYGUIWindow &other);
+    TTYGUIWindow(const TTYGUIWindow &other) = delete;
+    TTYGUIWindow &operator=(const TTYGUIWindow &other) = delete;
     ~TTYGUIWindow();
 
     void add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) override;

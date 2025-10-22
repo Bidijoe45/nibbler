@@ -18,8 +18,8 @@ public:
         int32_t gameboard_height_squares,
         std::string title
     );
-    SDLGUIWindow(const SDLGUIWindow &other);
-    SDLGUIWindow &operator=(const SDLGUIWindow &other);
+    SDLGUIWindow(const SDLGUIWindow &other) = delete;
+    SDLGUIWindow &operator=(const SDLGUIWindow &other) = delete;
     ~SDLGUIWindow();
 
     void add_event_listener_key_down(nibbler::IWindow::KeyDownCallback cb) override;

@@ -27,32 +27,6 @@ SDLGUIWindow::SDLGUIWindow(
     this->init(resolution_width_px, resolution_height_px);
 }
 
-SDLGUIWindow::SDLGUIWindow(const SDLGUIWindow &other)
-    : gameboard_width_squares_(other.gameboard_width_squares_),
-      gameboard_height_squares_(other.gameboard_height_squares_),
-      title_(other.title_)
-{
-    const std::pair<int, int> res = other.get_window_size();
-    this->init(res.first, res.second);
-    this->key_down_callbacks_ = other.key_down_callbacks_;
-}
-
-SDLGUIWindow &SDLGUIWindow::operator=(const SDLGUIWindow &other)
-{
-    if (this != &other)
-    {
-        this->gameboard_width_squares_ = other.gameboard_width_squares_;
-        this->gameboard_height_squares_ = other.gameboard_height_squares_;
-        this->title_ = other.title_;
-
-        const std::pair<int, int> res = other.get_window_size();
-        this->init(res.first, res.second);
-
-        this->key_down_callbacks_ = other.key_down_callbacks_;
-    }
-    return *this;
-}
-
 SDLGUIWindow::~SDLGUIWindow()
 {
     SDL_DestroyRenderer(this->renderer_);

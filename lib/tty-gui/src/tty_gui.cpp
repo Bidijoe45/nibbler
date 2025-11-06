@@ -188,6 +188,22 @@ void TTYGUIWindow::draw_fruit(const nibbler::Position& fruit_pos) {
     this->draw_pixel(fruit_pos.x + 1, fruit_pos.y + 1, '0'); // +1 to take into account window borders
 }
 
+void TTYGUIWindow::draw_start_screen(const std::string &msg, int32_t max_score)
+{
+    this->clear_screen();
+
+    int draw_start_x = (TTYGUIWindow::term_cols / 2) - (msg.length() / 2);
+    int draw_start_y = TTYGUIWindow::term_rows / 2;
+    std::cout << "\033[" << draw_start_y << ";" << draw_start_x << "H";
+    std::cout << msg << "\033[1;1H";
+
+    std::string max_score_msg = "Max score: " + std::to_string(max_score);
+    draw_start_x = (TTYGUIWindow::term_cols / 2) - (max_score_msg.length() / 2);
+    draw_start_y += TTYGUIWindow::term_rows / 4;
+    std::cout << "\033[" << draw_start_y << ";" << draw_start_x << "H";
+    std::cout << max_score_msg << "\033[1;1H";
+}
+
 nibbler::Key TTYGUIWindow::convert_input_to_key(char ch) {
     switch (ch)
     {
@@ -201,6 +217,10 @@ nibbler::Key TTYGUIWindow::convert_input_to_key(char ch) {
 
         case '3':
             return nibbler::Key::NUMBER_3;
+            break;
+
+        case ' ':
+            return nibbler::Key::SPACE;
             break;
 
         case 7:

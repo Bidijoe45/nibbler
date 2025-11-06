@@ -16,7 +16,7 @@ namespace nibbler {
 enum Key {
     ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT,
     NUMBER_1, NUMBER_2, NUMBER_3, NUMBER_4, NUMBER_5, NUMBER_6, NUMBER_7, NUMBER_8, NUMBER_9, NUMBER_0,
-    ESC, LETTER_P, EMPTY
+    ESC, SPACE, LETTER_P, EMPTY
 };
 
 struct Position {
@@ -37,6 +37,7 @@ public:
     virtual void read_input() = 0;
     virtual void draw_snake(const std::vector<Position> &snake) = 0;
     virtual void draw_fruit(const Position& fruit_pos) = 0;
+    virtual void draw_start_screen(const std::string &msg, int32_t max_score) = 0;
     virtual void set_score(int32_t score) = 0;
     virtual void render() = 0;
     virtual void push_message(const std::string &msg) = 0;

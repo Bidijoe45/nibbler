@@ -29,6 +29,7 @@ class SFMLGUIWindow : public nibbler::IWindow {
         void read_input() override;
         void draw_snake(const std::vector<nibbler::Position> &snake) override;
         void draw_fruit(const nibbler::Position& fruit_pos) override;
+        void draw_start_screen(const std::string &msg, int32_t max_score) override;
         void set_score(int32_t score) override;
         void render() override;
         void push_message(const std::string &msg) override;
@@ -36,6 +37,7 @@ class SFMLGUIWindow : public nibbler::IWindow {
     private:
         void init(int32_t resolution_width_px, int32_t resolution_height_px);
         const std::pair<int, int> get_window_size() const;
+        void center_text(sf::Text &text) const;
 
         sf::RenderWindow window_;
         std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;

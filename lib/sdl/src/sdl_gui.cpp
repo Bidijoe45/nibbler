@@ -150,6 +150,7 @@ void SDLGUIWindow::read_input() {
             case SDLK_LEFT: callback(nibbler::Key::ARROW_LEFT); break;
             case SDLK_RIGHT: callback(nibbler::Key::ARROW_RIGHT); break;
             case SDLK_DOWN: callback(nibbler::Key::ARROW_DOWN); break;
+            case SDLK_SPACE: callback(nibbler::Key::SPACE); break;
             default: break;
         }
     }
@@ -157,7 +158,6 @@ void SDLGUIWindow::read_input() {
 
 void SDLGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake) {
     std::pair<int, int> window_size = get_window_size();
-    SDL_SetRenderScale(this->renderer_, 1, 1);
     SDL_SetRenderDrawColor(this->renderer_, 163, 177, 138, 255);
 
     for (const nibbler::Position& p : snake) {
@@ -182,6 +182,28 @@ void SDLGUIWindow::draw_fruit(const nibbler::Position& fruit_pos) {
     SDL_RenderFillRect(this->renderer_, &fruit_square);
 }
 
+void SDLGUIWindow::draw_start_screen(const std::string &msg, int32_t max_score)
+{
+    SDL_SetRenderDrawColor(this->renderer_, 0, 0, 0, 255);
+    SDL_RenderClear(this->renderer_);
+
+    std::pair<int, int> res = this->get_window_size();
+    int pos_x = (res.first / 8);
+    int pos_y = res.second / 4;
+
+    SDL_SetRenderScale(this->renderer_, 2, 2);
+    SDL_SetRenderDrawColor(this->renderer_, 255, 255, 255, 255);
+
+    SDL_RenderDebugText(this->renderer_, pos_x, pos_y, msg.c_str());
+
+    std::string score_text = std::string("Max score:" + std::to_string(max_score));
+    pos_x = (res.first / 8);
+    pos_y += res.second / 8;
+    SDL_RenderDebugText(this->renderer_, pos_x, pos_y, score_text.c_str());
+
+    SDL_SetRenderScale(this->renderer_, 1, 1);
+}
+
 void SDLGUIWindow::push_message(const std::string& msg) {
     //TODO:
 }
@@ -191,6 +213,7 @@ void SDLGUIWindow::set_score(int32_t score) {
     SDL_SetRenderScale(this->renderer_, 2, 2);
     SDL_SetRenderDrawColor(this->renderer_, 255, 255, 255, 255);
     SDL_RenderDebugText(this->renderer_, 10, 1, score_text.c_str());
+    SDL_SetRenderScale(this->renderer_, 1, 1);
 }
 
 void SDLGUIWindow::render() {

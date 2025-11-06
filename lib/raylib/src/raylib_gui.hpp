@@ -30,6 +30,7 @@ public:
     void read_input() override;
     void draw_snake(const std::vector<nibbler::Position> &snake) override;
     void draw_fruit(const nibbler::Position& fruit_pos) override;
+    void draw_start_screen(const std::string &msg, int32_t max_score) override;
     void push_message(const std::string& msg) override;
     void set_score(int32_t score) override;
     void render() override;
@@ -37,12 +38,8 @@ public:
 private:
     void init(int32_t resolution_width_px, int32_t resolution_height_px);
     const std::pair<int, int> get_window_size() const;
-    void draw_border();
 
     std::vector<nibbler::IWindow::KeyDownCallback> key_down_callbacks_;
-    int32_t score_;
-    std::vector<nibbler::Position> snake_;
-    nibbler::Position fruit_;
     Camera3D camera_;
     int32_t gameboard_width_squares_;
     int32_t gameboard_height_squares_;

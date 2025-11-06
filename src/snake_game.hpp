@@ -47,6 +47,7 @@ private:
 
     GameState game_state_;
     int32_t score_ = 0;
+    int32_t max_score_ = 0;
     Snake snake_;
     Fruit fruit_;
     FruitFactory fruit_factory_;

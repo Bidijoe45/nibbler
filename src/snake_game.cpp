@@ -70,6 +70,10 @@ void SnakeGame::on_key_down(Key key) {
         case Key::ARROW_UP:
             this->snake_.change_direction(Direction::UP);
             break;
+        case Key::SPACE:
+            if (this->game_state_ == GameState::INIT)
+                this->game_state_ = GameState::RUNNING;
+            break;
         case Key::ESC:
             this->game_state_ = GameState::END;
             break;
@@ -107,22 +111,35 @@ void SnakeGame::initialize_game() {
 // This function is called 59.9 times per second. Game logic goes here
 void SnakeGame::update(double delta_time) {
 
-    if (!this->window_)
+    if (!this->window_ || this->game_state_ == GameState::END)
         return;
+
+    if (this->game_state_ == GameState::INIT)
+    {
+        this->window_->clear_screen();
+        this->window_->draw_start_screen("Press space to start", this->max_score_);
+        this->window_->render();
+        return;
+    }
 
     this->snake_.move(delta_time);
 
     // If collision, just restart the game for now
     bool wall_collision = this->snake_.check_wall_collision(this->config_.gameboard_width_squares, this->config_.gameboard_height_squares);
     bool body_collision = this->snake_.check_body_collision();
-    if (wall_collision || body_collision) {
+    if (wall_collision || body_collision)
+    {
+        this->game_state_ = GameState::INIT;
         this->initialize_game();
+        return;
     }
 
     bool fruit_collision = this->snake_.check_fruit_collision(this->fruit_.pos);
     if (fruit_collision) {
         this->fruit_ = this->fruit_factory_.create_fruit_random_pos(this->snake_.body.segments);
         this->score_ += 1;
+        if (this->score_ > this->max_score_)
+            this->max_score_ = this->score_;
         this->snake_.add_segment();
         this->snake_.increase_speed();
     }
@@ -177,8 +194,7 @@ int SnakeGame::run() {
 
     Key prev_gui = this->current_gui_;
 
-    this->game_state_ = GameState::RUNNING;
-    while (this->game_state_ == GameState::RUNNING) {
+    while (this->game_state_ != GameState::END) {
         std::chrono::steady_clock::time_point frame_start = std::chrono::steady_clock::now();
         std::chrono::duration<double> delta_time_s = frame_start - previous_time;
         previous_time = frame_start;

@@ -3,6 +3,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cmath>
 
 namespace sfmlgui {
 
@@ -181,6 +182,9 @@ void SFMLGUIWindow::read_input()
                     case sf::Keyboard::Key::Right:
                         callback(nibbler::Key::ARROW_RIGHT);
                         break;
+                    case sf::Keyboard::Key::Space:
+                        callback(nibbler::Key::SPACE);
+                        break;
                     default: break;
                 }
             }
@@ -213,6 +217,35 @@ void SFMLGUIWindow::draw_fruit(const nibbler::Position& fruit_pos)
                         fruit_pos.y * this->square_height_px_});
     fruit.setOutlineThickness(0.f);
     this->window_.draw(fruit);
+}
+
+void SFMLGUIWindow::center_text(sf::Text &text) const
+{
+    auto center = text.getGlobalBounds().size / 2.f;
+    auto localBounds = center + text.getLocalBounds().position;
+    auto rounded = sf::Vector2f{ std::round(localBounds.x), std::round(localBounds.y) };
+    text.setOrigin(rounded);
+    text.setPosition(sf::Vector2f{ this->window_.getSize() / 2u });
+}
+
+void SFMLGUIWindow::draw_start_screen(const std::string &msg, int32_t max_score)
+{
+    std::pair<int, int> res = this->get_window_size();
+
+    sf::Text start_text(this->font_, msg);
+    start_text.setCharacterSize(std::max(res.first / 10, res.second / 10));
+    start_text.setFillColor(sf::Color::Black);
+    this->center_text(start_text);
+
+    sf::Text score_text(this->font_, "Max score: " + std::to_string(max_score));
+    score_text.setCharacterSize(std::max(res.first / 25, res.second / 25));
+    score_text.setFillColor(sf::Color::Black);
+    this->center_text(score_text);
+    sf::Vector2f score_text_pos = score_text.getPosition();
+    score_text.setPosition(sf::Vector2f{ score_text_pos.x, score_text_pos.y + (res.second / 4) });
+
+    this->window_.draw(start_text);
+    this->window_.draw(score_text);
 }
 
 void SFMLGUIWindow::set_score(int32_t score)

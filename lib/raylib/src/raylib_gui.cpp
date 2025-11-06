@@ -8,9 +8,7 @@
 namespace raylibgui {
 
 RaylibGUIWindow::RaylibGUIWindow()
-    : score_(0),
-      fruit_({0, 0}),
-      gameboard_width_squares_(default_gameboard_x_squares),
+    : gameboard_width_squares_(default_gameboard_x_squares),
       gameboard_height_squares_(default_gameboard_y_squares),
       title_("No title")
 {
@@ -23,9 +21,7 @@ RaylibGUIWindow::RaylibGUIWindow(
     int32_t gameboard_width_squares,
     int32_t gameboard_height_squares,
     std::string title)
-    : score_(0),
-      fruit_({0, 0}),
-      gameboard_width_squares_(gameboard_width_squares),
+    : gameboard_width_squares_(gameboard_width_squares),
       gameboard_height_squares_(gameboard_height_squares),
       title_(title)
 {
@@ -71,12 +67,22 @@ void RaylibGUIWindow::add_event_listener_key_press(nibbler::IWindow::KeyPressCal
     //TODO:
 }
 
-void RaylibGUIWindow::draw_border() {
-    // No need to implement border, it's 3D
-}
-
 void RaylibGUIWindow::clear_screen() {
-    // This is done in the render function. This is how the library works
+    BeginDrawing();
+    ClearBackground(RAYWHITE);
+    BeginMode3D(this->camera_);
+    // Grid
+    Vector3 gridCellV3 = { 0, 0, 0.0f };
+    for (int32_t x = 0; x < this->gameboard_width_squares_; x++) {
+        for (int32_t y =0; y < this->gameboard_height_squares_; y++) {
+            gridCellV3.x = x;
+            gridCellV3.z = y;
+
+            DrawCube(gridCellV3, 1.0f, 0.0f, 1.0f, GRAY);
+            DrawCubeWires(gridCellV3, 1.0f, 0.1f, 1.0f, BLACK);
+        }
+    }
+    EndMode3D();
 }
 
 void RaylibGUIWindow::read_input() {
@@ -87,7 +93,7 @@ void RaylibGUIWindow::read_input() {
             callback(nibbler::Key::ESC);
             break;
         }
-        if (IsKeyDown(KeyboardKey::KEY_SPACE)) callback(nibbler::Key::ESC);
+        if (IsKeyDown(KeyboardKey::KEY_ESCAPE)) callback(nibbler::Key::ESC);
         if (IsKeyDown(KeyboardKey::KEY_ONE)) callback(nibbler::Key::NUMBER_1);
         if (IsKeyDown(KeyboardKey::KEY_TWO)) callback(nibbler::Key::NUMBER_2);
         if (IsKeyDown(KeyboardKey::KEY_THREE)) callback(nibbler::Key::NUMBER_3);
@@ -102,54 +108,14 @@ void RaylibGUIWindow::read_input() {
         if (IsKeyDown(KeyboardKey::KEY_LEFT)) callback(nibbler::Key::ARROW_LEFT);
         if (IsKeyDown(KeyboardKey::KEY_DOWN)) callback(nibbler::Key::ARROW_DOWN);
         if (IsKeyDown(KeyboardKey::KEY_RIGHT)) callback(nibbler::Key::ARROW_RIGHT);
+        if (IsKeyDown(KeyboardKey::KEY_SPACE)) callback(nibbler::Key::SPACE);
     }
 }
 
-//FIXME: maybe this should be set_snake or update_snake instead of draw
 void RaylibGUIWindow::draw_snake(const std::vector<nibbler::Position> &snake) {
-    if (this->snake_.size() != snake.size()) {
-        int32_t new_elements = snake.size() - this->snake_.size();
-        this->snake_.assign(snake.begin(), snake.end());
-    }
-
-    auto new_snake_it = snake.begin();
-    auto snake_it = this->snake_.begin();
-
-    for (; new_snake_it != snake.end(); ++new_snake_it, ++snake_it) {
-        *snake_it = *new_snake_it;
-    }
-}
-
-void RaylibGUIWindow::draw_fruit(const nibbler::Position& fruit_pos) {
-    this->fruit_ = fruit_pos;
-}
-
-void RaylibGUIWindow::push_message(const std::string& msg) {
-    //TODO:
-}
-
-void RaylibGUIWindow::set_score(int32_t score) {
-    this->score_ = score;
-}
-
-void RaylibGUIWindow::render() {
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
     BeginMode3D(this->camera_);
 
-    // Grid
-    Vector3 gridCellV3 = { 0, 0, 0.0f };
-    for (int32_t x = 0; x < this->gameboard_width_squares_; x++) {
-        for (int32_t y =0; y < this->gameboard_height_squares_; y++) {
-            gridCellV3.x = x;
-            gridCellV3.z = y;
-
-            DrawCube(gridCellV3, 1.0f, 0.0f, 1.0f, GRAY);
-            DrawCubeWires(gridCellV3, 1.0f, 0.1f, 1.0f, BLACK);
-        }
-    }
-
-    const nibbler::Position& head = this->snake_.front();
+    const nibbler::Position& head = snake.front();
     Vector3 headV3 = {
         static_cast<float>(head.x),
         0.0f,
@@ -160,7 +126,7 @@ void RaylibGUIWindow::render() {
     this->camera_.position.x = this->camera_.target.x;
     this->camera_.position.z = this->camera_.target.z + 15;
 
-    for (const nibbler::Position& segment : this->snake_) {
+    for (const nibbler::Position& segment : snake) {
         Vector3 cubePosition = {
             static_cast<float>(segment.x),
             0.5f,
@@ -170,17 +136,37 @@ void RaylibGUIWindow::render() {
         DrawCubeWires(cubePosition, 1.0f, 1.0f, 1.0f, SKYBLUE);
     }
 
-    Vector3 fruiPosition = {
-        static_cast<float>(this->fruit_.x),
-        0.5f,
-        static_cast<float>(this->fruit_.y)
-    };
-    DrawCube(fruiPosition, 1.0f, 1.0f, 1.0f, RED);
-    DrawCubeWires(fruiPosition, 1.0f, 1.0f, 1.0f, MAROON);
-
     EndMode3D();
-    DrawText(TextFormat("Score: %i", this->score_), 20, 20, 20, ORANGE);
+}
 
+void RaylibGUIWindow::draw_fruit(const nibbler::Position& fruit_pos) {
+    BeginMode3D(this->camera_);
+    Vector3 fruitPosition = {
+        static_cast<float>(fruit_pos.x),
+        0.5f,
+        static_cast<float>(fruit_pos.y)
+    };
+    DrawCube(fruitPosition, 1.0f, 1.0f, 1.0f, RED);
+    DrawCubeWires(fruitPosition, 1.0f, 1.0f, 1.0f, MAROON);
+    EndMode3D();
+}
+
+void RaylibGUIWindow::draw_start_screen(const std::string &msg, int32_t max_score)
+{
+    DrawText(msg.c_str(), 20, 20, 20, ORANGE);
+    DrawText(TextFormat("Max score: %i", max_score), 20, 40, 20, ORANGE);
+    
+}
+
+void RaylibGUIWindow::push_message(const std::string& msg) {
+    //TODO:
+}
+
+void RaylibGUIWindow::set_score(int32_t score) {
+    DrawText(TextFormat("Score: %i", score), 20, 20, 20, ORANGE);
+}
+
+void RaylibGUIWindow::render() {
     EndDrawing();
 }
 

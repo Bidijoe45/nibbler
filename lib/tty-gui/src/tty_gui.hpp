@@ -28,6 +28,7 @@ public:
     void draw_snake(const std::vector<nibbler::Position> &snake) override;
     void draw_fruit(const nibbler::Position& fruit_pos) override;
     void push_message(const std::string& msg) override;
+    void draw_start_screen(const std::string &msg, int32_t max_score) override;
     void set_score(int32_t score) override;
     void render() override;
 

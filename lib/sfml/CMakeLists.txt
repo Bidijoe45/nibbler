@@ -5,6 +5,7 @@ project(SFML_GUI)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(BUILD_SHARED_LIBS "ON")
+set(SFML_BUILD_AUDIO "OFF")
 
 set(SRCS
     src/sfml_gui.cpp

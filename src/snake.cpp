@@ -1,6 +1,8 @@
 #include "snake.hpp"
 #include "nibbler/graphics_api.hpp"
 
+#include <iostream>
+
 namespace nibbler {
 
 Snake::Snake() {}
@@ -79,6 +81,12 @@ void Snake::move(double delta_time) {
 }
 
 void Snake::change_direction(Direction dir) {
+    Position& snake_head = this->body.segments.front();
+
+    if (snake_head.x == last_pos.x && snake_head.y == last_pos.y)
+        return;
+    this->last_pos = snake_head;
+
     if (this->body.direction == dir)
         return;
 

@@ -6,6 +6,8 @@
 
 #include <SDL3/SDL.h>
 
+#include <string>
+
 namespace sdlgui {
 
 class SDLGUIWindow : public nibbler::IWindow {

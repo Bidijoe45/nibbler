@@ -5,6 +5,9 @@
 #include <memory>
 #include <functional>
 
+#include <vector>
+#include <string>
+
 static constexpr int32_t default_gameboard_x_squares = 16;
 static constexpr int32_t default_gameboard_y_squares = 16;
 static constexpr int32_t default_res_x_px = 640;

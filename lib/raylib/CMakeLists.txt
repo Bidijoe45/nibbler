@@ -4,7 +4,7 @@ project(RAYLIB_GUI)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(BUILD_SHARED_LIBS "ON")
+set(BUILD_SHARED_LIBS ON)
 
 set(SRCS
     src/raylib_gui.cpp

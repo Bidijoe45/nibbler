@@ -5,8 +5,8 @@
             "name": "SDL_GUI",
             "path": "build/lib/sdl/libSDL_GUI.so",
             "resolution": {
-                "width": 640,
-                "height": 480
+                "width": 1280,
+                "height": 960
             }
         },
         {
@@ -14,8 +14,8 @@
             "name": "RAYLIB_GUI",
             "path": "build/lib/raylib/libRAYLIB_GUI.so",
             "resolution": {
-                "width": 640,
-                "height": 480
+                "width": 1280,
+                "height": 960
             }
         },
         {
@@ -24,8 +24,8 @@
             "path": "build/lib/sfml/libSFML_GUI.so",
             "font_path": "config/Technology.ttf",
             "resolution": {
-                "width": 640,
-                "height": 480
+                "width": 1280,
+                "height": 960
             }
         },
         {

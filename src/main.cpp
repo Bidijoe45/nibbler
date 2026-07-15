@@ -31,8 +31,15 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    if (game_height_squares < 8 || game_width_squares < 8) {
-        std::cerr << "ERROR | arguments: width and height must be >= 8" << std::endl;
+    constexpr int32_t min_squares = 8;
+    constexpr int32_t max_squares = 200;
+    if (game_height_squares < min_squares || game_width_squares < min_squares) {
+        std::cerr << "ERROR | arguments: width and height must be >= " << min_squares << std::endl;
+        return 1;
+    }
+
+    if (game_height_squares > max_squares || game_width_squares > max_squares) {
+        std::cerr << "ERROR | arguments: width and height must be <= " << max_squares << std::endl;
         return 1;
     }
 

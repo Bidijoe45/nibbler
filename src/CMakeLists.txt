@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
 set(NIBBLER_MAIN_LIB nibbler_main_lib)
 set(SRCS
     config.cpp

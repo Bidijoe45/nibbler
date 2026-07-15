@@ -1,10 +1,13 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
 
 project(RAYLIB_GUI)
 
+set(BUILD_EXAMPLES OFF)
+set(BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libs" FORCE)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(BUILD_SHARED_LIBS ON)
+#set(BUILD_SHARED_LIBS ON)
 
 set(SRCS
     src/raylib_gui.cpp

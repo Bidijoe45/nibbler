@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 
 namespace nibbler {
 
@@ -19,7 +20,14 @@ Configuration ConfigParser::parseConfigFile(const std::string &file_path) {
         return config;
     }
 
-    nlohmann::json data = nlohmann::json::parse(file);
+    nlohmann::json data;
+    try {
+        data = nlohmann::json::parse(file);
+    }
+    catch (const std::exception &e) {
+        std::cerr << "ERROR | invalid config file " << file_path << std::endl;
+        return config;
+    }
 
     if (!data.contains("gui_libraries")) {
         std::cerr << "ERROR | config file: missing property gui_libraries in " << file_path << std::endl;
@@ -79,8 +87,13 @@ Configuration ConfigParser::parseConfigFile(const std::string &file_path) {
         lib.path = std::string(element["path"]);
         lib.resolution_height = element["resolution"]["height"];
         lib.resolution_width = element["resolution"]["width"];
-        if (element.contains("font_path"))
+        if (element.contains("font_path")) {
             lib.font_path = std::string(element["font_path"]);
+            if (!std::filesystem::exists(lib.font_path)) {
+                std::cerr << "ERROR|> Font file does not exist: " << lib.font_path << std::endl;
+                continue;
+            }
+        }
 
         config.gui_libraries.push_back(lib);
     }
